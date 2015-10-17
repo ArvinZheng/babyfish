@@ -1,0 +1,17 @@
+pre ol, pre ol li, pre ol li span{margin:0 0;padding:0;border:none}
+pre ol{list-style:decimal;margin:0px 0px 1px 3em !important;padding:5px 0;}
+pre ol li{background:url('splitter.png') repeat-y scroll;list-style-position:outside !important;color:#5C5C5C;padding:0 3px 0 10px !important;margin:0 !important;line-height:18px}
+pre ol li.alt{color:inherit}
+
+pre .pln { color: rgb(0, 0, 0) } /* plain text */
+pre .str { color: rgb(42, 0, 255); }  /* string content */
+pre .kwd { color: rgb(127, 0, 85); font-weight: bold; }  /* a keyword */
+pre .com { color: rgb(0, 128, 0); }  /* a comment */
+pre .typ { color: rgb(0, 0, 0); }  /* a type name */
+pre .lit { color: #066 }  /* a literal value */
+pre .pun, .opn, .clo { color: rgb(0,0,0); }
+pre .tag { color: rgb(63, 127, 127); font-weight:bold; }  /* a markup tag name */
+pre .atn { color: rgb(127, 0, 127); }  /* a markup attribute name */
+pre .atv { color: rgb(42, 0, 255); font-style: italic; }  /* a markup attribute value */
+pre .dec, .var { color: #606 }  /* a declaration; a variable name */
+pre .fun { color: red }  /* a function name */

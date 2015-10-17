@@ -1,0 +1,881 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Extended JPA Criteria</title>
+	
+	<style type="text/css">
+		.math {
+			font-size: 30px;
+			font-weight: bold;
+		}
+		.sup {
+			vertical-align: super;
+			font-size: 8px;
+		}
+		.sub {
+			vertical-align: sub;
+			font-size: 8px;
+		}
+		fieldset.calc-block {
+			border: 1px rgb(0, 50, 0) solid;
+			border-radius: 10px;
+			margin-bottom: 10px;
+			color: 
+		}
+		fieldset.calc-block > legend{
+			font-weight: bold;
+			color: rgb(0, 50, 0);
+		}
+	</style>
+	
+	<script type="text/javascript" src="../common/jquery-1.10.2.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/babyfish-doc.css"/>
+	<script type="text/javascript" src="../common/babyfish-doc.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/google-code-prettify.css"/>
+	<script type="text/javascript" src="../common/google-code-prettify.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="../common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		$(function() {
+			initChapters();
+			initCodeBlocks();
+			initButtons();
+		});
+	</script>
+</head>
+<body id="no-margin-body">
+    <div id="head">
+        <div id="title">Extended JPA Criteria</div>
+        <div id="right-top-conner">
+            <a class="button" href="../index.xhtml">Back to the start page</a>
+        </div>
+    </div>
+    <div id="content">
+    	<div id="dictionary"></div>
+    	<fieldset class="chapter">
+    		<legend>Outline</legend>
+    		<p class="paragrahps">
+    			JPA supports 2 methods to execute query.
+    		</p>
+    		<ul>
+    			<li>
+    				<span class="important">JPQL: </span>
+    				This is a simple method, it will ignore all the errors in compilation-time,
+    				it will throws exception in runtime even if the query has a tiny error such as spelling mistake.
+    				Though it is easy to create the query, but it is hard for debug and refactoring, especially when 
+    				the project you want to refactor is <span class="important">NOT</span> small. 
+    			</li>
+    			<li>
+    				<span class="important">JPA Criteria: </span>
+    				This is a powerful method, The vast majority of errors will be reported during the java compilation.
+    				If you use JPA criteria, you will find that your java IDE is OK means your query is OK in most cases.
+    				Though it will cost a little more time to create the query, but it will cost less time to 
+    				debug and refactor, especially you want to refactor a big project. 
+    				The only requirement is that you must be familiar with the Java5 language a little bit.
+    			</li>
+    		</ul>
+    		<p class="paragraphs">
+    			BabyFish <span class="important">mightily</span> suggest your to use JPA Criteria and BabyFish has extended the JPA Criteria, it is called <span class="important">Extended JPA Criteria</span>.
+    			if you think there are not enough reasons to make you do that, it gives you more reasons:
+    		</p>
+    		<ol>
+   				<li>
+   					Extended JPA Criteria is more powerful, especially when you handling a problem of dynamic query.
+   					it can resolve the dynamic query problem more simply.
+   				</li>
+   				<li>
+   					Extended JPA Criteria is clever so that it can 
+   					<span class="important">OPTIMIZE</span> the generated JPQL as much as possible.
+   				</li>
+   			</ol>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Class Diagram</legend>
+    		<img src="jpa-criteria.jpg"/>
+    		<p class="paragraphs">
+    			The gray types are supported by JPA Criteria, the yellow types are extended by BabyFish
+    		</p>
+    		<p class="paragraphs">
+    			BabyFish also extends javax.persistence.EntityManagerFactory
+    		</p>
+    		<div class="source-code">
+    			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence;
+
+import java.util.Map;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.SynchronizationType;
+import org.babyfish.persistence.criteria.XCriteriaBuilder;
+... ...
+
+public interface XEntityManagerFactory extends EntityManagerFactory, AutoCloseable {
+
+	@Override
+	/*{ <span class="important">XCriteriaBuilder</span> }*/ getCriteriaBuilder();
+
+	@Override
+	XEntityManager createEntityManager();
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	XEntityManager createEntityManager(Map map);
+	
+	@Override
+	XEntityManager createEntityManager(SynchronizationType synchronizationType);
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	XEntityManager createEntityManager(SynchronizationType synchronizationType, Map map);
+	
+	... ...
+}
+    			]]></pre>
+    		</div>
+    		and javax.persistence.EntityManager 
+    		<div class="source-code">
+    			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence;
+
+import javax.persistence.EntityManager;
+import org.babyfish.persistence.criteria.XCriteriaBuilder;
+
+... ...
+
+public interface XEntityManager extends EntityManager, AutoCloseable {
+	
+	@Override
+	/*{ <span class="important">XCriteriaBuilder</span> }*/ getCriteriaBuilder();
+	
+	@Override
+	XEntityManagerFactory getEntityManagerFactory();
+	
+	... ...
+}
+    			]]></pre>
+    		</div>
+    		to get the instance of <span class="important">org.babyfish.persistence.criteria.XCriteriaBuilder</span> that
+    		allows your to create objects of those extened JPA Criteria interfaces.
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Entity Class diagram for examples</legend>
+    		<p class="paragraphs">Let's see the entity class diagram for our examples</p>
+    		<img src="../common/entities-example.jpg"/>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>JoinMode</legend>
+    		<p class="paragraphs">
+    			Extend JPA Criteria supports JoinType
+    		</p>
+    		<div class="source-code">
+    			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.criteria;
+
+public enum /*{ <a name="JoinMode">JoinMode</a> }*/ {
+
+	OPTIONALLY_MERGE_EXISTS, //Default value
+	
+	OPTIONALLY_CREATE_NEW,
+	
+	REQUIRED_TO_MERGE_EXISTS,
+	
+	REQUIRED_TO_CREATE_NEW
+}
+    			]]></pre>
+    		</div>
+    		it is used by org.babyfish.persistence.XFrom:
+    		<div class="source-code">
+    			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.criteria;
+
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.MapAttribute;
+import javax.persistence.metamodel.SetAttribute;
+import javax.persistence.metamodel.SingularAttribute;
+
+@SuppressWarnings("hiding")
+public interface XFrom<Z, X> extends From<Z, X>, XFetchParent<Z, X> {
+	
+    @Override
+	<Y> XJoin<X, Y> join(SingularAttribute<? super X, Y> attribute);
+
+	@Override
+	<Y> XJoin<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType jt);
+
+	<Y> XJoin<X, Y> join(SingularAttribute<? super X, Y> attribute, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+    <Y> XJoin<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+    @Override
+	<Y> XCollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection);
+
+	@Override
+	<Y> XCollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection, JoinType jt);
+
+	<Y> XCollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+    <Y> XCollectionJoin<X, Y> join(CollectionAttribute<? super X, Y> collection, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+	@Override
+	<Y> XSetJoin<X, Y> join(SetAttribute<? super X, Y> set);
+
+	@Override
+	<Y> XSetJoin<X, Y> join(SetAttribute<? super X, Y> set, JoinType jt);
+
+	<Y> XSetJoin<X, Y> join(SetAttribute<? super X, Y> set, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+    <Y> XSetJoin<X, Y> join(SetAttribute<? super X, Y> set, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+	@Override
+	<Y> XListJoin<X, Y> join(ListAttribute<? super X, Y> list);
+
+	@Override
+	<Y> XListJoin<X, Y> join(ListAttribute<? super X, Y> list, JoinType jt);
+
+	<Y> XListJoin<X, Y> join(ListAttribute<? super X, Y> list, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+    <Y> XListJoin<X, Y> join(ListAttribute<? super X, Y> list, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+	@Override
+	<K, V> XMapJoin<X, K, V> join(MapAttribute<? super X, K, V> map);
+
+	@Override
+	<K, V> XMapJoin<X, K, V> join(MapAttribute<? super X, K, V> map, JoinType jt);
+
+	<K, V> XMapJoin<X, K, V> join(MapAttribute<? super X, K, V> map, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+    <K, V> XMapJoin<X, K, V> join(MapAttribute<? super X, K, V> map, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+	@Override
+	<X, Y> XJoin<X, Y> join(String attributeName);
+
+	@Override
+	<X, Y> XJoin<X, Y> join(String attributeName, JoinType jt);
+
+	<X, Y> XJoin<X, Y> join(String attributeName, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);	
+
+    <X, Y> XJoin<X, Y> join(String attributeName, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+	@Override
+	<X, Y> XCollectionJoin<X, Y> joinCollection(String attributeName);
+
+	@Override
+	<X, Y> XCollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt);
+
+	<X, Y> XCollectionJoin<X, Y> joinCollection(String attributeName, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);	
+
+    <X, Y> XCollectionJoin<X, Y> joinCollection(String attributeName, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+	@Override
+	<X, Y> XSetJoin<X, Y> joinSet(String attributeName);
+
+	@Override
+	<X, Y> XSetJoin<X, Y> joinSet(String attributeName, JoinType jt);
+
+	<X, Y> XSetJoin<X, Y> joinSet(String attributeName, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+	<X, Y> XSetJoin<X, Y> joinSet(String attributeName, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+	@Override
+	<X, Y> XListJoin<X, Y> joinList(String attributeName);
+
+	@Override
+	<X, Y> XListJoin<X, Y> joinList(String attributeName, JoinType jt);
+
+	<X, Y> XListJoin<X, Y> joinList(String attributeName, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+    <X, Y> XListJoin<X, Y> joinList(String attributeName, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+
+	@Override
+	<X, K, V> XMapJoin<X, K, V> joinMap(String attributeName);
+
+	@Override
+	<X, K, V> XMapJoin<X, K, V> joinMap(String attributeName, JoinType jt);
+
+	<X, K, V> XMapJoin<X, K, V> joinMap(String attributeName, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);	
+
+    <X, K, V> XMapJoin<X, K, V> joinMap(String attributeName, JoinType jt, /*{ <a href="#JoinMode">JoinMode</a> }*/ jm);
+    
+    ... ...
+}
+    			]]></pre>
+    		</div>
+    		<p class="paragraphs">
+	    		This interface added some methods with the parameter whose type is JoinType, the other methods without this parameter
+	    		uses default value JoinMode.OPTIONALLY_MERGE_EXISTS
+    		</p>
+    		<fieldset class="chapter">
+    			<legend>Creation mode</legend>
+    			<p class="paragraphs">
+    				JoinMode supports 2 creation modes, REQUIRED &amp; OPTIONAL
+    			</p>
+    			<fieldset class="chapter">
+    				<legend>REQUIRED</legend>
+    				<p class="paragraphs">
+    					It is supported by REQUIRED_TO_MERGE_EXISTS or REQUIRED_TO_CREATE_NEW.
+  						In this mode, the created join will be used to generate JPQL absolutely without optimization,
+  						whether the created join is used by other expressions or not.
+  					</p>
+  					<p class="paragraphs">
+  						Let's see an example, only uses REQUIRED_TO_MERGE_EXISTS to be the example because the behavior of
+  						REQUIRED_TO_CREATE_NEW is very similar.
+  					</p>
+  					<div class="source-code">
+  						<pre class="lang-java"><![CDATA[
+XCriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+XCriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+XRoot<Employee> employee = cq.from(Employee.class);
+employee.join(Employee_.department, JoinMode./*{ <span class="important">REQUIRED</span>}*/_TO_MERGE_EXISTS);
+return this.entityManager.createQuery(cq).getResultList();
+  						]]></pre>
+  					</div>
+  					This join is not used by any expression, but it is still used to generate JPQL. this is the original behavior of JPA.
+  					The JPQL that is executed finally is
+  					<div class="source-code">
+  						<pre class="lang-sql"><![CDATA[
+select babyfish_shared_alias_0
+from com.yourcompany.yourproject.entities.Employee babyfish_shared_alias_0
+inner join babyfish_shared_alias_0.department babyfish_shared_alias_1
+  						]]></pre>
+  					</div>
+    			</fieldset>
+    			<fieldset class="chapter">
+    				<legend>OPTIONAL</legend>
+    				<p class="paragraphs">
+    					It is supported by OPTIONALLY_MERGE_EXISTS or OPTIONALLY_CREATE_NEW.
+   						In this mode, if the created join is not used by any expressions, it will be ignored and
+   						not JPQL about it will be generated.
+    				</p>
+    				<p class="paragraphs">
+    					Let's see an example, only uses OPTIONALLY_MERGE_EXISTS to be the example because the behavior of
+  						OPTIONALLY_CREATE_NEW is very similar.
+  					</p>
+  					<div class="source-code">
+  						<pre class="lang-java"><![CDATA[
+XCriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+XCriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+XRoot<Employee> employee = cq.from(Employee.class);
+employee.join(Employee_.department, JoinMode./*{ <span class="important">OPTIONAL</span>}*/LY_MERGE_EXISTS);
+return this.entityManager.createQuery(cq).getResultList();
+  						]]></pre>
+  					</div>
+  					This join is not used by any expression so that it will be ignore and no JQPL about it will be generated. 
+  					The JPQL that is executed finally is
+  					<div class="source-code">
+  						<pre class="lang-sql"><![CDATA[
+select babyfish_shared_alias_0
+from com.yourcompany.yourproject.entities.Employee babyfish_shared_alias_0
+/* No join! Babyfish thinks it is unecessary so it is ignored */
+  						]]></pre>
+  					</div>
+  					<p class="paragrahs">
+  						If you use created join in any expressions(such as where condition, order by clause, select clause, 
+  						group by clause, having condition, or subqueries). for example
+  					</p>
+  					<div class="source-code">
+  						<pre class="lang-java"><![CDATA[
+XCriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+XCriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+XRoot<Employee> employee = cq.from(Employee.class);
+XJoin<Employee, Department> /*{ <span class="important2">department</span> }*/ = employee.join(Employee_.department, JoinMode./*{ <span class="important">OPTIONAL</span>}*/LY_MERGE_EXISTS);
+cq.where(cb.like(/*{ <span class="important2">department</span> }*/.get(Department_.name), departmentNamePattern));
+return this.entityManager.createQuery(cq).getResultList();
+  						]]></pre>
+  					</div>
+  					This created join will be used to generate JPQL because it is used by other expressions
+  					<div class="source-code">
+  						<pre class="lang-sql"><![CDATA[
+select babyfish_shared_alias_0
+from com.yourcompany.yourproject.entities.Employee babyfish_shared_alias_0
+inner join babyfish_shared_alias_0.department babyfish_shared_alias_1
+where babyfish_shared_alias_1.name like :babyfish_literal_0
+  						]]></pre>
+  					</div>
+    			</fieldset>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>Merging mode</legend>
+    			<fieldset class="chapter">
+    				<legend>Create New</legend>
+    				<p class="paragraphs">
+    					It is supported by REQUIRED_TO_CREATE_NEW or OPTIONALLY_CREATE_NEW.
+   						In this mode, if one assocation is joined more than twice, the joines will not be merged.
+    				</p>
+    				<p class="paragraphs">
+    					Let's see an example, only uses REQUIRED_TO_CREATE_NEW to be the example because the behavior of
+  						OPTIONALLY_CREATE_NEW is very similar.
+  					</p>
+  					<div class="source-code">
+  						<pre class="lang-java"><![CDATA[
+XCriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+XCriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+XRoot<Employee> employee = cq.from(Employee.class);
+cq.where(
+	cb.or(
+		cb.like(
+			employee.join(Employee_.department, JoinMode.REQUIRED_TO_/*{ <span class="important">CREATE_NEW</span> }*/).get(Department_.name), 
+			departmentNamePattern1
+		),
+		cb.like(
+			employee.join(Employee_.department, JoinMode.REQUIRED_TO_/*{ <span class="important">CREATE_NEW</span> }*/).get(Department_.name), 
+			departmentNamePattern2
+		)
+	)
+);
+employee.fetch(Employee_.department)
+return this.entityManager.createQuery(cq).getResultList();
+  						]]></pre>
+  					</div>
+  					The joins ared created by "CREATE_NEW" mode so that each join can not be used to merge with other joins, 
+  					also can not be used to merge with fetches. This is the original behavior of JPA.
+  					The JPQL that is executed fianlly is
+  					<div class="source-code">
+  						<pre class="lang-sql"><![CDATA[
+select babyfish_shared_alias_0
+from com.yourcompany.yourproject.entities.Employee babyfish_shared_alias_0
+inner join babyfish_shared_alias_0.department /*{ <a href="../query-path/index.xhtml#specialAliasPrefix">babyfish_not_shared_alias_</a> }*/1
+inner join babyfish_shared_alias_0.department /*{ <a href="../query-path/index.xhtml#specialAliasPrefix">babyfish_not_shared_alias_</a> }*/2
+inner join fetch babyfish_shared_alias_0.department babyfish_shared_alias_3
+where 
+	/*{ <a href="../query-path/index.xhtml#specialAliasPrefix">babyfish_not_shared_alias_</a> }*/1.name like :babyfish_literal_0
+or
+	/*{ <a href="../query-path/index.xhtml#specialAliasPrefix">babyfish_not_shared_alias_</a> }*/2.name like :babyfish_literal_1
+  						]]></pre>
+  					</div>
+  					The join created by JoinMode.REQUIRED_TO_CREATE_NEW or JoinMode.OPTIONALLY_CREATE_NEW will generate
+  					JPQL join whose alias starts with the special prefix <span class="important">babyfish_not_shared_alias_</span>.
+  					This special prefix can ganrantee that the join will not be merged with other joins or fetches
+  					<span class="important">absolutely</span>.Please view the 
+  					<a class="button" href="../query-path/index.xhtml#specialAliasPrefix">Special alias prefix</a>
+  					to know more.
+    			</fieldset>
+    			<fieldset class="chapter">
+    				<legend>Merge exists</legend>
+    				<p class="paragraphs">
+    					It is supported by REQUIRED_TO_MERGE_EXISTS or OPTIONALLY_MERGE_EXISTS.
+   						In this mode, if one assocation is joined more than twice, the joines will not be merged.
+    				</p>
+    				<p class="paragraphs">
+    					Let's see an example, only uses REQUIRED_TO_EXISTS to be the example because the behavior of
+  						OPTIONALLY_MERGE_EXISTS is very similar.
+  					</p>
+  					<div class="source-code">
+  						<pre class="lang-java"><![CDATA[
+XCriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+XCriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+XRoot<Employee> employee = cq.from(Employee.class);
+cq.where(
+	cb.or(
+		cb.like(
+			employee.join(Employee_.department, JoinType.LEFT, JoinMode.REQUIRED_TO_/*{ <span class="important">MERGE_EXISTS</span> }*/).get(Department_.name), 
+			departmentNamePattern1
+		),
+		cb.like(
+			employee.join(Employee_.department, JoinType.RIGHT, JoinMode.REQUIRED_TO_/*{ <span class="important">MERGE_EXISTS</span> }*/).get(Department_.name), 
+			departmentNamePattern2
+		)
+	)
+);
+employee.fetch(Employee_.department, JoinType.INNER)
+return this.entityManager.createQuery(cq).getResultList();
+  						]]></pre>
+  					</div>
+  					The joins ared created by "MERGE_EXISTS" mode so that each join can be used to merge with other joins, 
+  					also can be used to merge with fetches. One join is left join, another join is right join and the fetch is
+  					left join, the merged join type is inner. The JPQL that is executed fianlly is
+  					<div class="source-code">
+  						<pre class="lang-sql"><![CDATA[
+select babyfish_shared_alias_0
+from com.yourcompany.yourproject.entities.Employee babyfish_shared_alias_0
+inner join fetch babyfish_shared_alias_0.department babyfish_shared_alias_1 /* Merged result of 2 joins and 1 fetch */
+where 
+	babyfish_shared_alias_1.name like :babyfish_literal_0
+or
+	babyfish_shared_alias_1.name like :babyfish_literal_1
+  						]]></pre>
+  					</div>
+    			</fieldset>
+    		</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Fetches</legend>
+    		<div class="important-section">
+    			Though the <span class="important">BEST</span> solution of fetch requirement is
+    			<a class="button" href="../query-path/index.xhtml#fetchPath">FetchPath</a>,
+    			but babyfish still supports org.babyfish.persistence.XFechParent to extend javax.persistence.FetchParent
+    			in order to keep the compatibility with JPA Criteria to and to keep the theoretically integrity. 
+    			Do <span class="important">NOT</span> use it in real project.
+    		</div>
+    		<div class="source-code">
+    			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.criteria;
+
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.FetchParent;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.metamodel.PluralAttribute;
+import javax.persistence.metamodel.SingularAttribute;
+
+import org.babyfish.collection.XOrderedSet;
+import org.babyfish.persistence.path./*{ <a href="../query-path/index.xhtml#CollectionFetchType">CollectionFetchType</a> }*/;
+
+public interface XFetchParent<Z, X> extends FetchParent<Z, X> {
+	
+	@Override
+	XOrderedSet<Fetch<X, ?>> getFetches();
+	
+	XOrderedSet<XFetch<X, ?>> getXFetches();
+
+	@Override
+	<Y> XFetch<X, Y> fetch(SingularAttribute<? super X, Y> attribute);
+
+	@Override
+	<Y> XFetch<X, Y> fetch(SingularAttribute<? super X, Y> attribute, JoinType jt);
+
+	@Override
+	<Y> XFetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> attribute);
+
+	@Override
+	<Y> XFetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> attribute, JoinType jt);
+
+	<Y> XFetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> attribute, /*{ <a href="../query-path/index.xhtml#CollectionFetchType">CollectionFetchType</a> }*/ cft);
+
+	<Y> XFetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> attribute, JoinType jt, /*{ <a href="../query-path/index.xhtml#CollectionFetchType">CollectionFetchType</a> }*/ cft);
+
+	@SuppressWarnings("hiding")
+	@Override
+	<X, Y> XFetch<X, Y> fetch(String attributeName);
+
+	@SuppressWarnings("hiding")
+	@Override
+	<X, Y> XFetch<X, Y> fetch(String attributeName, JoinType jt);
+
+	@SuppressWarnings("hiding")
+    <X, Y> XFetch<X, Y> fetch(String attributeName, /*{ <a href="../query-path/index.xhtml#CollectionFetchType">CollectionFetchType</a> }*/ cft);
+
+    @SuppressWarnings("hiding")
+    <X, Y> XFetch<X, Y> fetch(String attributeName, JoinType jt, /*{ <a href="../query-path/index.xhtml#CollectionFetchType">CollectionFetchType</a> }*/ cft);
+}
+    			]]></pre>
+    		</div>
+    		By the original behavior of JPA Criteria, fetches can create join, if the join that is going to be created 
+    		is same with other joins or fetches, jpa insisted to create it. In Extended JPA Criteria
+    		<ol>
+    			<li>
+    				If the fetch and another fetch are base on same association, they should be merged together
+    				<span class="important">absolutely</span>.
+    			</li>
+    			<li>
+    				If the fetch and another join are base on same association but that join is created by
+    				JoinMode.REQUIRED_TO_CREATE_NEW or JoinMode.OPTIONALLY_CREATE_NEW, the fetch will create
+    				a join, it will <span class="important">NOT</span> be merged with that join.
+    			</li>
+    			<li>
+    				If the fetch bases on a reference association(<span class="important">NOT</span> collection assocation),
+    				it will be merged with the the other joines base on same assocation
+    				<span class="important">UNLESS</span>
+    				the other join is created by JoinMode.REQUIRED_TO_CREATE_NEW or JoinMode.OPTIONALLY_CREATE_NEW. 
+    			</li>
+    			<li>
+    				If the fetch bases on a collection association and it is created by CollectionFetchType.PARTIAL, 
+    				it will be merged with the the other joines base on same assocation unless the other join is
+    				created by JoinMode.REQUIRED_TO_CREATE_NEW or JoinMode.OPTIONALLY_CREATE_NEW.  
+    			</li>
+    		</ol>
+    		These merging rules is very similar with Babyfish FetchPath merging rules, 
+    		all the similar behaviors have been discussed in the document about 
+    		<a class="button" href="../query-path/index.xhtml#fetchesMergingRules">FetchPath merging rules</a>,
+    		please view it to know more, we need not to discuss the rules again. 
+    		<div class="important-section">
+    			<div>
+    				Emphasize again! please do <span class="important">NOT</span> use this functionality, the best solution is using <a class="button" href="../query-path/index.xhtml#fetchPath">FetchPath</a>
+    			</div>
+    			If you use fetch functionality of JPA Criteria or Extended JPA Criteria, 
+    			your fetches are solidified in the data access layer,
+    			so it is <span class="important">NOT</span> a good idea to use it in your project,
+    			the better way is using <a class="button" href="../query-path/index.xhtml#fetchPath">FetchPath</a>.
+    			The reason why org.babyfish.persistence.XFetchParent is supported is just to keep
+    			the compatibility with JPA Criteria standard and to keep the theoretically integrity.
+    		</div> 
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Reference assocation operation</legend>
+    		<p class="paragraphs">
+	    		The reference assocation means the one-to-one or many-to-one association, 
+	    		the type of the association property is entity, not collection.
+    		</p>
+    		<fieldset class="chapter">
+    			<legend>Change "join" to "get" automatically</legend>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>Change "get" to "join" automatically</legend>
+    			<fieldset class="chapter">
+    				<legend>Case 1</legend>
+    			</fieldset>
+    			<fieldset class="chapter">
+    				<legend>Case 2</legend>
+    			</fieldset>
+    			<fieldset class="chapter">
+    				<legend>Case 3</legend>
+    			</fieldset>
+    		</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>IN(...)</legend>
+    		<fieldset class="chapter">
+    			<legend>When list is empty</legend>
+    			
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>Resolve the problem of Oracle's max length of list</legend>
+    		</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Dynamic query</legend>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend><a name="literalExpression">OpenJPA style Literal expression</a></legend>
+    		<p class="paragraphs">
+    			In hibernate, if the literal is not number, hibernate will transalate it as JPQL parameter
+    			to avoid SQL injection attack; but if it is number, hibernate will translate it as JPQL literal. 
+    			Though numberic literal can not cause SQL injection attack, but this solution still has
+    			a problem.
+    		</p>
+    		<ol>
+   				<li>
+   					In hibernate HQL implementation, it supports the a cache of query plan in order to optimize
+   					the HQL parsing(use Hibernate-4.3.0.Final to be the example, the cache is
+   					org.hibernate.engine.query.spi.QueryPlanCache, in babyfish-hibernate, it is extended as
+   					org.babyfish.hibernate.hql.XQueryPlanCache). The key of the cache is the
+   					HQL and some other additional informations, the value is the HQL query plan of that HQL.
+   					Hibernate can use this cache to avoid duplicated compliation for duplicated HQL. 
+   				</li>
+   				<li>
+   					In some databases there is a SQL query plan cache too. for example, Oracle instance 
+   					supports SGA(System Global Area), SGA has a sub area named "Shared Pool", SharedPool
+   					has a sub area named "Library Cache". Libaray Cache support a SQL plan cache, its key
+   					is SQL string, its value is SQL query plan. Oracle can use Library Cache to avoid
+   					duplicated compliation for duplicated SQL.
+   				</li>
+   			</ol>
+   			The JPA criteria implementation of Hibernate translator the numberic literal expression to be
+   			JPQL literal, that means the queries with same query logic and different numberic parameter will
+   			be considiered as different HQL and will be used to generate different SQL. so the hit rate of both
+   			Hibernate HQL QueryPlanCache and Oracle LibraryCache will be reduced significantly.
+    		<p class="paragrahs">
+    			BabyFish supports OpenJPA style literal expression in order to resolve this problem of hibernate,
+    			The liternal expression will be transalated as JPQL parameter whether its type is numberic or not.
+    			For example
+    		</p>
+    		<div class="source-code">
+    			<pre class="lang-java"><![CDATA[
+/*
+ * "this.entityManager" is org.babyfish.persistance.XEntityManager, 
+ * NOT javax.persistence.EntityManager
+ */
+CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+CriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+Root<Employee> employee = cq.from(Employee.class);
+cq.where(
+	cb.ge(employee.get(Employee_.salary), new BigDecimal("10000")),
+	cb.le(employee.get(Employee_.salary), new BigDecimal("20000"))
+);
+/*
+ * You can also write the long-winded code like this too
+ * cq.where(
+ * 		cb.and(
+ *			cb.ge(employee.get(Employee_.salary), cb.literal(new BigDecimal("10000"))),
+ *			cb.le(employee.get(Employee_.salary), cb.literal(new BigDecimal("20000")))
+ * 		)
+ * )
+ */
+return this.entityManager.createQuery(cq).getResultList();
+    			]]></pre>
+    		</div>
+    		Employee_.salary is an attriubte delegates a property whose type is "java.util.BigDeciaml" that
+    		is a derived type of "java.lang.Number". Be diffrent with hibernate, babyfish will generate the
+    		numberic literal as JPQL parameter, NOT JPQL literal. The JPQL that is executed finally is
+    		<div class="source-code">
+    			<pre class="lang-sql"><![CDATA[
+select babyfish_shared_alias_0
+from Department babyfish_shared_alias_0
+where
+	babyfish_shared_alias_0.salary >= :babyfish_literal_0
+and
+	babyfish_shared_alias_0.salary <= :babyfish_literal_1
+    			]]></pre>
+    		</div>
+    		<div class="important-section">
+				The Extended JPA Criteria of BabyFish-Hibernate ganrantee the literal expressions will be
+				translated as JPQL parameter <span class="important">UNLESS</span> thee parameter is 
+				<span class="important">NOT</span> allowd in some special JPQL grammar
+				(for example, in the case-statement, when-statement is not allowed to use parameter) 
+				<span class="important">ABSOLUTELY</span>,
+				so it is <span class="important">UNNECESSARY</span> to use CriteriaBuilder.parameter(...) 
+				explicitly in your project:)  
+    		</div>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Constant expression</legend>
+    		<div class="important-section">
+    			This is functionality is designed to support <span class="important">ONLY</span> the 
+    			<span class="important">FUNCTION INDEX</span> of Oracle,
+    			Please do <span class="important">NOT</span> use it in other cases!
+    		</div>
+    		<p class="paragraphs">
+	    		Be different with literal expression, babyfish supports constant expression that is always
+	    		transalted to be JPQL literal, not JPQL parameter. this expression must be used to describe the
+	    		<span class="important">CONSTANT</span>, <span class="important">NOT</span> the query parameter 
+	    		specified by the customer, the reason has been dicussed in the 
+	    		<a href="#literalExpression" class="button">OpenJPA style Literal expression</a>.
+    		</p>
+    		<p class="paragraphs">
+    			BabyFish adds a new method into org.babyfish.persistance.XCriteriaBuilder to support constant expression.
+    		</p>
+    		<div class="source-code">
+    			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.criteria;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+
+public interface XCriteriaBuilder extends CriteriaBuilder {
+	
+	<T> Expression<T> constant(T value);
+	
+	... ...
+}
+    			]]></pre>
+    		</div>
+    		<p class="paragraphs">
+    			When should we use constant expression? 
+    		</p>
+    		<p class="paragraphs">
+    			Suppose we have some balls, each ball is two-tier structure.
+    			The inner core is a ball of gold, set its radius R<span class="sub">au</span>;  
+    			the outer layer is platinum package, set its radius R<span class="sub">pt</span>.
+    			this radius is also the the radius of the whole ball.
+    		</p>
+    		<fieldset class="calc-block">
+    			<legend>The weight of gold core</legend>
+    			Let &#961;<span class="sub">au</span> be the density of gold 
+	    		<div class="math">
+	    			&#961;<span class="sub">au</span> * 4 * &pi; * R<span class="sub">au</span><span class="sup">3</span> / 3
+	    		</div>
+    		</fieldset>
+    		<fieldset class="calc-block">
+	    		<legend>The weight of platinum package</legend>
+	    		Let &#961;<span class="sub">pt</span> be the density of platinum
+	    		<div class="math">
+	    			&#961;<span class="sub">pt</span> * (4 * &pi; * R<span class="sub">pt</span><span class="sup">3</span> / 3 - 4 * &pi; * R<span class="sub">au</span><span class="sup">3</span> / 3)
+	    		</div>
+	    		After calculate, it is  
+	    		<div class="math">
+	    			&#961;<span class="sub">pt</span> * 4 * &pi; * R<span class="sub">pt</span><span class="sup">3</span> / 3 - 
+	    			&#961;<span class="sub">pt</span> * 4 * &pi; * R<span class="sub">au</span><span class="sup">3</span> / 3
+	    		</div>
+    		</fieldset>
+    		<fieldset class="calc-block">
+    			<legend>Total weight of the ball</legend> 
+	    		<div class="math">
+	    			&#961;<span class="sub">au</span> * 4 * &pi; * R<span class="sub">au</span><span class="sup">3</span> / 3 +
+	    			&#961;<span class="sub">pt</span> * 4 * &pi; * R<span class="sub">pt</span><span class="sup">3</span> / 3 - 
+	    			&#961;<span class="sub">pt</span> * 4 * &pi; * R<span class="sub">au</span><span class="sup">3</span> / 3
+	    		</div>
+	    		After calculate, it is
+	    		<div class="math">
+	    			&#961;<span class="sub">pt</span> * 4 * &pi; * R<span class="sub">pt</span><span class="sup">3</span> / 3 - 
+	    			(&#961;<span class="sub">pt</span> - &#961;<span class="sub">au</span>) * 4 * &pi; * R<span class="sub">au</span><span class="sup">3</span> / 3
+	    		</div>
+	    		<ul>
+	    			<li>Let &pi; = 3.14159265358979323846</li>
+	    			<li>Let &#961;<span class="sub">au</span> = 19370.0008kg/m<span class="sup">3</span></li>
+	    			<li>Let &#961;<span class="sub">pt</span> = 21370.0008kg/m<span class="sup">3</span></li>
+	    		</ul>
+	    		So the total weight of the ball is
+	    		<div class="math">
+	    			21370.0008 * 4 * 3.14159265358979323846 * R<span class="sub">pt</span><span class="sup">3</span> / 3 
+	    			- 
+	    			(21370.0008 - 19370.0008) * 4 * 3.14159265358979323846 * R<span class="sub">au</span><span class="sup">3</span> / 3
+	    		</div>
+	    		The final result is
+	    		<div class="math">
+	    			89514.45002731733 * R<span class="sub">pt</span><span class="sup">3</span>
+	    			-
+	    			8377.580409572781 * R<span class="sub">au</span><span class="sup">3</span>
+	    		</div>
+	    	</fieldset>
+	    	Now we need to query the balls whose weight between 0.02kg and 0.03kg
+	    	<div class="source-code">
+	    		<pre class="lang-java"><![CDATA[
+XCriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+CriteriaQuery<Ball> cq = cb.createQuery(Ball.class);
+Root<Ball> ball = cq.createQuery(Ball.class);
+cb.where(
+	cb.between(
+		cb.diff(
+			cb.prod(
+				cb./*{ <span class="important">constant</span> }*/(81136.86961774455), //cb.constant(...) must be used explicitly because the default implicit behavior is cb.literal(...)
+				cb.function(
+					"pow",
+					ball.get(Ball_.ptRadius,
+					cb.constant(3.0) //cb.constant(...) must be used explicitly because the default implicit behavior is cb.literal(...)
+				)
+			),
+			cb.prod(
+				cb./*{ <span class="important">constant</span> }*/(8377.580409572781), //cb.constant(...) must be used explicitly because the default implicit behavior is cb.literal(...)
+				cb.function(
+					"pow",
+					ball.get(Ball_.auRadius,
+					cb.constant(3.0) //cb.constant(...) must be used explicitly because the default implicit behavior is cb.literal(...)
+				)
+			)
+		),
+		0.02, //the implicit default behavior is cb.literal(...)
+		0.03 //the implicit default behavior is cb.literal(...)
+	)
+);
+return this.entityManager.createQuery(cq).getResultList();
+	    		]]></pre>
+	    	</div>
+	    	The JPQL that is executed finally is
+	    	<div class="source-code">
+	    		<pre class="lang-sql"><![CDATA[
+select babyfish_shared_alias_0
+from com.yourcompany.yourproject.entities.Ball babyfish_shared_alias_0
+where 
+	/*{ <span class="important">89514.45002731733</span> }*/ /* Constant expression is translated to be JPQL literal */
+	* 
+	pow(babyfish_shared_alias_0.ptRadius, 3.0)
+	-
+	/*{ <span class="important">8377.580409572781</span> }*/ /* Constant expression is translated to be JPQL literal */ 
+	* 
+	pow(babyfish_shared_alias_0.auRadius, 3.0)
+between 
+	/*{ <span class="important">:babyfish_literal_0</span> }*/ /*{ <span class="com">&#47;&#42; <span class="important2">0.02</span>, Literal expression is translated to be JPQL parameter &#42;&#47;</span> }*/
+and
+	/*{ <span class="important">:babyfish_literal_1</span> }*/ /*{ <span class="com">&#47;&#42; <span class="important2">0.03</span>, Literal expression is translated to be JPQL parameter &#42;&#47;</span> }*/
+	    		]]></pre>
+	    	</div>
+	    	So you can create the Oracle <span class="important">FUNCTION INDEX</span> to optimize this query
+	    	<div class="source-code">
+	    		<pre class="lang-sql"><![CDATA[
+create index BALL_WEIGHT_INDEX
+	on BALL(
+		89514.45002731733 * POW(PT_RADIUS, 3.0) - 
+		8377.580409572781 * POW(AU_RADIUS, 3.0)
+	);
+	    		]]></pre>
+	    	</div>
+    	</fieldset>
+    </div>
+</body>
+</html>

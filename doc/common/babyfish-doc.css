@@ -1,0 +1,184 @@
+body {
+    font-size: 16px;
+}
+p{
+    text-indent: 50px;
+}
+.paragraphs {
+    text-indent: 50px;
+}
+.no-paragraphs {
+	text-indent: 0px;
+}
+.button {
+	/* nothing: used as jQuery filter to apply .ui-button */
+	text-indent: 0px;
+}
+.java {
+	/* nothing: only used to avoid the bug of highlight.js */
+}
+div.title {
+    text-align: center;
+    font-size: 50px;
+    font-weight: bold;
+}
+#no-margin-body {
+    margin: 0px;
+}
+#head {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    height: 75px;
+    color: white;
+    background-color: rgb(0, 0, 100);
+}
+#content {
+    position: absolute;
+    left: 0px;
+    top: 75px;
+    right: 0px;
+    bottom: 0px;
+    overflow-y: auto;
+}
+#title {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    right: 300px;
+    height: 75px;
+    text-align: left;
+    font-size: 50px;
+    font-weight: bold;
+    text-align: left;
+    padding: 10px;
+    white-space: nowrap;
+    overflow-x: hidden;
+}
+#right-top-conner {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    height: 75px;
+    text-align: right;
+    padding: 10px;
+    padding-top: 25px;
+    text-align: right;
+}
+.important {
+    color: red;
+    font-weight: bold;
+}
+.important2 {
+	color: blue;
+	font-weight: bold;
+}
+.important-section {
+    background-color: #ffcc99;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 20px 0px 20px 0px;
+    padding: 20px;
+    border: 1px dashed black;
+    border-radius: 20px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+}
+.gray-section {
+    background-color: #ffeedd;
+    color: #222222;
+    font-style: italic;
+    margin: 10px 0px 10px 0px;
+    padding: 10px;
+    border: 1px dashed black;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.little-important {
+	font-weight: bold;
+}
+fieldset.chapter {
+    border: none;
+    padding-left: 50px;
+}
+.source-code {
+    border: 1px solid black;
+    background-color: #dddddd;
+    font-size: 16px;
+    margin: 20px 0px 20px 0px;
+    padding: 0px 20px 0px 20px;
+    text-indent: 0px;
+    border-radius: 20px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+}
+.ui-embed-source-code {
+	height: 600px;
+	overflow: auto;
+	margin:0px;
+	padding:0px;
+	background-color:#dddddd;
+}
+.text-like-code {
+	border: 1px solid black;
+    background-color: #dddddd;
+    border-radius: 10px;
+    padding: 10px;
+}
+ul.block-list>li {
+	border: 1px dashed black;
+	margin: 20px 0px 20px 0px;
+    padding: 0px 20px 0px 20px;
+    border-radius: 20px;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+}
+.grid {
+	border-collapse: collapse;
+	border: 1px solid black;
+}
+.grid-title {
+	background-color: #000088;
+	color: white;
+	font-weight: bold;
+}
+.grid-item {
+	background-color: #ffeedd;
+}
+.grid-alternating-item {
+	background-color: #ddeeff;
+}
+.grid-selected-item {
+	background-color: rgb(255, 127, 0) !important;
+	color: white;
+	border: 1px dashed rgb(0, 127, 255);
+}
+.grid-secondary-title {
+	border-top: 1px solid gray;
+}
+.splitter {
+	border-left: 4px solid rgb(0, 166, 80);
+}
+a.link-in-code {
+	font-weight: bold;
+	color: rgb(0, 0, 255);
+}
+a.link-in-code:hover {
+	font-weight: bold;
+	color: white;
+	background-color: black;
+	border: 1px dashed blue;
+	border-radius: 4px; 
+}
+.group {
+	border: 1px dashed rgb(255, 127, 0);
+	border-radius: 10px;
+}
+.deprecated {
+	text-decoration:line-through;
+}
+.not-important {
+	color: gray;
+}

@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>BabyFish Document</title>
+	<script type="text/javascript" src="common/jquery-1.10.2.min.js"></script>
+	
+	<script type="text/javascript" src="common/babyfish-doc.js"></script>
+	<link type="text/css" rel="stylesheet" href="common/babyfish-doc.css"/>
+	
+	<link type="text/css" rel="stylesheet" href="common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		$(function() {
+			initChapters();
+			initButtons();
+		});
+	</script>
+</head>
+<body>
+    <div class="title">BabyFish Document</div>
+	<div id="dictionary"></div>
+	<fieldset class="chapter">
+		<legend>Outline</legend>
+        <p class="paragraphs" style="font-size: 18px;font-weight:bold;">
+        	View see <a href="../babyfish.html" target="_blank">Introduction</a> to know what BabyFish is.
+        </p>
+		<div class="important-section">
+			I'm a Chinese who's not good at English so that maybe this document
+			is hard to read. 
+			If you can't bear this document, please 
+			learn the demo directly by watching the 
+			<a href="../demo/demo-guide.html" target="_blank">demo guide</a> directly.
+		</div>
+    </fieldset>
+    <fieldset class="chapter">
+        <legend>Functionalities</legend>
+        <div>
+            <p class="paragraphs">These functionalities are most important functionalities of babyfish</p>
+            <fieldset class="chapter">
+                <legend>BabyFish SpringFramework ORM <a class="button" style="font-size:14px" href="babyfish-springframework-orm/index.xhtml">View more...</a></legend>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>QueryPath <a class="button" style="font-size:14px" href="query-path/index.xhtml">View more...</a></legend>
+                <p class="paragraphs">This is helpful for your multiple-layer project developing. There are two kind QueryPaths: </p>
+                <ul>
+                    <li>
+                        <span class="important">QueryPath</span>
+                        It allows you to specify a topology graph with to unlimited breadth and depth to fetch the related ORM entities of the current center ORM entity very easy and safe
+                    </li>
+                    <li>
+                        <span class="important">SimpleOrderPath</span>
+                        it allows you to specify a topology graph with unlimited breadth and depth to order the current ORM entity and related ORM entities
+                    </li>
+                </ul>
+                <p class="paragraphs">
+                    QueryPath has no depenency with any ORM technologies so that it can be used by the components of any layer, for example, both data accessing component and business component.
+                    You can use it to be the parameter of the query methods of the components of any layer so that the UI layer can specify the QueryPath and assign it to data accessing layer through several middle layers.
+                    Let’s say goodbye to Spring’s “open session in view” and N+1 query.
+                </p>
+                <p class="paragraphs">
+                    BabyFish enhanced both Hibernate API and JPA, for both Hibernate and JPA progject, you can use it.
+                </p>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>DistinctLimitQuery <a class="button" style="font-size:14px" href="distinct-limit-query/index.xhtml">View more...</a></legend>
+                <p class="paragraphs">
+                    In Hibernate, if you use paging query with collection fetches, hibernate will query all the data from database and apply the paging in memory. 
+                    The DistinctLimitQuery of babyfish can generate the paging SQL for paging query with collection fetches when the database is Oracle.
+                </p>
+            </fieldset> 
+            <fieldset class="chapter">
+                <legend>Extended JPA Criteria <a class="button" style="font-size:14px" href="extended-jpa-criteria/index.xhtml">View more...</a></legend>
+                <p class="paragraphs">Babyfish supports Extended JPA Criteria, it is smarter and more flexible, it can optimize the query statement automatically</p>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>ObjectModel <a class="button" style="font-size:14px" href="object-model/index.xhtml">View more...</a></legend>
+                <p class="paragraphs">
+                	<span class="important">ObjectModel is the most important functionality of BabyFish, it is the root cause why I created BabyFish.</span>
+                </p>
+                <p class="paragraphs">
+                    This is helpful for your data model class design. 
+                    Often, we design 2 model classes, each one use an association property to retain other one, that is called bidirectional association. 
+                    If you do nothing anymore, When your program changes the association by one side, but the other side will not be changed correspondingly and automatically, 
+                    ObjectModel can help you to resolve this problem by annotation declaration, not by code! 
+                    Babyfish supports two kinds of ObjectModel
+                </p>
+                <ul>
+                	<li>
+                		<span class="important2">ObjectModel4Java: </span>
+                        ObjectModel can be used for any java data model class in any java application, it is not only confined in the ORM entity classes.
+                    </li>
+                    <li>
+                        <span class="important2">ObjectModel4JPA: </span>
+                        You can use it in your JPA/Hibernate entity, it can synchronize the bidirectional association and it can work with ORM's lazy-loading collection together.
+                    </li>
+                </ul>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>BabyFish Collection Framework <a class="button" style="font-size:14px" href="babyfish-collection-framework/index.xhtml">View more...</a></legend>
+                <p  class="paragraphs">
+                	This is an extension of Java Collection Framework. it can be split to
+                </p> 
+                <ul>
+                    <li>
+                        Babyfish X(Extension) Collection Framework
+                    </li>
+                    <li>
+                        Babyfish MA(Modification Aware) Collection Framework
+                    </li>
+                </ul>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>Typed-I18N <a class="button" style="font-size:14px" href="typed-18n/index.xhtml">View more...</a></legend>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>BabyFish Refection API <a class="button" style="font-size:14px" href="babyfish-reflection-api/index.xhtml">View more...</a></legend>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>Concurrent Changable Event <a class="button" style="font-size:14px" href="concurrent-changable-event/index.xhtml">View more...</a></legend>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>Graph Travel<a class="button" style="font-size:14px" href="graph-travel/index.xhtml">View more...</a></legend>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>JUnit Filter <a class="button" style="font-size:14px" href="junit-filter/index.xhtml">View more...</a></legend>
+            </fieldset>
+            <fieldset class="chapter">
+                <legend>Object Equality<a class="button" style="font-size:14px" href="object-equality/index.xhtml">View more...</a></legend>
+            </fieldset>
+        </div>
+    </fieldset>
+    <fieldset class="chapter">
+			<legend>Appendix<a class="button" style="font-size:14px" href="appendix.xhtml">View more...</a></legend>
+			<p class="paragraphs">
+				Lists all the annotations, JVM system properties and JPA properties of BabyFish, click "view more..." to know more.
+			</p>
+	</fieldset>
+    <hr style="border: 1px solid black"/>
+    <div style="text-align:right">
+    	<p>
+    		Tao Chen(&#38472;&#28059;)
+    		<a href="mailto:babyfish-ct@163.com">babyfish-ct@163.com</a>
+    	</p>
+    	<p>
+    		2013-12-28, ChengDu, China
+    	</p>
+    </div>
+</body>
+</html>

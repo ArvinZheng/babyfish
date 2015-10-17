@@ -1,0 +1,2210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>BabyFish MA Collection Framework</title>
+	
+	<script type="text/javascript" src="../common/jquery-1.10.2.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/babyfish-doc.css"/>
+	<script type="text/javascript" src="../common/babyfish-doc.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/google-code-prettify.css"/>
+	<script type="text/javascript" src="../common/google-code-prettify.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="../common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		$(function() {
+			initChapters();
+			initCodeBlocks();
+			initButtons();
+		});
+	</script>
+</head>
+<body id="no-margin-body">
+    <div id="head">
+        <div id="title">BabyFish MA Collection Framework</div>
+        <div id="right-top-conner">
+            <a class="button" href="../index.xhtml">Back to the start page</a>
+	    	<a class="button" href="index.xhtml">Back to BabyFish Collection Framework</a>
+        </div>
+    </div>
+    <div id="content">
+    	<div id="dictionary"></div>
+    	<fieldset class="chapter">
+    		<legend>Outline</legend>
+    		<p class="paragraphs">
+    			BabyFish MA Collection Framework declares the collection and views that supports
+    			modification event, <span class="important">like the trigger of database.</span> 
+    		</p>
+			<p class="paragraphs">    		
+    			BabyFish <span class="important">MA</span> Collection Framework is an extension of BabyFish <span class="important">X</span> Collection,
+    			it is the base of ObjectModel.
+    		</p>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Class Diagram</legend>
+    		<p class="paragraphs">
+    			Before we learn the MA Collection Framework, let's look the class diagram of MA Collection Framework.
+    			In order to keep the simplicity of this document, this diagram does <span class="important">NOT</span>
+    			list all types and relationships.
+    		</p>
+    		<img src="ma-collection.jpg"/>
+    		<p class="paragraphs">
+    			The types of this diagram have 4 different colors:
+    			<ul class="no-paragraphs">
+    				<li>
+    					<span style="font-weight:bold;color:rgb(128, 128, 128);">Gray: </span>
+    					They are interfaces supported by BabyFish X Collection Framework.
+    				</li>
+    				<li>
+    					<span style="font-weight:bold;color:rgb(45, 255, 45);">Green: </span>
+    					They are main collection interfaces supported by BabyFish MA Collection Framework.
+    				</li>
+    				<li>
+    					<span style="font-weight:bold;color:rgb(255, 127, 127);">Red: </span>
+    					These types are used by BabyFish MA Collection Framework.
+    				</li>
+    				<li>
+    					<span style="font-weight:bold;color:rgb(255, 128, 0);">Orange: </span>
+    					The implementation classes of BabyFish MA Collection Framework.
+    				</li>
+    			</ul>
+    		</p>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Event Life Cycle</legend>
+    		<p class="paragraphs">
+    			BabyFish MACollection look likes the database trigger very much,
+    			you can handle the modification event.
+    		</p>
+    		<p class="paragraphs">
+    			Two events are supported MACollections.
+    			<ul class="no-paragraphs">
+    				<li>
+    					<span class="important2">modifying: </span>
+    					The collection will but has not been changed, like the before trigger of database
+    				</li>
+    				<li>
+    					<span class="important2">modified: </span>
+    					The collection has been changed, like the after trigger of database
+    				</li>
+    			</ul>
+    		</p>
+    		<p class="paragraphs">
+    			If user calls the batch modification operations such as "addAll", "clear", "removeAll", "retainAll",
+	    		several elements will be changed, 
+    			<ul class="no-paragraphs">
+    				<li>
+	    				The first "modified" event must be triggered after all the "modifying" event
+	    				have been triggered. For example, if a batch modification operation changes 3 elements, the events must
+	    				be triggered by this order: 
+	    				"modifying: data1"->"modifying: data2"->"modifying: data3"->
+	    				"modified: data1"->"modified: data2"->"modified: data3".
+    				</li>
+    				<li>
+    					If an exception raises during handling one "modifying" event, the other "modifying" events still can be trigger too.
+    				</li>
+    				<li>
+    					If an exception raises during handling one "modified" event, the other "modified" events still can be trigger too.
+    				</li>
+    				<li>
+    					If an exception raised during handing "modifying" events, no modification for any the elements will be applied; 
+    					otherwise, the modifications for <span class="important">ALL</span> the elements will be applied.
+    					In a word, either apply all or giveup all.
+    				</li>
+    				<li>
+    					The "modified" event will be triggered even if exception raises during handling the "modifying" event,
+    					the user must use the "ModificationEvent.isModificationSuccessed()" to check whether the modification
+    					has been applied successfully. That means "modifying" event is coupled  with "modified" absolutely.
+    				</li>
+    			</ul>
+    		</p>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Modification Type</legend>
+    		<p class="paragraphs">
+    			There are 3 modification types.
+    			<ul class="no-paragraphs">
+    				<li>
+    					<span class="important2">DETACH: </span>
+    					An element is removed from the current collection, user should use "getXXX(PropertyVersion.DETACH)"
+    					to get the removed element. This looks like DELETE operation and OLD table in trigger of database.
+    				</li>
+    				<li>
+    					<span class="important2">ATTACH: </span>
+    					An element is added into the current collection, user should use "getXXX(PropertyVersion.ATTACH)"
+    					to get the added element. This looks like INSERT operation and NEW table in trigger of database.
+    				</li>
+    				<li>
+    					<span class="important2">REPLACE: </span>
+    					An old element is removed into the current collection and a new element is added into the current collection
+    					(Classic example: java.util.List.set(index, E)), user can use both "getXXX(PropertyVersion.ATTACH)" 
+    					and getXXX(PropertyVersion.ATTACH) to get both of the removed element and added element. 
+    					This looks like UPDATE operation and both OLD and NEW table in trigger of database.
+    				</li>
+    			</ul>
+    		</p>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Modification Listeners</legend>
+    		<p class="paragraphs">
+    			BabyFish MA Collection Framework support 6 modification listeners
+    			<ul class="no-paragraphs">
+    				<li>
+    					<span class="important2">org.babyfish.collection.event.ElementListener&lt;E&gt;: </span>,
+    					This listener is supported by org.babyfish.collection.MACollection&lt;E&gt; and 
+    					org.babyfish.collection.MACollection.MAIterator&lt;E&gt;, when the Collection or Iterator
+    					is changed, you can use it to handle the events to get the detached, attached or 
+    					replaced elements.
+    				</li>
+    				<li>
+    					<span class="important2">org.babyfish.collection.event.ListElementListener&lt;E&gt;: </span>,
+    					This listener is supported by org.babyfish.collection.MAList&lt;E&gt; and 
+    					org.babyfish.collection.MAList.MAListIterator&lt;E&gt;, when the List or ListIterator 
+    					is changed, you can use it to handle the events to get the detached, attached or replaced 
+    					index-element pairs.
+    				</li>
+    				<li>
+    					<span class="important2">org.babyfish.collection.event.MapElementListener&lt;K, V&gt;: </span>,
+    					This listener is supported by org.babyfish.collection.MAMap&lt;K, V&gt;, 
+    					when the Map is changed, you can use it to handle the events to get the detached, 
+    					attached or replaced key-element pairs.
+    				</li>
+    				<li>
+    					<span class="important2">org.babyfish.collection.event.KeySetElementListener&lt;K, V&gt;: </span>,
+    					This listener is supported by org.babyfish.collection.MAMap.MAKeySetView&lt;K, V&gt;
+    					and org.babyfish.collection.MAMap.MAKeySetView.MAKeySetIterator&lt;K, V&gt;, 
+    					when the keySet of Map or the iterator of keySet of map is changed, 
+    					you can use it to handle the events to get the detached, attached or replaced key-element pairs.
+    				</li>
+    				<li>
+    					<span class="important2">org.babyfish.collection.event.ValuesElementListener&lt;K, V&gt;: </span>,
+    					This listener is supported by org.babyfish.collection.MAMap.MAValuesView&lt;K, V&gt;
+    					and org.babyfish.collection.MAMap.MAValuesView.MAValuesIterator&lt;K, V&gt;, 
+    					when the values of Map or the iterator of values of map is changed, 
+    					you can use it to handle the events to get the detached, attached or replaced key-element pairs.
+    				</li>
+    				<li>
+    					<span class="important2">org.babyfish.collection.event.EntryElementListener&lt;K, V&gt;: </span>,
+    					This listener is supported by org.babyfish.collection.MAMap.MAEntry&lt;K, V&gt;, 
+    					when an entry of Map or the iterator is changed, you can use it to handle the events 
+    					to get the detached, attached or replaced key-element pairs.
+    				</li>
+    			</ul>
+    		</p>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.event.ElementListener&lt;E&gt;</legend>
+    			<p class="paragraphs">
+    				The ElementListener is an event listener interface that an let you know what the elements that are detached, attached or replaced are.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+import java.util.EventListener;
+
+import org.babyfish.lang.ChainInvocationExceptionHandleMode;
+import org.babyfish.lang.DefaultChainInvocationExceptionHandleMode;
+
+@DefaultChainInvocationExceptionHandleMode(ChainInvocationExceptionHandleMode.CONTINUE)
+public interface /*{ <a name="ElementListenerDeclaration">ElementListener</a> }*/<E> extends EventListener {
+
+	void modifying(ElementEvent<E> e) throws Throwable;
+	
+	void modified(ElementEvent<E> e) throws Throwable;
+}
+    					]]></pre>
+    				</div>
+    				There are two methods in this interface, "modifying" and "modified", the method "modifying" looks
+    				like the pre-trigger of database and it is invoked automatically when the collection is going to be 
+    				modified, the method "modified" looks like the post-trigger of database and it is invoked automatically
+    				when the collection has been modified.
+    			</p>
+    			<p>	
+    				The ElementListener is supported by all the MA collections, MA iterators and MA entry that inherit 
+    				the interface org.babyfish.collection.event.ElementModificationAware&lt;E&gt; Let's see <span class="important">ONLY</span>
+    				the source code of MACollection and MAIterator here.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+import org.babyfish.modificationaware.ModificationAware;
+
+public interface /*{ <a name="ElementModificationAwareDeclaration">ElementModificationAware</a> }*/<E> extends ModificationAware {
+
+	void /*{ <a name="ElementModificationAware_addElementListener">addElementListener</a> }*/(/*{ <a href="#ElementListenerDeclaration">ElementListener</a> }*/<? super E> listener);
+	
+	void /*{ <a name="ElementModificationAware_removeElementListener">removeElementListener</a> }*/(/*{ <a href="#ElementListenerDeclaration">ElementListener</a> }*/<? super E> listener);	
+}    					
+    					]]></pre>
+    				</div>
+    				This interface has been inherited by org.babyfish.collection.MACollection&lt;E&gt; and
+    				org.babyfish.collection.MACollection.MAIterator&lt;E&gt;
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import org.babyfish.collection.event./*{ <a href="#ElementModificationAwareDeclaration">ElementModificationAware</a> }*/;
+
+public interface /*{ <a name="MACollectionDeclaration">MACollection</a> }*/<E> extends org.babyfish.collection.XCollection<E>, /*{ <a href="#ElementModificationAwareDeclaration">ElementModificationAware</a> }*/<E> {
+	
+	@Override
+	/*{ <a href="#MACollection_MAIterator">MAIterator</a> }*/<E> iterator();
+	
+	interface /*{ <a name="MACollection_MAIterator">MAIterator</a> }*/<E> extends XIterator<E>, /*{ <a href="#ElementModificationAwareDeclaration">ElementModificationAware</a> }*/<E> {
+	
+	}
+}
+    					]]></pre>
+    				</div>
+    			</p>
+    			<p class="chapter">
+    				Let's see an example, in order to make our example to be easy to and test, the example
+    				uses org.babyfish.collection.MALinkedHashSet, <span class="important">NOT</span> 
+    				org.babyfish.collection.MAHashSet.
+    			</p>
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.macollection.basic;
+
+import java.util.Iterator;
+
+import org.babyfish.collection.MALinkedHashSet;
+import org.babyfish.collection.MACollections;
+import org.babyfish.collection.MASet;
+import org.babyfish.collection.ReplacementRule;
+import org.babyfish.collection.event.ElementEvent;
+import org.babyfish.collection.event.ElementListener;
+import org.babyfish.modificationaware.event.PropertyVersion;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+public class ElementListenerTest {
+
+	private MASet<Integer> set;
+	
+	private StringBuilder eventHistory;
+	
+	@Before
+	public void setUp() {
+		this.set = new MALinkedHashSet<>(ReplacementRule.NEW_REFERENCE_WIN);
+		this.set./*{ <a href="#ElementModificationAware_addElementListener">addElementListener</a> }*/(new /*{ <a href="#ElementListenerDeclaration">ElementListener</a> }*/<Integer>() {
+			@Override
+			public void modifying(ElementEvent<Integer> e) {
+				if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+					ElementListenerTest
+					.this
+					.eventHistory
+					.append(":pre-detach(")
+					.append(e.getElement(PropertyVersion.DETACH))
+					.append(')');
+				}
+				if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+					ElementListenerTest
+					.this
+					.eventHistory
+					.append(":pre-attach(")
+					.append(e.getElement(PropertyVersion.ATTACH))
+					.append(')');
+				}
+			}
+			@Override
+			public void modified(ElementEvent<Integer> e) {
+				if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+					ElementListenerTest
+					.this
+					.eventHistory
+					.append(":post-detach(")
+					.append(e.getElement(PropertyVersion.DETACH))
+					.append(')');
+				}
+				if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+					ElementListenerTest
+					.this
+					.eventHistory
+					.append(":post-attach(")
+					.append(e.getElement(PropertyVersion.ATTACH))
+					.append(')');
+				}
+			}
+		});
+	}
+
+	@Test
+	public void test() {
+	
+		this.eventHistory = new StringBuilder();
+        this.set.add(56);
+        Assert.assertEquals(":pre-attach(56):post-attach(56)", this.eventHistory.toString());
+        
+        this.eventHistory = new StringBuilder();
+        this.set.addAll(MACollections.wrap(34, 78, -37, 56, 61, -23, -82));
+        Assert.assertEquals(
+                ":pre-attach(34):pre-attach(78):pre-attach(-37):pre-detach(56):pre-attach(56):pre-attach(61):pre-attach(-23):pre-attach(-82)" +
+                ":post-attach(34):post-attach(78):post-attach(-37):post-detach(56):post-attach(56):post-attach(61):post-attach(-23):post-attach(-82)", 
+                this.eventHistory.toString()
+        );
+        
+        this.eventHistory = new StringBuilder();
+        this.set.removeAll(MACollections.wrap(-100, 34, 78, -82, 230, 259));
+        Assert.assertEquals(
+                ":pre-detach(34):pre-detach(78):pre-detach(-82)" +
+                ":post-detach(34):post-detach(78):post-detach(-82)", 
+                this.eventHistory.toString()
+        );
+        
+        this.eventHistory = new StringBuilder();
+        Iterator<Integer> itr = this.set.iterator();
+        while (itr.hasNext()) {
+            Integer value = itr.next();
+            if (value < 0) {
+                itr.remove();
+            }
+        }
+        Assert.assertEquals(
+                ":pre-detach(-37):post-detach(-37)" +
+                ":pre-detach(-23):post-detach(-23)", 
+                this.eventHistory.toString()
+        );
+	}
+}
+    				]]></pre>
+    			</div>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.event.ListElementListener&lt;E&gt;</legend>
+    			<p class="paragraphs">
+    				The ListElementListener is an event listener interface that can let you know what the indexes and elements that are detached, attached or replaced are.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+import java.util.EventListener;
+
+import org.babyfish.lang.ChainInvocationExceptionHandleMode;
+import org.babyfish.lang.DefaultChainInvocationExceptionHandleMode;
+
+@DefaultChainInvocationExceptionHandleMode(ChainInvocationExceptionHandleMode.CONTINUE)
+public interface /*{ <a name="ListElementListenerDeclaration">ListElementListener</a> }*/<E> extends EventListener {
+
+	void modifying(ListElementEvent<E> e) throws Throwable;
+	
+	void modified(ListElementEvent<E> e) throws Throwable;
+}
+    					]]></pre>
+    				</div>
+    				There are two methods in this interface, "modifying" and "modified", the method "modifying" looks
+    				like the pre-trigger of database and it is invoked automatically when the list is going to be 
+    				modified, the method "modified" looks like the post-trigger of database and it is invoked automatically
+    				when the list has been modified.
+    			</p>
+    			<p>	
+    				The ListElementListener is supported by all the MA list and MA iterator that inherit the 
+    				interface org.babyfish.collection.event.ListElementModificationAware&lt;E&gt;, 
+    				Let's see <span class="important">ONLY</span> the source code of ListElementModificationAware here.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+public interface /*{ <a name="ListElementModificationAwareDeclaration">ListElementModificationAware</a> }*/<E> extends /*{ <a href="#ElementModificationAwareDeclaration">ElementModificationAware</a> }*/<E> {
+
+	void /*{ <a name="ListElementModificationAware_addListElementListener">addListElementListener</a> }*/(/*{ <a name="#ListElementListenerDeclaration">ListElementListener</a> }*/<? super E> listener);
+	
+	void /*{ <a name="ListElementModificationAware_removeListElementListener">removeListElementListener</a> }*/(/*{ <a name="#ListElementListenerDeclaration">ListElementListener</a> }*/<? super E> listener);
+}
+    					]]></pre>
+    				</div>
+    				This interface has been inherited by org.babyfish.collection.MAList&lt;E&gt; and
+    				org.babyfish.collection.MAList.MAListIterator&lt;E&gt;
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import org.babyfish.collection.event./*{ <a href="#ListElementModificationAwareDeclaration">ListElementModificationAware</a> }*/;
+import org.babyfish.view.View;
+
+public interface MAList<E> extends XList<E>, /*{ <a href="#MACollectionDeclaration">MACollection</a> }*/<E>, /*{ <a href="#ListElementModificationAwareDeclaration">ListElementModificationAware</a> }*/<E> {
+	
+	@Override
+	/*{ <a href="#MAList_MAListIterator">MAListIterator</a> }*/<E> iterator();
+	
+	@Override
+	/*{ <a href="#MAList_MAListIterator">MAListIterator</a> }*/<E> listIterator();
+	
+	@Override
+	/*{ <a href="#MAList_MAListIterator">MAListIterator</a> }*/<E> listIterator(int index);
+	
+	@Override
+	MAListView<E> subList(int fromIndex, int toIndex);
+	
+	interface /*{ <a name="MAList_MAListIterator">MAListIterator</a> }*/<E> extends XListIterator<E>, /*{ <a href="#MACollection_MAIterator">MAIterator</a> }*/<E>, ListElementModificationAware<E> {
+		
+	}
+	
+	interface MAListView<E> extends XListView<E>, MAList<E>, View {
+		
+	}
+}
+    					]]></pre>
+    				</div>
+    			</p>
+    			<p class="paragraphs">
+    				Let's see an example:
+    			</p>
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.macollection.basic;
+
+import java.util.ListIterator;
+
+import org.babyfish.collection.MAArrayList;
+import org.babyfish.collection.MACollections;
+import org.babyfish.collection.MAList;
+import org.babyfish.collection.conflict.ListConflictVoter;
+import org.babyfish.collection.conflict.ListConflictVoterArgs;
+import org.babyfish.collection.conflict.ListReader;
+import org.babyfish.collection.event.ListElementEvent;
+import org.babyfish.collection.event.ListElementListener;
+import org.babyfish.modificationaware.event.PropertyVersion;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+/*
+ * (1) For detached element, 
+ * ListElementEvent.getIndex(PropertyVersion.DETACH) means the index before deleting
+ * (2) For attached element, 
+ * ListElementEvent.getIndex(PropertyVersion.ATTACH) means the index after insertion
+ */
+public class ListElementListenerTest {
+ 
+    private MAList<Integer> list;
+    
+    private StringBuilder eventHistory;
+    
+    @Before
+    public void setUp() {
+        this.list = new MAArrayList<>();
+        this.list./*{ <a href="#ListElementModificationAware_addListElementListener">addListElementListener</a> }*/(new ListElementListener<Integer>() {
+            @Override
+            public void modifying(ListElementEvent<Integer> e) {
+                if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+                    ListElementListenerTest
+                    .this
+                    .eventHistory
+                    .append(":pre-detach(index=")
+                    .append(e.getIndex(PropertyVersion.DETACH))
+                    .append(",element=")
+                    .append(e.getElement(PropertyVersion.DETACH))
+                    .append(')');
+                }
+                if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+                    ListElementListenerTest
+                    .this
+                    .eventHistory
+                    .append(":pre-attach(index=")
+                    .append(e.getIndex(PropertyVersion.ATTACH))
+                    .append(",element=")
+                    .append(e.getElement(PropertyVersion.ATTACH))
+                    .append(')');
+                }
+            }
+            @Override
+            public void modified(ListElementEvent<Integer> e) {
+                if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+                    ListElementListenerTest
+                    .this
+                    .eventHistory
+                    .append(":post-detach(index=")
+                    .append(e.getIndex(PropertyVersion.DETACH))
+                    .append(",element=")
+                    .append(e.getElement(PropertyVersion.DETACH))
+                    .append(')');
+                }
+                if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+                    ListElementListenerTest
+                    .this
+                    .eventHistory
+                    .append(":post-attach(index=")
+                    .append(e.getIndex(PropertyVersion.ATTACH))
+                    .append(",element=")
+                    .append(e.getElement(PropertyVersion.ATTACH))
+                    .append(')');
+                }
+            }
+        });
+        this.list./*{ <a href="x-collection.xhtml#XList_addConflictVoter">addConflictVoter</a> }*/(new ListConflictVoter<Integer>() {
+            @Override
+            public void vote(ListConflictVoterArgs<Integer> args) {
+                ListReader<Integer> reader = args.reader();
+                while (reader.read()) {
+                    if (args.unifiedComparator().equals(args.newElement(), reader.element())) {
+                        args.conflictFound(reader.index());
+                    }
+                }
+            }
+        });
+    }
+ 
+    @Test
+    public void test() {
+    
+        this.eventHistory = new StringBuilder();
+        this.list.add(70);
+        assertList(this.list, 70);
+        Assert.assertEquals(
+            ":pre-attach(index=0,element=70):post-attach(index=0,element=70)",
+            this.eventHistory.toString()
+        );
+ 
+        this.eventHistory = new StringBuilder();
+        this.list.add(0, -954);
+        assertList(this.list, -954, 70);
+        Assert.assertEquals(
+            ":pre-attach(index=0,element=-954):post-attach(index=0,element=-954)",
+            this.eventHistory.toString()
+        );
+        
+        this.eventHistory = new StringBuilder();
+        this.list.addAll(1, MACollections.wrap(34, 93, 723, -36, 30672, -63));
+        assertList(this.list, -954, 34, 93, 723, -36, 30672, -63, 70);
+        Assert.assertEquals(
+            ":pre-attach(index=1,element=34)" +
+            ":pre-attach(index=2,element=93)" +
+            ":pre-attach(index=3,element=723)" +
+            ":pre-attach(index=4,element=-36)" +
+            ":pre-attach(index=5,element=30672)" +
+            ":pre-attach(index=6,element=-63)"
+            +
+            ":post-attach(index=1,element=34)" +
+            ":post-attach(index=2,element=93)" +
+            ":post-attach(index=3,element=723)" +
+            ":post-attach(index=4,element=-36)" +
+            ":post-attach(index=5,element=30672)" +
+            ":post-attach(index=6,element=-63)",
+            this.eventHistory.toString()
+        );
+        
+        this.eventHistory = new StringBuilder();
+        this.list.subList(2, 4).clear();
+        assertList(this.list, -954, 34, -36, 30672, -63, 70);
+        Assert.assertEquals(
+            ":pre-detach(index=2,element=93):pre-detach(index=3,element=723)" +
+            ":post-detach(index=2,element=93):post-detach(index=3,element=723)",
+            this.eventHistory.toString()
+        );
+        
+        this.eventHistory = new StringBuilder();
+        this.list.subList(2, 4).addAll(1, MACollections.wrap(70, 45, -897, 34, 2754, 78));
+        assertList(this.list, -954, -36, 70, 45, -897, 34, 2754, 78, 30672, -63);
+        Assert.assertEquals(
+        	":pre-detach(index=1,element=34)"
+        	+ ":pre-detach(index=5,element=70)"
+        	+ ":pre-attach(index=2,element=70)"
+        	+ ":pre-attach(index=3,element=45)"
+        	+ ":pre-attach(index=4,element=-897)"
+        	+ ":pre-attach(index=5,element=34)"
+        	+ ":pre-attach(index=6,element=2754)"
+        	+ ":pre-attach(index=7,element=78)"
+        	+ ":post-detach(index=1,element=34)"
+        	+ ":post-detach(index=5,element=70)"
+        	+ ":post-attach(index=2,element=70)"
+        	+ ":post-attach(index=3,element=45)"
+        	+ ":post-attach(index=4,element=-897)"
+        	+ ":post-attach(index=5,element=34)"
+        	+ ":post-attach(index=6,element=2754)"
+        	+ ":post-attach(index=7,element=78)",
+            this.eventHistory.toString()
+        );
+        
+        this.eventHistory = new StringBuilder();
+		ListIterator<Integer> listItr = this.list.subList(4, 10).listIterator();
+        while (listItr.hasNext()) {
+            Integer value = listItr.next();
+            if (value < 0) {
+                listItr.remove();
+            } else {
+                listItr.set(value / 10 * 10);
+            }
+        }
+        assertList(this.list, -954, -36, 45, 30, 2750, 70, 30670);
+        Assert.assertEquals(
+            ":pre-detach(index=4,element=-897)" +
+            ":post-detach(index=4,element=-897)" +
+            ":pre-detach(index=4,element=34):pre-attach(index=4,element=30)" +
+            ":post-detach(index=4,element=34):post-attach(index=4,element=30)" +
+            ":pre-detach(index=5,element=2754):pre-attach(index=5,element=2750)" +
+            ":post-detach(index=5,element=2754):post-attach(index=5,element=2750)" +
+            ":pre-detach(index=2,element=70):pre-detach(index=6,element=78):pre-attach(index=5,element=70)" +
+            ":post-detach(index=2,element=70):post-detach(index=6,element=78):post-attach(index=5,element=70)" +
+            ":pre-detach(index=6,element=30672):pre-attach(index=6,element=30670)" +
+            ":post-detach(index=6,element=30672):post-attach(index=6,element=30670)" +
+            ":pre-detach(index=7,element=-63)" +
+            ":post-detach(index=7,element=-63)",
+            this.eventHistory.toString()
+        );
+    }
+    
+    private static void assertList(MAList<Integer> list, int ... elements) {
+        Assert.assertEquals(elements.length, list.size());
+        int index = 0;
+        for (Integer element : list) {
+            Assert.assertEquals(elements[index++], element.intValue());
+        }
+    }
+}
+    				]]></pre>
+    			</div>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.event.MapElementListener&lt;K, V&gt;</legend>
+    			<p class="paragraphs">
+    				The ListElementListener is an event listener interface that can let you know what the keyes and values that are detached, attached or replaced are.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+import java.util.EventListener;
+
+import org.babyfish.lang.ChainInvocationExceptionHandleMode;
+import org.babyfish.lang.DefaultChainInvocationExceptionHandleMode;
+
+@DefaultChainInvocationExceptionHandleMode(ChainInvocationExceptionHandleMode.CONTINUE)
+public interface MapElementListener<K, V> extends EventListener {
+
+	void modifying(MapElementEvent<K, V> e) throws Throwable;
+	
+	void modified(MapElementEvent<K, V> e) throws Throwable;
+}
+    					]]></pre>
+    				</div>
+   					There are two methods in this interface, "modifying" and "modified", 
+   					the method "modifying" looks like the pre-trigger of database and 
+   					it is invoked automatically when the map is going to be modified, 
+   					the method "modified" looks like the post-trigger of database and 
+   					it is invoked automatically when the map has been modified.
+    			</p>
+    			<p class="paragraphs">
+    				The MapElementListener is supported by all the MAMap&lt;K, V&gt; that inherits the 
+    				interface org.babyfish.collection.event.MapElementModificationAware&lt;K, V&gt;, 
+    				Let's see <span class="important">ONLY</span> the source code of MapElementModificationAware here.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+import org.babyfish.modificationaware.ModificationAware;
+
+public interface MapElementModificationAware<K, V> extends ModificationAware {
+	
+	void /*{ <a name="MapElementModificationAware_addMapElementListener">addMapElementListener</a> }*/(MapElementListener<? super K, ? super V> listener);
+	
+	void /*{ <a name="MapElementModificationAware_removeMapElementListener">removeMapElementListener</a> }*/(MapElementListener<? super K, ? super V> listener);
+}
+    					]]></pre>
+    				</div>
+    			</p>
+    			<p class="paragraphs">
+    				Let's see an example:
+    			</p>
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.macollection.basic;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import junit.framework.Assert;
+
+import org.babyfish.collection.HashMap;
+import org.babyfish.collection.LinkedHashMap;
+import org.babyfish.collection.MACollections;
+import org.babyfish.collection.MANavigableMap;
+import org.babyfish.collection.MATreeMap;
+import org.babyfish.collection.conflict.MapConflictVoter;
+import org.babyfish.collection.conflict.MapConflictVoterArgs;
+import org.babyfish.collection.conflict.MapReader;
+import org.babyfish.collection.event.MapElementEvent;
+import org.babyfish.collection.event.MapElementListener;
+import org.babyfish.modificationaware.event.PropertyVersion;
+import org.junit.Before;
+import org.junit.Test;
+
+public class MapElementListenerTest {
+
+	private MANavigableMap<Integer, String> map;
+	
+	private StringBuilder eventHistory;
+	
+	@Before
+	public void setUp() {
+		this.map = new MATreeMap<>();
+		this.map./*{ <a href="#MapElementModificationAware_addMapElementListener">addMapElementListener</a> }*/(new MapElementListener<Integer, String>() {
+
+			@Override
+			public void modifying(MapElementEvent<Integer, String> e)
+					throws Throwable {
+				MapElementListenerTest that = MapElementListenerTest.this;
+				if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+					that
+                    .eventHistory
+                    .append(":pre-detach(key=")
+                    .append(e.getKey(PropertyVersion.DETACH))
+                    .append(",value=")
+                    .append(e.getValue(PropertyVersion.DETACH))
+                    .append(')');
+                }
+                if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+                	that
+                    .eventHistory
+                    .append(":pre-attach(key=")
+                    .append(e.getKey(PropertyVersion.ATTACH))
+                    .append(",value=")
+                    .append(e.getValue(PropertyVersion.ATTACH))
+                    .append(')');
+                }
+			}
+
+			@Override
+			public void modified(MapElementEvent<Integer, String> e)
+					throws Throwable {
+				MapElementListenerTest that = MapElementListenerTest.this;
+				if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+					that
+                    .eventHistory
+                    .append(":post-detach(key=")
+                    .append(e.getKey(PropertyVersion.DETACH))
+                    .append(",value=")
+                    .append(e.getValue(PropertyVersion.DETACH))
+                    .append(')');
+                }
+                if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+                	that
+                    .eventHistory
+                    .append(":post-attach(key=")
+                    .append(e.getKey(PropertyVersion.ATTACH))
+                    .append(",value=")
+                    .append(e.getValue(PropertyVersion.ATTACH))
+                    .append(')');
+                }
+			}
+		});
+		this.map./*{ <a href="x-collection.xhtml#XMap_addConflictVoter">addConflictVoter</a> }*/(new MapConflictVoter<Integer, String>() {
+			@Override
+			public void vote(MapConflictVoterArgs<Integer, String> args) {
+				MapReader<Integer, String> reader = args.reader();
+				while (reader.read()) {
+					if (args.valueUnifiedComparator().equals(args.newValue(), reader.value())) {
+						args.conflictFound(reader.key());
+					}
+				}
+			}
+		});
+	}
+	
+	@Test
+	public void test() {
+		this.eventHistory = new StringBuilder();
+		this.map.put(1, "One");
+		assertMap(this.map, 1, "One");
+		Assert.assertEquals(
+				":pre-attach(key=1,value=One):post-attach(key=1,value=One)", 
+				this.eventHistory.toString());
+		
+		this.eventHistory = new StringBuilder();
+		Map<Integer, String> m = new LinkedHashMap<>();
+		m.put(1, "I");
+		m.put(2, "II");
+		m.put(3, "III");
+		m.put(4, "IV");
+		m.put(5, "V");
+		m.put(6, "VI");
+		this.map.putAll(m);
+		assertMap(this.map, 1, "I", 2, "II", 3, "III", 4, "IV", 5, "V", 6, "VI");
+		Assert.assertEquals(
+				":pre-detach(key=1,value=One)" +
+				":pre-attach(key=1,value=I)" +
+				":pre-attach(key=2,value=II)" +
+				":pre-attach(key=3,value=III)" +
+				":pre-attach(key=4,value=IV)" +
+				":pre-attach(key=5,value=V)" +
+				":pre-attach(key=6,value=VI)" +
+				":post-detach(key=1,value=One)" +
+				":post-attach(key=1,value=I)" +
+				":post-attach(key=2,value=II)" +
+				":post-attach(key=3,value=III)" +
+				":post-attach(key=4,value=IV)" +
+				":post-attach(key=5,value=V)" +
+				":post-attach(key=6,value=VI)", 
+				this.eventHistory.toString());
+		
+		this.eventHistory = new StringBuilder();
+		this.map.subMap(3, true, 4, true).clear();
+		assertMap(this.map, 1, "I", 2, "II", 5, "V", 6, "VI");
+		Assert.assertEquals(
+				":pre-detach(key=3,value=III)" +
+				":pre-detach(key=4,value=IV)" +
+				":post-detach(key=3,value=III)" +
+				":post-detach(key=4,value=IV)",
+				this.eventHistory.toString());
+		
+		this.eventHistory = new StringBuilder();
+		m = new HashMap<>();
+		m.put(3, "III");
+		m.put(4, "IV");
+		m.put(-5, "V");
+		this.map.putAll(m);
+		assertMap(this.map, -5, "V", 1, "I", 2, "II", 3, "III", 4, "IV", 6, "VI");
+		//The old entry{ key: 4, vaue: "IV" } will be deleted because of MapConflictVoter
+		Assert.assertEquals(
+				":pre-detach(key=5,value=V)" +
+				":pre-attach(key=3,value=III)" +
+				":pre-attach(key=4,value=IV)" +
+				":pre-attach(key=-5,value=V)" +
+				":post-detach(key=5,value=V)" +
+				":post-attach(key=3,value=III)" +
+				":post-attach(key=4,value=IV)" +
+				":post-attach(key=-5,value=V)",
+				this.eventHistory.toString());
+		
+		this.eventHistory = new StringBuilder();
+		// Remove all key that are odd number and between 1 and 5(1 and 3 will be deleted).
+		Iterator<Integer> keyIterator = this.map.keySet().subSet(1, true, 5, true).iterator();
+		while (keyIterator.hasNext()) {
+			int key = keyIterator.next();
+			if (key % 2 != 0) {
+				keyIterator.remove();
+			}
+		}
+		assertMap(this.map, -5, "V", 2, "II", 4, "IV", 6, "VI");
+		//The old entry{ key: 4, vaue: "IV" } will be deleted because of MapConflictVoter
+		Assert.assertEquals(
+				":pre-detach(key=1,value=I)" +
+				":post-detach(key=1,value=I)" +
+				":pre-detach(key=3,value=III)" +
+				":post-detach(key=3,value=III)",
+				this.eventHistory.toString());
+		
+		this.eventHistory = new StringBuilder();
+		this.map.values().retainAll(MACollections.wrap("VI", "VII", "VIII"));
+		assertMap(this.map, 6, "VI");
+		Assert.assertEquals(
+				":pre-detach(key=-5,value=V)" +
+				":pre-detach(key=2,value=II)" +
+				":pre-detach(key=4,value=IV)" +
+				":post-detach(key=-5,value=V)" +
+				":post-detach(key=2,value=II)" +
+				":post-detach(key=4,value=IV)",
+				this.eventHistory.toString());
+		
+		this.eventHistory = new StringBuilder();
+		this.map.descendingMap().entrySet().iterator().next().setValue("Six");
+		assertMap(this.map, 6, "Six");
+		Assert.assertEquals(
+				":pre-detach(key=6,value=VI)" +
+				":pre-attach(key=6,value=Six)" +
+				":post-detach(key=6,value=VI)" +
+				":post-attach(key=6,value=Six)",
+				this.eventHistory.toString()
+		);
+	}
+	
+	private static void assertMap(Map<Integer, String> map, Object ... keyAndValues) {
+		if (keyAndValues.length % 2 != 0) {
+			throw new IllegalArgumentException("The length of \"keyAndValues\" must be even number");
+		}
+		Assert.assertEquals(keyAndValues.length / 2, map.size());
+		int index = 0;
+		for (Entry<Integer, String> entry : map.entrySet()) {
+			Assert.assertEquals(keyAndValues[index++], entry.getKey());
+			Assert.assertEquals(keyAndValues[index++], entry.getValue());
+		}
+	}
+}
+    				]]></pre>
+    			</div>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.event.KeySetElementListener&lt;K, V&gt;</legend>
+    			<p class="paragraphs">
+    				The KeySetElementListener is an event listener interface that can let you know what the keyes and values that are detached
+    				(KeySet does not support "attach" and "replace").
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+import java.util.EventListener;
+
+import org.babyfish.lang.ChainInvocationExceptionHandleMode;
+import org.babyfish.lang.DefaultChainInvocationExceptionHandleMode;
+
+@DefaultChainInvocationExceptionHandleMode(ChainInvocationExceptionHandleMode.CONTINUE)
+public interface KeySetElementListener<K, V> extends EventListener {
+
+	void modifying(KeySetElementEvent<K, V> e) throws Throwable;
+	
+	void modified(KeySetElementEvent<K, V> e) throws Throwable;	
+}
+    					]]></pre>
+    				</div>
+   					There are two methods in this interface, "modifying" and "modified", 
+   					the method "modifying" looks like the pre-trigger of database and 
+   					it is invoked automatically when the map.keySet is going to be modified, 
+   					the method "modified" looks like the post-trigger of database and 
+   					it is invoked automatically when the map.keySet has been modified.
+    			</p>
+    			<p class="paragraphs">
+    				The KeySetElementListener is supported by all the MAMap/MAKeySetView&lt;K, V&gt; that inherits the 
+    				interface org.babyfish.collection.event.KeySetElementModificationAware&lt;K, V&gt;, 
+    				Let's see <span class="important">ONLY</span> the source code of KeySetElementModificationAware here.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+public interface KeySetElementModificationAware<K, V> extends ElementModificationAware<K> {
+
+	void /*{ <a name="KeySetElementModificationAware_addKeySetElementListener">addKeySetElementListener</a> }*/(KeySetElementListener<? super K, ? super V> listener);
+	
+	void /*{ <a name="KeySetElementModificationAware_removeKeySetElementListener">removeKeySetElementListener</a> }*/(KeySetElementListener<? super K, ? super V> listener);	
+}
+    					]]></pre>
+    				</div>
+    			</p>
+    			<p class="paragraphs">
+    				Let's see an example:
+    				<div class="source-code"><pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.macollection.basic;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import junit.framework.Assert;
+
+import org.babyfish.collection.MALinkedHashMap;
+import org.babyfish.collection.MAOrderedMap;
+import org.babyfish.collection.MAOrderedMap.MAOrderedKeySetView;
+import org.babyfish.collection.event.KeySetElementEvent;
+import org.babyfish.collection.event.KeySetElementListener;
+import org.babyfish.modificationaware.event.PropertyVersion;
+import org.junit.Before;
+import org.junit.Test;
+
+public class KeySetElementListenerTest {
+
+	private MAOrderedMap<Integer, String> map;
+	
+	private MAOrderedKeySetView<Integer, String> keySet;
+	
+	private StringBuilder eventHistory;
+	
+	@Before
+	public void setUp() {
+		this.map = new MALinkedHashMap<>();
+		this.keySet = this.map.keySet();
+		this.keySet./*{ <a href="#KeySetElementModificationAware_addKeySetElementListener">addKeySetElementListener</a> }*/(new KeySetElementListener<Integer, String>() {
+			@Override
+			public void modifying(KeySetElementEvent<Integer, String> e) throws Throwable {
+				KeySetElementListenerTest that = KeySetElementListenerTest.this;
+				if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+					that
+					.eventHistory
+					.append(":pre-detach(key=")
+					.append(e.getElement(PropertyVersion.DETACH))
+					.append(",value=")
+					.append(e.getValue())
+					.append(")");
+				}
+				if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+					that
+					.eventHistory
+					.append(":pre-detach(key=")
+					.append(e.getElement(PropertyVersion.ATTACH))
+					.append(",value=")
+					.append(e.getValue())
+					.append(")");
+				}
+			}
+			@Override
+			public void modified(KeySetElementEvent<Integer, String> e) throws Throwable {
+				KeySetElementListenerTest that = KeySetElementListenerTest.this;
+				if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+					that
+					.eventHistory
+					.append(":post-detach(key=")
+					.append(e.getElement(PropertyVersion.DETACH))
+					.append(",value=")
+					.append(e.getValue())
+					.append(")");
+				}
+				if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+					that
+					.eventHistory
+					.append(":post-detach(key=")
+					.append(e.getElement(PropertyVersion.ATTACH))
+					.append(",value=")
+					.append(e.getValue())
+					.append(")");
+				}
+			}
+		});
+	}
+	
+	@Test
+	public void test() {
+		this.map.put(1, "I");
+		this.map.put(2, "II");
+		this.map.put(3, "III");
+		this.map.put(4, "IV");
+		this.map.put(5, "V");
+		this.map.put(6, "VI");
+		
+		this.eventHistory = new StringBuilder();
+		Iterator<Integer> keyIterator = this.map.keySet().descendingIterator();
+		while (keyIterator.hasNext()) {
+			int key = keyIterator.next();
+			if (key % 2 != 0) {
+				keyIterator.remove();
+			}
+		}
+		assertMap(this.map, 2, "II", 4, "IV", 6, "VI");
+		Assert.assertEquals(
+				":pre-detach(key=5,value=V)" +
+				":post-detach(key=5,value=V)" +
+				":pre-detach(key=3,value=III)" +
+				":post-detach(key=3,value=III)" +
+				":pre-detach(key=1,value=I)" +
+				":post-detach(key=1,value=I)",
+				this.eventHistory.toString());
+	}
+	
+	private static void assertMap(Map<Integer, String> map, Object ... keyAndValues) {
+		if (keyAndValues.length % 2 != 0) {
+			throw new IllegalArgumentException("The length of \"keyAndValues\" must be even number");
+		}
+		Assert.assertEquals(keyAndValues.length / 2, map.size());
+		int index = 0;
+		for (Entry<Integer, String> entry : map.entrySet()) {
+			Assert.assertEquals(keyAndValues[index++], entry.getKey());
+			Assert.assertEquals(keyAndValues[index++], entry.getValue());
+		}
+	}
+}
+    				]]></pre></div>
+    			</p>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.event.ValuesElementListener&lt;K, V&gt;</legend>
+    			<p class="paragraphs">
+    				The ValuesElementListener is an event listener interface that can let you know what the keyes and values that are detached
+    				(Values does not support "attach" and "replace").
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+import java.util.EventListener;
+
+import org.babyfish.lang.ChainInvocationExceptionHandleMode;
+import org.babyfish.lang.DefaultChainInvocationExceptionHandleMode;
+
+@DefaultChainInvocationExceptionHandleMode(ChainInvocationExceptionHandleMode.CONTINUE)
+public interface ValuesElementListener<K, V> extends EventListener {
+
+	void modifying(ValuesElementEvent<K, V> e) throws Throwable;
+	
+	void modified(ValuesElementEvent<K, V> e) throws Throwable;
+}
+    					]]></pre>
+    				</div>
+   					There are two methods in this interface, "modifying" and "modified", 
+   					the method "modifying" looks like the pre-trigger of database and 
+   					it is invoked automatically when the map.values is going to be modified, 
+   					the method "modified" looks like the post-trigger of database and 
+   					it is invoked automatically when the map.values has been modified.
+    			</p>
+    			<p class="paragraphs">
+    				The ValuesElementListener is supported by all the MAMap/MAValuesView&lt;K, V&gt; that inherits the 
+    				interface org.babyfish.collection.event.ValuesElementModificationAware&lt;K, V&gt;, 
+    				Let's see <span class="important">ONLY</span> the source code of ValuesElementModificationAware here.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+
+public interface ValuesElementModificationAware<K, V> extends ElementModificationAware<V> {
+
+	void /*{ <a name="ValuesElementModificationAware_addValuesElementListener">addValuesElementListener</a> }*/(ValuesElementListener<? super K, ? super V> listener);
+	
+	void /*{ <a name="ValuesElementModificationAware_removeValuesElementListener">removeValuesElementListener</a> }*/(ValuesElementListener<? super K, ? super V> listener);
+}
+    					]]></pre>
+    				</div>
+    			</p>
+    			<p class="paragraphs">
+    				Let's see an example:
+    				<div class="source-code"><pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.macollection.basic;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import junit.framework.Assert;
+
+import org.babyfish.collection.MALinkedHashMap;
+import org.babyfish.collection.MAMap.MAValuesView;
+import org.babyfish.collection.MAOrderedMap;
+import org.babyfish.collection.event.ValuesElementEvent;
+import org.babyfish.collection.event.ValuesElementListener;
+import org.babyfish.modificationaware.event.PropertyVersion;
+import org.junit.Before;
+import org.junit.Test;
+
+public class ValuesElementListenerTest {
+
+	private MAOrderedMap<Integer, String> map;
+	
+	private MAValuesView<Integer, String> values;
+	
+	private StringBuilder eventHistory;
+	
+	@Before
+	public void setUp() {
+		this.map = new MALinkedHashMap<>();
+		this.values = this.map.values();
+		this.values./*{ <a href="#ValuesElementModificationAware_addValuesElementListener">addValuesElementListener</a> }*/(new ValuesElementListener<Integer, String>() {
+			@Override
+			public void modifying(ValuesElementEvent<Integer, String> e) throws Throwable {
+				ValuesElementListenerTest that = ValuesElementListenerTest.this;
+				if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+					that
+					.eventHistory
+					.append(":pre-detach(key=")
+					.append(e.getKey())
+					.append(",value=")
+					.append(e.getElement(PropertyVersion.DETACH))
+					.append(")");
+				}
+				if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+					that
+					.eventHistory
+					.append(":pre-detach(key=")
+					.append(e.getKey())
+					.append(",value=")
+					.append(e.getElement(PropertyVersion.ATTACH))
+					.append(")");
+				}
+			}
+			@Override
+			public void modified(ValuesElementEvent<Integer, String> e) throws Throwable {
+				ValuesElementListenerTest that = ValuesElementListenerTest.this;
+				if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+					that
+					.eventHistory
+					.append(":post-detach(key=")
+					.append(e.getKey())
+					.append(",value=")
+					.append(e.getElement(PropertyVersion.DETACH))
+					.append(")");
+				}
+				if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+					that
+					.eventHistory
+					.append(":post-detach(key=")
+					.append(e.getKey())
+					.append(",value=")
+					.append(e.getElement(PropertyVersion.ATTACH))
+					.append(")");
+				}
+			}
+		});
+	}
+	
+	@Test
+	public void test() {
+		this.map.put(1, "I");
+		this.map.put(2, "II");
+		this.map.put(3, "III");
+		this.map.put(4, "IV");
+		this.map.put(5, "V");
+		this.map.put(6, "VI");
+		
+		this.eventHistory = new StringBuilder();
+		Iterator<String> valueIterator = this.map.values().iterator();
+		while (valueIterator.hasNext()) {
+			String value = valueIterator.next();
+			if (value.length() % 2 != 0) {
+				valueIterator.remove();
+			}
+		}
+		assertMap(this.map, 2, "II", 4, "IV", 6, "VI");
+		Assert.assertEquals(
+				":pre-detach(key=1,value=I)" +
+				":post-detach(key=1,value=I)" +
+				":pre-detach(key=3,value=III)" +
+				":post-detach(key=3,value=III)" +
+				":pre-detach(key=5,value=V)" +
+				":post-detach(key=5,value=V)",
+				this.eventHistory.toString());
+	}
+	
+	private static void assertMap(Map<Integer, String> map, Object ... keyAndValues) {
+		if (keyAndValues.length % 2 != 0) {
+			throw new IllegalArgumentException("The length of \"keyAndValues\" must be even number");
+		}
+		Assert.assertEquals(keyAndValues.length / 2, map.size());
+		int index = 0;
+		for (Entry<Integer, String> entry : map.entrySet()) {
+			Assert.assertEquals(keyAndValues[index++], entry.getKey());
+			Assert.assertEquals(keyAndValues[index++], entry.getValue());
+		}
+	}
+}
+					]]></pre></div>
+				</p>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.event.EntryElementListener&lt;K, V&gt;</legend>
+    			<p class="paragraphs">
+    				When user changes the value of a Map.Entry&lt;K, V&gt; by "Entry.setValue(V)", this event will be triggered.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+import java.util.EventListener;
+
+import org.babyfish.lang.ChainInvocationExceptionHandleMode;
+import org.babyfish.lang.DefaultChainInvocationExceptionHandleMode;
+
+@DefaultChainInvocationExceptionHandleMode(ChainInvocationExceptionHandleMode.CONTINUE)
+public interface EntryElementListener<K, V> extends EventListener {
+
+	void modifying(EntryElementEvent<K, V> e) throws Throwable;
+	
+	void modified(EntryElementEvent<K, V> e) throws Throwable;
+}
+    					]]></pre>
+    				</div>
+    			</p>
+    			<p class="paragraphs">
+    				The org.babyfish.collection.MAMap.MAEntry&lt;K, V&gt; inherits the interface
+    				org.babyfish.collection.event.EntryElementModificationAware&lt;K, V&gt;
+    				to support add/remove the event handler.
+    				<div class="source-code"><pre class="lang-java"><![CDATA[
+package org.babyfish.collection.event;
+
+public interface EntryElementModificationAware<K, V> extends ElementModificationAware<V> {
+
+	void addEntryElementListener(EntryElementListener<? super K, ? super V> listener);
+	
+	void removeEntryElementListener(EntryElementListener<? super K, ? super V> listener);	
+}
+    				]]></pre></div>
+    			</p>
+    			<p class="paragraphs">
+    				Often, this event is used by babyfish internally, so, no example for it.
+    			</p>
+    		</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Modifications</legend>
+    		<p class="paragraphs">
+    			Collection supports several methods with modification behavior, use java.util.Collection to be the example,
+    			it supports "add", "addAll", "clear", "remove", "removeAll" and "retainAll". 
+    			So babyfish supports the modification informantion on the event object to let your which method is called
+    			by user and what the parameters are.
+    		</p>
+    		<p class="paragraphs">
+    			Let's see this example(This is not whole example, if you want to see the whole one, please see demo)
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package org.babyfishdemo.macollection.modification;
+
+import java.util.Collection;
+
+import org.babyfish.collection.MACollection;
+import org.babyfish.collection.MACollections;
+import org.babyfish.collection.MAHashSet;
+import org.babyfish.collection.event.ElementAdapter;
+import org.babyfish.collection.event.ElementEvent;
+import org.babyfish.collection.event.ElementEvent.Modification;
+import org.babyfish.collection.event.modification.CollectionModifications;
+import org.babyfish.collection.event.modification.CollectionModifications.AddAllByCollection;
+import org.babyfish.collection.event.modification.CollectionModifications.AddByElement;
+import org.babyfish.collection.event.modification.CollectionModifications.RemoveAllByCollection;
+import org.babyfish.collection.event.modification.CollectionModifications.RemoveByElement;
+import org.babyfish.collection.event.modification.CollectionModifications.RetainAllByCollection;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ModificationTest {
+	
+	@Test
+	public void testCollectionModifications() {
+		
+		MACollection<String> collection = new MAHashSet<>();
+		ElementListenerImpl<String> eli = new ElementListenerImpl<>();
+		collection.addElementListener(eli);
+		
+		String e = "A";
+		Collection<String> c = MACollections.wrap("B");
+		
+		{
+			collection.add(e);
+			Assert.assertTrue(eli.getModification() instanceof AddByElement<?>);
+			AddByElement<String> addByElement = (AddByElement<String>)eli.getModification();
+			Assert.assertSame(e, addByElement.getElement());
+		}
+		
+		{
+			collection.addAll(c);
+			Assert.assertTrue(eli.getModification() instanceof AddAllByCollection<?>);
+			AddAllByCollection<String> addAllByCollection = (AddAllByCollection<String>)eli.getModification();
+			Assert.assertSame(c, addAllByCollection.getCollection());
+		}
+		
+		{
+			collection.remove(e);
+			Assert.assertTrue(eli.getModification() instanceof RemoveByElement<?>);
+			RemoveByElement<String> removeByElement = (RemoveByElement<String>)eli.getModification();
+			Assert.assertSame(e, removeByElement.getElement());
+		}
+		
+		{
+			collection.removeAll(c);
+			Assert.assertTrue(eli.getModification() instanceof RemoveAllByCollection<?>);
+			RemoveAllByCollection<String> removeAllByCollection = (RemoveAllByCollection<String>)eli.getModification();
+			Assert.assertSame(c, removeAllByCollection.getCollection());
+		}
+		
+		collection.add("X");
+		
+		{
+			collection.retainAll(c);
+			Assert.assertTrue(eli.getModification() instanceof RetainAllByCollection<?>);
+			RetainAllByCollection<String> retainAllByCollection = (RetainAllByCollection<String>)eli.getModification();
+			Assert.assertSame(c, retainAllByCollection.getCollection());
+		}
+		
+		collection.add("X");
+		
+		{
+			collection.clear();
+			Assert.assertTrue(eli.getModification() instanceof CollectionModifications.Clear<?>);
+		}
+	}
+	
+	private static class ElementListenerImpl<E> extends ElementAdapter<E> {
+		
+		private Modification<E> modification;
+
+		@Override
+		public void modified(ElementEvent<E> e) throws Throwable {
+			this.modification = e.getModification();
+		}
+		
+		public Modification<E> getModification() {
+			return this.modification;
+		}
+	}
+}
+    				]]></pre>
+    			</div>
+    		</p>
+    		<p class="paragraphs">
+    			This is all the modifications supported by babyfish
+    			<div>
+    				<img src="modifications.png"/>
+    			</div>
+    		</p>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Bubble Event</legend>
+    		<p class="paragraphs">
+    			Java collection framework is complex, it supports collection views, such as 
+    			"subList", 
+    			"headSet", "tailSet", "subSet", "descendingSet",
+    			"headSet", "tailMap", "subMap", "descendingMap",
+    			You can create a view of original collection, and change the view collection
+    			to influence the original collection.
+    		</p>
+    		<p class="paragraphs">
+    			Java collection framework also support java.util.Iterator, java.util.ListIterator
+    			and java.util.Map.Entry, be similar with view collection, you can modify them
+    			to influence the original collection.
+    		</p>
+    		<p class="paragraphs">
+    			In order to handle this, complexity, Babyfish MA-Collection Framework supports 
+    			<span class="important">"Event bubble mechanism"</span>.
+    			if the user modify a view collection(or iterator, entry), an event will be triggered on itself,
+    			after this, another new bubbled event will be created and triggered on its parent collection or parent view,
+    			finally, the event will be triggered on the root collection.
+    		</p>
+    		<p class="paragraphs">
+    			This is a simple example for Bubble Event.(If you want to see more complex example, please see demo)
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package org.babyfishdemo.macollection.bubble;
+
+import org.babyfish.collection.MAArrayList;
+import org.babyfish.collection.MACollection.MAIterator;
+import org.babyfish.collection.MACollections;
+import org.babyfish.collection.MAList;
+import org.babyfish.collection.MAList.MAListIterator;
+import org.babyfish.collection.MANavigableMap;
+import org.babyfish.collection.MANavigableSet;
+import org.babyfish.collection.MATreeMap;
+import org.babyfish.collection.event.ElementAdapter;
+import org.babyfish.collection.event.ElementEvent;
+import org.babyfish.collection.event.ElementListener;
+import org.babyfish.collection.event.KeySetElementEvent;
+import org.babyfish.collection.event.ListElementAdapter;
+import org.babyfish.collection.event.ListElementEvent;
+import org.babyfish.collection.event.ListElementListener;
+import org.babyfish.collection.event.MapElementAdapter;
+import org.babyfish.collection.event.MapElementEvent;
+import org.babyfish.collection.event.MapElementListener;
+import org.babyfish.modificationaware.event.ModificationEvent;
+import org.babyfish.modificationaware.event.PropertyVersion;
+import org.junit.Assert;
+import org.junit.Test;
+
+/*
+ * Before learn this test, you must learn
+ * org.babyfishdemo.macollection.basic.*
+ * and
+ * org.babyfishdemo.macollection.modification.*
+ * at first
+ *
+ * In java collection framework, collection can create views, 
+ * view can create sub-views, sub-view can create more deep sub-views.
+ * 
+ * You can consider all the views of a collection as a tree which 
+ * uses the original collection to be the root. 
+ * (1) This tree has unlimited depth 
+ * (2) You can use any node of this tree to change the data of original collection.
+ * (3) All the data change change be observed by any node of this tree.
+ * 
+ * In java collection framework, these methods can be used to create views.
+ * 
+ * (1) java.util.Collection<E>.iterator()
+ * (2) java.util.List<E>.subList(int, int)
+ * (3) java.util.List<E>.listIterator()
+ * (4) java.util.List<E>.listIterator(int)
+ * (5) java.util.Map<K, V>.entrySet()
+ * (6) java.util.Map<K, V>.keySet()
+ * (7) java.util.Map<K, V>.values()
+ * (8) java.util.SortedSet<K, V>.headSet(E)
+ * (9) java.util.NavigableSet<E>.headSet(E, boolean)
+ * (10) java.util.SortedSet<E>.tailSet(E)
+ * (11) java.util.NavigableSet<E>.tailSet(E, boolean)
+ * (12) java.util.SortedSet<E>.subSet(E, E)
+ * (13) java.util.NavigableSet<E>.subSet(E, boolean, E, boolean)
+ * (14) java.util.NavigableSet<E>.descendingSet()
+ * (15) java.util.NavigableSet<E>.descendingIterator()
+ * (16) java.util.SortedMap<K, V>.headMap(K)
+ * (17) java.util.NavigableMap<K, V>.headMap(K, boolean)
+ * (18) java.util.SortedMap<K, V>.tailMap(K)
+ * (19) java.util.NavigableMap<K, V>.tailMap(K, boolean)
+ * (20) java.util.SortedMap<K, V>.subMap(K, K)
+ * (21) java.util.NavigableMap<K, V>.subMap(K, boolean, K, boolean)
+ * (22) java.util.NavigableMap<K, V>.descendingMap()
+ * (23) java.util.NavigableMap<K, V>.navigableKeySet()
+ * (24) java.util.NavigableMap<K, V>.descendingKeySet()
+ * (25) java.util.NavigableMap<K, V>.firstEntry()
+ * (26) java.util.NavigableMap<K, V>.lastEntry()
+ * (27) java.util.NavigableMap<K, V>.lowerEntry(K)
+ * (28) java.util.NavigableMap<K, V>.higherEntry(K)
+ * (29) java.util.NavigableMap<K, V>.floorEntry()
+ * (30) java.util.NavigableMap<K, V>.ceilingEntry()
+ * 
+ * BabyFish Collection Framework added these methods that can create views
+ * (31) org.babyfish.collection.XOrderedSet<E>.descendingSet()
+ * (32) org.babyfish.collection.XOrderedSet<E>.descendingIterator()
+ * (33) org.babyfish.collection.XOrderedMap<K, V>.descendingMap()
+ * (34) org.babyfish.collection.XOrderedMap<K, V>.descendingKeySet()
+ * (35) org.babyfish.collection.XOrderedMap<K, V>.firstEntry()
+ * (36) org.babyfish.collection.XOrderedMap<K, V>.lastEntry()
+ * 
+ * Specially, the instance of java.util.Map.Entry<K, V> returned by 
+ * java.util.Map<K, V>.entrySet().iterator() is implicit view too
+ * because its method "setValue(V)" can change the original map.
+ * 
+ * BabyFish collection framework is very powerful, because if you change
+ * the data of a view, the view will report an event, then this event
+ * will be bubbled to the parent view and reported by parent view, then
+ * this event will be bubbled to the parent of parent... Finally, this
+ * event will be bubbled to the root(original collection) and reported 
+ * by the root. If you handle the data change event of the original collection
+ * you can feel all the data change on any node of this tree with unlimited depth
+ * 
+ * It is impossible to show all the view-branches the unlimited view tree 
+ * in one test class, so we only show 2 cases                                   
+ */
+public class SimpleBubbleEventTest {
+
+	/*
+	 * (2) <root> : NavigableMap<K, V>
+	 *     |
+	 *     \--->descendingMap() : NavigableMap<K, V>
+	 *          |
+	 *          \--->subMap(K, boolean, K, boolean) : NavigableMap<K, V>
+	 *               |
+	 *               \--->descendingKeySet() : NavigableKeySet<E>
+	 *                    |
+	 *                    \--->headSet(K, boolean) : NavigableSet<E>
+	 *                         |
+	 *                         \--->descendingIterator() : Iterator<E>
+	 * 
+	 * Then we use the iterator to delete one element, the data change
+	 * event will be triggered by the iterator, then this event will be
+	 * bubbled step by step, finally, the event will be triggered by
+	 * the root NavigableMap.
+	 * 
+	 * In this test case, the type of event and bubble event are different.
+	 * (1) For the events triggered by descendingIterator, headSet and descedingKeySet,
+	 * 		java class is "KeySetElementEvent<K, V>"
+	 * (2) For the events triggered by subMap, descendingMap and root NavigableMap,
+	 * 		java class is "MapElementEvent<K, V>"
+	 */
+	@Test
+	public void testBubbleEventWithEventTypeDifference() {
+		
+		MANavigableMap<String, String> map = new MATreeMap<>();
+		map.put("A", "Alpha");
+		map.put("B", "Beta");
+		map.put("C", "Gamma");
+		map.put("D", "Delta");
+		
+		MANavigableMap<String, String> descendingMap = map.descendingMap();
+		MANavigableMap<String, String> subMap = descendingMap.subMap("C", true, "B", true);
+		MANavigableSet<String> descendingKeySet = subMap.descendingKeySet();
+		MANavigableSet<String> headSet = descendingKeySet.headSet("C", false);
+		MAIterator<String> descendingIterator = headSet.descendingIterator();
+		
+		MapBubbleRecorder<String, String>
+			mapRecorder = new MapBubbleRecorder<>(),
+			descendingMapRecorder = new MapBubbleRecorder<>(),
+			subMapRecorder = new MapBubbleRecorder<>(),
+			descendingKeySetRecorder = new MapBubbleRecorder<>(),
+			headSetRecorder = new MapBubbleRecorder<>(),
+			descendingIteratorRecorder = new MapBubbleRecorder<>();
+		
+		map.addMapElementListener(mapRecorder.mapElementListener());
+		descendingMap.addMapElementListener(descendingMapRecorder.mapElementListener());
+		subMap.addMapElementListener(subMapRecorder.mapElementListener());
+		descendingKeySet.addElementListener(descendingKeySetRecorder.keyElementListener());
+		headSet.addElementListener(headSetRecorder.keyElementListener());
+		descendingIterator.addElementListener(descendingIteratorRecorder.keyElementListener());
+		
+		descendingIterator.next();
+		descendingIterator.remove();
+		
+		/*
+		 * (1) If the event is not bubbled event: e.getModification() != null, but e.getCause() == null
+		 * (2) If the event is bubbled event: e.getModification() == null, but e.getCause() != null
+		 */
+		Assert.assertEquals(
+				"KeySetElementEvent {"
+				+   "detachedElement: B,"
+				+   "value: Beta,"
+				+   "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+   "cause: null"
+				+ "}",
+				descendingIteratorRecorder.toString()
+		);
+		Assert.assertEquals(
+				"KeySetElementEvent {"
+				+   "detachedElement: B,"
+				+   "value: Beta,"
+				+   "modification: null,"
+				+   "cause: {"
+				+     "viewInfo: org.babyfish.collection.viewinfo.NavigableSetViewInfos$DescendingIterator,"
+				+     "event: KeySetElementEvent {"
+				+       "detachedElement: B,"
+				+       "value: Beta,"
+				+       "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+       "cause: null"
+				+     "}"
+				+   "}"
+				+ "}",
+				headSetRecorder.toString()
+		);
+		Assert.assertEquals(
+				"KeySetElementEvent {"
+				+   "detachedElement: B,"
+				+   "value: Beta,"
+				+   "modification: null,"
+				+   "cause: {"
+				+     "viewInfo: org.babyfish.collection.viewinfo.NavigableSetViewInfos$HeadSetByToElementAndInclusive{ "
+				+       "toElement : C, "
+				+       "inclusive : false "
+				+     "},"
+				+     "event: KeySetElementEvent {"
+				+       "detachedElement: B,"
+				+       "value: Beta,"
+				+       "modification: null,"
+				+       "cause: {"
+				+         "viewInfo: org.babyfish.collection.viewinfo.NavigableSetViewInfos$DescendingIterator,"
+				+         "event: KeySetElementEvent {"
+				+           "detachedElement: B,"
+				+           "value: Beta,"
+				+           "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+           "cause: null"
+				+         "}"
+				+       "}"
+				+     "}"
+				+   "}"
+				+ "}",
+				descendingKeySetRecorder.toString()
+		);
+		Assert.assertEquals(
+				"MapElementEvent {"
+				+   "detachedKey: B,"
+				+   "detachedValue: Beta,"
+				+   "modification: null,"
+				+   "cause: {"
+				+     "viewInfo: org.babyfish.collection.viewinfo.NavigableMapViewInfos$DescendingKeySet,"
+				+     "event: KeySetElementEvent {"
+				+       "detachedElement: B,"
+				+       "value: Beta,"
+				+       "modification: null,"
+				+       "cause: {"
+				+         "viewInfo: org.babyfish.collection.viewinfo.NavigableSetViewInfos$HeadSetByToElementAndInclusive{ "
+				+           "toElement : C, "
+				+           "inclusive : false "
+				+         "},"
+				+         "event: KeySetElementEvent {"
+				+           "detachedElement: B,"
+				+           "value: Beta,"
+				+           "modification: null,"
+				+           "cause: {"
+				+             "viewInfo: org.babyfish.collection.viewinfo.NavigableSetViewInfos$DescendingIterator,"
+				+             "event: KeySetElementEvent {"
+				+               "detachedElement: B,"
+				+               "value: Beta,"
+				+               "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+               "cause: null"
+				+             "}"
+				+           "}"
+				+         "}"
+				+       "}"
+				+     "}"
+				+   "}"
+				+ "}",
+				subMapRecorder.toString()
+		);
+		Assert.assertEquals(
+				"MapElementEvent {"
+				+   "detachedKey: B,"
+				+   "detachedValue: Beta,"
+				+   "modification: null,"
+				+   "cause: {"
+				+     "viewInfo: org.babyfish.collection.viewinfo.NavigableMapViewInfos$SubMapByFromKeyAndFromInclusiveAndToKeyAndToInclusive{ "
+				+       "fromKey : C, "
+				+       "fromInclusive : true, "
+				+       "toKey : B, "
+				+       "toInclusive : true "
+				+     "},"
+				+     "event: MapElementEvent {"
+				+       "detachedKey: B,"
+				+       "detachedValue: Beta,"
+				+       "modification: null,"
+				+       "cause: {"
+				+         "viewInfo: org.babyfish.collection.viewinfo.NavigableMapViewInfos$DescendingKeySet,"
+				+         "event: KeySetElementEvent {"
+				+           "detachedElement: B,"
+				+           "value: Beta,"
+				+           "modification: null,"
+				+           "cause: {"
+				+             "viewInfo: org.babyfish.collection.viewinfo.NavigableSetViewInfos$HeadSetByToElementAndInclusive{ "
+				+               "toElement : C, "
+				+               "inclusive : false "
+				+             "},"
+				+             "event: KeySetElementEvent {"
+				+               "detachedElement: B,"
+				+               "value: Beta,"
+				+               "modification: null,"
+				+               "cause: {"
+				+                 "viewInfo: org.babyfish.collection.viewinfo.NavigableSetViewInfos$DescendingIterator,"
+				+                 "event: KeySetElementEvent {"
+				+                   "detachedElement: B,"
+				+                   "value: Beta,"
+				+                   "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+                   "cause: null"
+				+                 "}"
+				+               "}"
+				+             "}"
+				+           "}"
+				+         "}"
+				+       "}"
+				+     "}"
+				+   "}"
+				+ "}",
+				descendingMapRecorder.toString()
+		);
+		Assert.assertEquals(
+				"MapElementEvent {"
+				+   "detachedKey: B,"
+				+   "detachedValue: Beta,"
+				+   "modification: null,"
+				+   "cause: {"
+				+     "viewInfo: org.babyfish.collection.viewinfo.NavigableMapViewInfos$DescendingMap,"
+				+     "event: MapElementEvent {"
+				+       "detachedKey: B,"
+				+       "detachedValue: Beta,"
+				+       "modification: null,"
+				+       "cause: {"
+				+         "viewInfo: org.babyfish.collection.viewinfo.NavigableMapViewInfos$SubMapByFromKeyAndFromInclusiveAndToKeyAndToInclusive{ "
+				+           "fromKey : C, "
+				+           "fromInclusive : true, "
+				+           "toKey : B, "
+				+           "toInclusive : true "
+				+         "},"
+				+         "event: MapElementEvent {"
+				+           "detachedKey: B,"
+				+           "detachedValue: Beta,"
+				+           "modification: null,"
+				+           "cause: {"
+				+             "viewInfo: org.babyfish.collection.viewinfo.NavigableMapViewInfos$DescendingKeySet,"
+				+             "event: KeySetElementEvent {"
+				+               "detachedElement: B,"
+				+               "value: Beta,"
+				+               "modification: null,"
+				+               "cause: {"
+				+                 "viewInfo: org.babyfish.collection.viewinfo.NavigableSetViewInfos$HeadSetByToElementAndInclusive{ "
+				+                   "toElement : C, "
+				+                   "inclusive : false "
+				+                 "},"
+				+                 "event: KeySetElementEvent {"
+				+                   "detachedElement: B,"
+				+                   "value: Beta,"
+				+                   "modification: null,"
+				+                   "cause: {"
+				+                     "viewInfo: org.babyfish.collection.viewinfo.NavigableSetViewInfos$DescendingIterator,"
+				+                     "event: KeySetElementEvent {"
+				+                       "detachedElement: B,"
+				+                       "value: Beta,"
+				+                       "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+                       "cause: null"
+				+                     "}"
+				+                   "}"
+				+                 "}"
+				+               "}"
+				+             "}"
+				+           "}"
+				+         "}"
+				+       "}"
+				+     "}"
+				+   "}"
+				+ "}",
+				mapRecorder.toString()
+		);
+	}
+
+	/*
+	 * (1) <root> : List<E>
+	 *     |
+	 *     \--->subList(1, 6) : List<E>
+	 *          |
+	 *          \--->subList(1, 4) : List<E>
+	 *               |
+	 *               \--->subList(1, 2) : List<E>
+	 *                    |
+	 *                    \--->iterator() : Iterator<E>
+	 * 
+	 * Then we use the iterator to delete one element, the data change
+	 * event will be triggered by the iterator, then this event will be
+	 * bubbled step by step, finally, the event will be triggered by
+	 * the root List.
+	 * 
+	 * In this test case, the data of event and bubble event are different.
+	 * (1) For the events triggered by iterator and subList3, index = 0
+	 * (2) For the event triggered by subList2, index = 1
+	 * (3) For the event triggered by subList1, index = 2
+	 * (4) For the event triggered by root List, index = 3
+	 */
+	@Test
+	public void testBubbleEventWithEventDataDifference() {
+		MAList<String> list = new MAArrayList<>();
+		list.addAll(MACollections.wrap("Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta"));
+		
+		MAList<String> subList1 = list.subList(1, 6);
+		MAList<String> subList2 = subList1.subList(1, 4);
+		MAList<String> subList3 = subList2.subList(1, 2);
+		MAListIterator<String> iterator = subList3.iterator();
+		
+		ListBubbleRecorder<String>
+			listRecorder = new ListBubbleRecorder<>(),
+			subList1Recorder = new ListBubbleRecorder<>(),
+			subList2Recorder = new ListBubbleRecorder<>(),
+			subList3Recorder = new ListBubbleRecorder<>(),
+			iteratorRecorder = new ListBubbleRecorder<>();
+			
+		list.addListElementListener(listRecorder.listElementListener());
+		subList1.addListElementListener(subList1Recorder.listElementListener());
+		subList2.addListElementListener(subList2Recorder.listElementListener());
+		subList3.addListElementListener(subList3Recorder.listElementListener());
+		iterator.addListElementListener(iteratorRecorder.listElementListener());
+		
+		iterator.next();
+		iterator.remove();
+		
+		Assert.assertEquals(
+				"ListElementEvent {"
+				+   "detachedElement: Delta,"
+				+   "detachedIndex: 0,"
+				+   "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+   "cause: null"
+				+ "}", 
+				iteratorRecorder.toString()
+		);
+		Assert.assertEquals(
+				"ListElementEvent {"
+				+   "detachedElement: Delta,"
+				+   "detachedIndex: 0,"
+				+   "modification: null,"
+				+   "cause: {"
+				+     "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$ListIteratorByIndex{ "
+				+       "index : 0 "
+				+     "},"
+				+     "event: ListElementEvent {"
+				+       "detachedElement: Delta,"
+				+       "detachedIndex: 0,"
+				+       "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+       "cause: null"
+				+     "}"
+				+   "}"
+				+ "}", 
+				subList3Recorder.toString()
+		);
+		Assert.assertEquals(
+				"ListElementEvent {"
+				+   "detachedElement: Delta,"
+				+   "detachedIndex: 1,"
+				+   "modification: null,"
+				+   "cause: {"
+				+     "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$SubList{ "
+				+       "fromIndex : 1, "
+				+       "toIndex : 2 "
+				+     "},"
+				+     "event: ListElementEvent {"
+				+       "detachedElement: Delta,"
+				+       "detachedIndex: 0,"
+				+       "modification: null,"
+				+       "cause: {"
+				+         "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$ListIteratorByIndex{ "
+				+           "index : 0 "
+				+         "},"
+				+         "event: ListElementEvent {"
+				+           "detachedElement: Delta,"
+				+           "detachedIndex: 0,"
+				+           "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+           "cause: null"
+				+         "}"
+				+       "}"
+				+     "}"
+				+   "}"
+				+ "}", 
+				subList2Recorder.toString()
+		);
+		Assert.assertEquals(
+				"ListElementEvent {"
+				+   "detachedElement: Delta,"
+				+   "detachedIndex: 2,"
+				+   "modification: null,"
+				+   "cause: {"
+				+     "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$SubList{ "
+				+       "fromIndex : 1, "
+				+       "toIndex : 4 "
+				+     "},"
+				+     "event: ListElementEvent {"
+				+       "detachedElement: Delta,"
+				+       "detachedIndex: 1,"
+				+       "modification: null,"
+				+       "cause: {"
+				+         "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$SubList{ "
+				+           "fromIndex : 1, "
+				+           "toIndex : 2 "
+				+         "},"
+				+         "event: ListElementEvent {"
+				+           "detachedElement: Delta,"
+				+           "detachedIndex: 0,"
+				+           "modification: null,"
+				+           "cause: {"
+				+             "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$ListIteratorByIndex{ "
+				+               "index : 0 "
+				+             "},"
+				+             "event: ListElementEvent {"
+				+               "detachedElement: Delta,"
+				+               "detachedIndex: 0,"
+				+               "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+               "cause: null"
+				+             "}"
+				+           "}"
+				+         "}"
+				+       "}"
+				+     "}"
+				+   "}"
+				+ "}", 
+				subList1Recorder.toString()
+		);
+		Assert.assertEquals(
+				"ListElementEvent {"
+				+   "detachedElement: Delta,"
+				+   "detachedIndex: 3,"
+				+   "modification: null,"
+				+   "cause: {"
+				+     "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$SubList{ "
+				+       "fromIndex : 1, "
+				+       "toIndex : 6 "
+				+     "},"
+				+     "event: ListElementEvent {"
+				+       "detachedElement: Delta,"
+				+       "detachedIndex: 2,"
+				+       "modification: null,"
+				+       "cause: {"
+				+         "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$SubList{ "
+				+           "fromIndex : 1, "
+				+           "toIndex : 4 "
+				+         "},"
+				+         "event: ListElementEvent {"
+				+           "detachedElement: Delta,"
+				+           "detachedIndex: 1,"
+				+           "modification: null,"
+				+           "cause: {"
+				+             "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$SubList{ "
+				+               "fromIndex : 1, "
+				+               "toIndex : 2 "
+				+             "},"
+				+               "event: ListElementEvent {"
+				+               "detachedElement: Delta,"
+				+               "detachedIndex: 0,"
+				+               "modification: null,"
+				+               "cause: {"
+				+                 "viewInfo: org.babyfish.collection.viewinfo.ListViewInfos$ListIteratorByIndex{ "
+				+                   "index : 0 "
+				+                 "},"
+				+                 "event: ListElementEvent {"
+				+                   "detachedElement: Delta,"
+				+                   "detachedIndex: 0,"
+				+                   "modification: org.babyfish.collection.event.modification.IteratorModifications$Remove,"
+				+                   "cause: null"
+				+                 "}"
+				+               "}"
+				+             "}"
+				+           "}"
+				+         "}"
+				+       "}"
+				+     "}"
+				+   "}"
+				+ "}", 
+				listRecorder.toString()
+		);
+	}
+	
+	private static class MapBubbleRecorder<K, V> {
+		
+		private StringBuilder builder = new StringBuilder();
+		
+		private ElementListener<K> keyElementListener = 
+				new ElementAdapter<K>() {
+					@SuppressWarnings("unchecked")
+					@Override
+					public void modified(ElementEvent<K> e) throws Throwable {
+						MapBubbleRecorder.this.append((KeySetElementEvent<K, V>)e);
+					}
+				};
+				
+		private MapElementListener<K, V> mapElementListener =
+				new MapElementAdapter<K, V>() {
+					@Override
+					public void modified(MapElementEvent<K, V> e) throws Throwable {
+						MapBubbleRecorder.this.append(e);
+					}
+				};
+		
+		public ElementListener<K> keyElementListener() {
+			return this.keyElementListener;
+		}
+		
+		public MapElementListener<K, V> mapElementListener() {
+			return this.mapElementListener;
+		}
+		
+		@Override
+		public String toString() {
+			return this.builder.toString();
+		}
+		
+		private void append(KeySetElementEvent<K, V> e) {
+			this
+			.builder
+			.append("KeySetElementEvent {");
+			if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+				this
+				.builder
+				.append("detachedElement: ")
+				.append(e.getElement(PropertyVersion.DETACH));
+			}
+			if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+				this
+				.builder
+				.append(e.getModificationType().contains(PropertyVersion.DETACH) ? "," : "")
+				.append("attachedElement: ")
+				.append(e.getElement(PropertyVersion.ATTACH));
+			}
+			this
+			.builder
+			.append(",value: ")
+			.append(e.getValue())
+			.append(",modification: ")
+			.append(e.getModification());
+			if (e.getCause() == null) {
+				this.builder.append(",cause: null");
+			} else {
+				this
+				.builder
+				.append(",cause: {")
+				.append("viewInfo: ")
+				.append(e.getCause().getViewInfo())
+				.append(",event: ");
+				this.append(e.getCause().getEvent());
+				this
+				.builder
+				.append("}");
+			}
+			this
+			.builder
+			.append("}");
+		}
+		
+		private void append(MapElementEvent<K, V> e) {
+			this
+			.builder
+			.append("MapElementEvent {");
+			if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+				this
+				.builder
+				.append("detachedKey: ")
+				.append(e.getKey(PropertyVersion.DETACH))
+				.append(",detachedValue: ")
+				.append(e.getValue(PropertyVersion.DETACH));
+			}
+			if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+				this
+				.builder
+				.append(e.getModificationType().contains(PropertyVersion.DETACH) ? "," : "")
+				.append("attachedKey: ")
+				.append(e.getKey(PropertyVersion.ATTACH))
+				.append(",attachedValue: ")
+				.append(e.getValue(PropertyVersion.ATTACH));
+			}
+			this
+			.builder
+			.append(",modification: ")
+			.append(e.getModification());
+			if (e.getCause() == null) {
+				this.builder.append(",cause: null");
+			} else {
+				this
+				.builder
+				.append(",cause: {")
+				.append("viewInfo: ")
+				.append(e.getCause().getViewInfo())
+				.append(",event: ");
+				this.append(e.getCause().getEvent());
+				this.builder.append("}");
+			}
+			this
+			.builder
+			.append("}");
+		}
+		
+		@SuppressWarnings("unchecked")
+		private void append(ModificationEvent e) {
+			if (e instanceof KeySetElementEvent<?, ?>) {
+				this.append((KeySetElementEvent<K, V>)e);
+			} else {
+				this.append((MapElementEvent<K, V>)e);
+			}
+		}
+	}
+
+	private static class ListBubbleRecorder<E> {
+		
+		private StringBuilder builder = new StringBuilder();
+		
+		private ListElementListener<E> listElementListener =
+				new ListElementAdapter<E>() {
+					@Override
+					public void modified(ListElementEvent<E> e) throws Throwable {
+						ListBubbleRecorder.this.append(e);
+					}
+				};
+				
+		public ListElementListener<E> listElementListener() {
+			return this.listElementListener;
+		}
+		
+		@Override
+		public String toString() {
+			return this.builder.toString();
+		}
+		
+		@SuppressWarnings("unchecked")
+		private void append(ListElementEvent<E> e) {
+			this
+			.builder
+			.append("ListElementEvent {");
+			if (e.getModificationType().contains(PropertyVersion.DETACH)) {
+				this
+				.builder
+				.append("detachedElement: ")
+				.append(e.getElement(PropertyVersion.DETACH))
+				.append(",detachedIndex: ")
+				.append(e.getIndex(PropertyVersion.DETACH));
+			}
+			if (e.getModificationType().contains(PropertyVersion.ATTACH)) {
+				this
+				.builder
+				.append(e.getModificationType().contains(PropertyVersion.DETACH) ? "," : "")
+				.append("attachedElement: ")
+				.append(e.getElement(PropertyVersion.ATTACH))
+				.append(",attachedIndex: ")
+				.append(e.getIndex(PropertyVersion.ATTACH));
+			}
+			this
+			.builder
+			.append(",modification: ")
+			.append(e.getModification());
+			if (e.getCause() == null) {
+				this.builder.append(",cause: null");
+			} else {
+				this
+				.builder
+				.append(",cause: {")
+				.append("viewInfo: ")
+				.append(e.getCause().getViewInfo())
+				.append(",event: ");
+				this.append((ListElementEvent<E>)e.getCause().getEvent());
+				this
+				.builder
+				.append("}");
+			}
+			this
+			.builder
+			.append("}");
+		}
+	}
+}
+    				]]></pre>
+    			</div>
+    		</p>
+    	</fieldset>
+    </div>
+</body>
+</html>

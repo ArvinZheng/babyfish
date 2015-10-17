@@ -1,0 +1,69 @@
+/*
+ * BabyFish, Object Model Framework for Java and JPA.
+ *
+ * Copyright (c) 2008-2015, Tao Chen
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * Please visit "http://opensource.org/licenses/LGPL-3.0" to know more.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ */
+package org.babyfish.persistence.criteria.spi;
+
+import java.util.List;
+
+import javax.persistence.criteria.CompoundSelection;
+import javax.persistence.criteria.Selection;
+
+import org.babyfish.persistence.criteria.XCriteriaBuilder;
+import org.babyfish.util.LazyResource;
+
+/**
+ * @author Tao Chen(&#38472;&#28059;)
+ */
+public abstract class AbstractSelection<X> extends AbstractNode implements Selection<X> {
+
+    private static final long serialVersionUID = -2074383010261851296L;
+    
+    private static final LazyResource<Resource> LAZY_RESOURCE = LazyResource.of(Resource.class);
+    
+    private String alias;
+    
+    protected AbstractSelection(XCriteriaBuilder criteriaBuilder) {
+        super(criteriaBuilder);
+    }
+    
+    @Override
+    public String getAlias() {
+        return this.alias;
+    }
+
+    @Override
+    public Selection<X> alias(String alias) {
+        this.checkState();
+        this.alias = alias;
+        return this;
+    }
+    
+    @Override
+    public boolean isCompoundSelection() {
+        return false;
+    }
+
+    @Override
+    public List<Selection<?>> getCompoundSelectionItems() {
+        throw new UnsupportedOperationException(LAZY_RESOURCE.get().isNotCompoundSelection(CompoundSelection.class));
+    }
+
+    private interface Resource {
+        
+        @SuppressWarnings("rawtypes")
+        String isNotCompoundSelection(Class<CompoundSelection> compoundSelectionType);
+    }
+}

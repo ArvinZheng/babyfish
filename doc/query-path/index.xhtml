@@ -1,0 +1,2570 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>QueryPath</title>
+	
+	<script type="text/javascript" src="../common/jquery-1.10.2.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/babyfish-doc.css"/>
+	<script type="text/javascript" src="../common/babyfish-doc.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/google-code-prettify.css"/>
+	<script type="text/javascript" src="../common/google-code-prettify.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="../common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		$(function() {
+			initChapters();
+			initCodeBlocks();
+			initButtons();
+			initGrids();
+			$("#jpaQueryPathModelEntityProcessorAccordion").tabs();
+		});
+	</script>
+</head>
+<body id="no-margin-body">
+    <div id="head">
+        <div id="title">QueryPath</div>
+        <div id="right-top-conner">
+            <a class="button" href="../index.xhtml">Back to the start page</a>
+        </div>
+    </div>
+    <div id="content">
+        <div id="dictionary"></div>
+        <fieldset class="chapter">
+            <legend>Outline</legend>
+            <p class="paragraphs">This is helpful for your multiple-layer project developing. There are two kind QueryPaths: </p>
+            <ul>
+                <li>
+                    <span class="important">QueryPath</span>
+                    It allows you to specify a topology graph with to unlimited breadth and depth to fetch the related ORM entities of the current center ORM entity very easy and safe
+                </li>
+                <li>
+                    <span class="important">SimpleOrderPath</span>
+                    it allows you to specify a topology graph with unlimited breadth and depth to order the current ORM entity and related ORM entities
+                </li>
+            </ul>
+            <p class="paragraphs">
+        		All the java interfaces for QueryPath are declared in babyfish-entity.jar that depends on nothing except babyfish-core.jar,
+        		 so it does not depend on JPA module or Hibernate module so that your can use them in <span class="important">ANY</span> layers, 
+        		<span class="important">NOT ONLY</span> in data-access layer. 
+        	</p>
+            <p class="paragraphs">
+                You can use it to be the parameter of the query methods of the components of any layer so that the UI layer can specify the QueryPath and assign it to data accessing layer through several middle layers.
+                Let's say goodbye to Spring' s "open session in view" and the performance problem of "N + 1 query".
+            </p>
+            <p>
+                Babyfish ehanced both Hibernate API and JPA, for both Hibernate and JPA progject, you can use it.
+            </p>
+        </fieldset>
+        <fieldset class="chapter">
+            <legend>Typed Path and Non-Typed Path</legend>
+            <p class="paragraphs">
+                Both FetchPath and QueryPath support <span class="important">typed path</span> and <span class="important">typed path</span>
+            </p>
+            <fieldset class="chapter">
+            	<legend>Non-typed query path declaration</legend>
+               	<p class="paragraphs">
+                    <span class="important">Non-typed path</span> is a string, the java compiler considers it as a normal java string.
+                    so compilation-time error will be reported by java compiler if the query path is error.
+                    Babyfish support an embed compiler to parse it runtime, any sytanx error will be reported as java runtime exception,
+                    and it will cost a little time too. So it is <span class="important">NOT</span> a suggested method.
+                    But it doesn't require any configuration of your maven pom.xml file or eclipse IDE, so this is a simple way for you tiny project.
+                   </p>
+                   <p class="paragraphs">
+                    You can use FetchPaths.compile(String) and FetchPaths.compile(String ...) to parse the <span class="important">Non-typed path</span> string 
+                    to be the list of org.babyfish.persistence.path.QueryPath interfaces. These two methods are declared as
+                    <div class="source-code">
+                    	<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.path;
+
+import java.util.List;
+
+public class QueryPaths {
+	
+	/*
+	 * compile("this.employees.annualLeaves;this.employees.supervisor;pre order by this.name asc, this.employees.name asc");
+	 */
+	public static List<QueryPath> compile(String queryPath) {
+		... ...
+	}
+	
+	/*
+	 * compile(
+	 *		"this.employees.annualLeaves", 
+	 *		"this.employees.supervisor", 
+	 *		"pre order by this.name asc",
+	 *		"pre order by this.employees.name asc"
+	 * );
+	 */
+	public static List<QueryPath> compile(String ... queryPaths) {
+		... ...
+	}
+	
+	... ...
+}
+                    	]]></pre>
+                    </div> 
+                   </p>
+	            <p class="paragraphs">
+	            	The QueryPath is declared as
+	            	<div class="source-code">
+	          			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.path;
+
+import java.io.Serializable;
+
+public interface /*{ <a name="QueryPathDeclaration" class="pln">QueryPath</a> }*/ extends Serializable {
+
+}
+	          			]]></pre>
+	            	</div>
+	            	This is the declaration of QueryPath, it is all super interface for all QueryPaths, so it has no member.
+	            	It implements java.io.Serialziable so that I can used to be the parameter of the EJB/RMI interface methods.
+	            </p>
+	            <p class="paragraphs">
+	            	Non-typed FetchPath org.babyfish.persistence.FetchPath inherits the org.babyfish.persistence.path.QueryPath.
+	            	<div class="source-code">
+	            		<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.path;
+
+public interface /*{ <a name="FetchPathDeclaration" class="pln">FetchPath</a> }*/ extends /*{ <a href="#QueryPathDeclaration">QueryPathDeclaration</a> }*/ {
+	
+	... ...
+}
+	            		]]></pre>
+	            	</div>
+	            </p>
+	            <p class="paragraphs">
+	            	Non-typed SimpleOrderPath org.babyfish.persistence.SimpleOrderPath inherits the org.babyfish.persistence.path.QueryPath
+	            	<div class="source-code">
+	            		<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.path;
+		
+public interface /*{ <a name="SimpleOrderPathDeclaration" class="pln">SimpleOrderPath</a> }*/ extends /*{ <a href="#QueryPath">QueryPathDeclaration</a> }*/ {
+	
+	... ...
+}
+	            		]]></pre>
+	            	</div>
+	            </p>
+            </fieldset>
+            <fieldset  class="chapter">
+            	<legend>Typed QueryPath declaration</legend>
+               	<p class="paragaph">
+                   	<span class="important">Typed path</span> is java object, any error will be reported by java compiler at compilation-time,
+                   	and babyfish need not to parse it in runtime, so it is the suggested method.
+                   </p>
+                   <p class="paragraphs">
+	            	The TypedQueryPath inherits 
+	            	<div class="source-code">
+	          			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.path;
+
+public interface /*{ <a name="TypedQueryPathDeclaration" class="pln">TypedQueryPath</a> }*/<R> extends /*{ <a href="#QueryPath">QueryPathDeclaration</a> }*/ {
+
+	... ...
+}
+	          			]]></pre>
+	            	</div>
+	            </p>
+	            <p class="paragraphs">
+	            	Typed FetchPath org.babyfish.persistence.TypedFetchPath inherits both the org.babyfish.persistence.path.TypedQueryPath and org.babyfish.persistence.path.FetchPath.
+	            	<div class="source-code">
+	            		<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.path;
+
+
+public interface TypedFetchPath<R> extends /*{ <a href="#TypedQueryPath">TypedQueryPathDeclaration</a> }*/<R>, /*{ <a href="#FetchPath">FetchPathDeclaration</a> }*/ {
+	
+	... ...
+}
+	            		]]></pre>
+	            	</div>
+	            </p>
+	            <p class="paragraphs">
+	            	Typed SimpleOrderPath org.babyfish.persistence.TypedSimpleOrderPath inherits both the org.babyfish.persistence.path.TypedQueryPath and org.babyfish.persistence.path.SimpleOrderPath
+	            	<div class="source-code">
+	            		<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.path;
+
+import org.babyfish.lang.Arguments;
+import org.babyfish.lang.BinaryFunc;
+
+public interface TypedSimpleOrderPath<R> extends /*{ <a href="#TypedQueryPath">TypedQueryPathDeclaration</a> }*/<R>, /*{ <a href="#SimpleOrderPath">SimpleOrderPathDeclaration</a> }*/ {
+
+	... ...
+}
+	            		]]></pre>
+	            	</div>
+	            </p>
+                   <p class="paragraphs">
+                   	These interfaces of typed QueryPaths are implemented by some classes which are generated in pre-compilation phase,
+                    They look like the JPA static meta-model classes that are generated in the pre-compilation phase too.
+                    You must configure the tool class of <span class="important">babyfish-jpaqpmodelgen-{version}.jar</span> into your maven pom.xml file
+                    or eclipse IDE. just use maven pom.xml to be the example
+                    <div class="source-code">
+                        <pre class="lang-xml"><![CDATA[
+<build>
+	<plugins>
+		<plugin>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<configuration>
+				<source>1.7</source>
+				<target>1.7</target>
+			</configuration>
+		</plugin>
+		<plugin>
+			<groupId>org.bsc.maven</groupId>
+			<artifactId>maven-processor-plugin</artifactId>
+			<version>2.0.0</version>
+			<executions>
+				<execution>
+					<id>process</id>
+					<goals>
+						<goal>process</goal>
+					</goals>
+					<phase>generate-sources</phase>
+					<configuration>
+						<outputDirectory>target/metamodel</outputDirectory>
+						<processors>
+							<processor>
+								<!-- Hibernate's processor, generate JPA metamodel -->
+								<!--{ <a class="pln">org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</a> }-->
+							</processor>
+							<processor>
+								<!-- BabyFish's processor, genearate QueryPath moetamodel -->
+								<!--{<a href="javascript:void(0);" onclick="$('#jpaQueryPathModelEntityProcessorDialog').dialog({width: $(document.body).width() * 0.75, resizable: false});">org.babyfish.jpaqpmodelgen.JPAQueryPathModelEntityProcessor</a>}-->
+							</processor>
+						</processors>
+					</configuration>
+				</execution>
+		        </executions>
+			<dependencies>
+				<dependency>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-jpamodelgen</artifactId>
+					<version>1.3.0.Final</version>
+				</dependency>
+				<dependency>
+					<groupId>org.babyfish</groupId>
+					<artifactId>babyfish-jpaqpmodelgen</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</plugin>
+		<plugin>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>build-helper-maven-plugin</artifactId>
+			<version>1.3</version>
+			<executions>
+				<execution>
+					<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+							<source>target/metamodel</source>
+						</sources>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
+						]]></pre>
+                    </div>
+                </p>
+            </fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>How to specify the QueryPaths to ORM query</legend>
+            <p class="paragraph">
+            	Both the JPA API and Hibernate API are extended
+            </p>
+            <ul>
+            	<li>            		
+            		For javax.persistence.Query, Babyfish supports a derived interface: "org.babyfish.persistence.XQuery"
+            		<div class="source-code">
+            			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence;
+
+import javax.persistence.Query;
+import org.babyfish.persistence.path.QueryPath;
+... ...
+
+public interface XQuery extends Query {
+	
+	XQuery setQueryPaths(QueryPath ... queryPaths);
+
+	XQuery setQueryPaths(String alias, QueryPath ... queryPaths);
+	
+	XQuery setQueryPaths(Collection<? extends QueryPath> queryPaths);
+
+	XQuery setQueryPaths(String alias, Collection<? extends QueryPath> queryPaths);
+	
+	... ...
+}
+            			]]></pre>
+            		</div>
+            	</li>
+            	<li>            		
+            		For javax.persistence.EntityManager, Babyfish supports a derived interface: "org.babyfish.persistence.XEntityManager"
+            		<div class="source-code">
+            			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence;
+
+import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
+... ...
+
+import org.babyfish.persistence.path.TypedQueryPath;
+... ...
+
+public interface XEntityManager extends EntityManager, AutoCloseable {
+	
+	<E> E getReference(Class<E> entityClass, Object primaryKey, String ... queryPaths);
+	
+	<E> E find(Class<E> entityClass, Object primaryKey, String ... queryPaths);
+	
+	<E> E find(Class<E> entityClass, Object primaryKey, LockModeType lockModeType, String ... queryPaths);
+	
+	@SuppressWarnings("unchecked")
+	<E> E getReference(Class<E> entityClass, Object primaryKey, TypedQueryPath<E> ... queryPaths);
+	
+	@SuppressWarnings("unchecked")
+	<E> E find(Class<E> entityClass, Object primaryKey, TypedQueryPath<E> ... queryPaths);
+	
+	@SuppressWarnings("unchecked")
+	<E> E find(Class<E> entityClass, Object primaryKey, LockModeType lockModeType, TypedQueryPath<E> ... queryPaths);
+	
+	... ...
+}
+            			]]></pre>
+            		</div>
+            	</li>
+            	<li>
+            		For org.hibernate.Query, Babyfish supports a derived interface: "org.babyfish.hibernate.XQuery"
+            		<div class="source-code">
+            			<pre class="lang-java"><![CDATA[
+package org.babyfish.hibernate;
+
+import org.babyfish.persistence.path.QueryPath;
+import org.hibernate.Query;
+... ...
+
+public interface XQuery extends Query {
+	
+	XQuery setQueryPaths(QueryPath ... queryPaths);
+
+	XQuery setQueryPaths(String alias, QueryPath ... queryPaths);
+	
+	XQuery setQueryPaths(Collection<? extends QueryPath> queryPaths);
+
+	XQuery setQueryPaths(String alias, Collection<? extends QueryPath> queryPaths);
+	
+	... ...
+}
+            			]]></pre>
+            		</div>
+            	</li>
+            	<li>
+            		For org.hibernate.Session, Babyfish supports a derived interface: "org.babyfish.hibernate.XSession"
+            		<div class="source-code">
+            			<pre class="lang-java"><![CDATA[
+package org.babyfish.hibernate;
+
+import java.io.Serializable;
+
+import org.babyfish.persistence.path.QueryPath;
+import org.babyfish.persistence.path.TypedQueryPath;
+import org.hibernate.LockOptions;
+import org.hibernate.Session;
+
+public interface XSession extends Session {
+	
+	Object load(String entityName, Serializable id, String ... queryPaths);
+	
+	Object load(String entityName, Serializable id, LockOptions lockOptions, String ... queryPaths);
+	
+	Object load(String entityName, Serializable id, QueryPath ... queryPaths);
+	
+	@SuppressWarnings("unchecked")
+	<E> E load(Class<E> entityClass, Serializable id, TypedQueryPath<E> ... queryPaths);
+	
+	Object load(String entityName, Serializable id, LockOptions lockOptions, QueryPath ... queryPaths);
+	
+	@SuppressWarnings("unchecked")
+	<E> E load(Class<E> entityClass, Serializable id, LockOptions lockOptions, TypedQueryPath<E> ... queryPaths);
+	
+	Object get(String entityName, Serializable id, String ... queryPaths);
+	
+	Object get(String entityName, Serializable id, LockOptions lockOptions, String ... queryPaths);
+	
+	Object get(String entityName, Serializable id, QueryPath ... queryPaths);
+	
+	@SuppressWarnings("unchecked")
+	<E> E get(Class<E> entityClass, Serializable id, TypedQueryPath<E> ... queryPaths);
+	
+	Object get(String entityName, Serializable id, LockOptions lockOptions, QueryPath ... queryPaths);
+	
+	@SuppressWarnings("unchecked")
+	<E> E get(Class<E> entityClass, Serializable id, LockOptions lockOptions, TypedQueryPath<E> ... queryPaths);
+	
+	... ...
+}
+
+            			]]></pre>
+            		</div>
+            	</li>
+            </ul>
+            <p class="paragraphs">
+            	From the source code, we can see the query of babyfish-jpa and babyfish-hibernate use same method to specify the QueryPaths.
+            	<span class="important" style="font-size: 24px">To keep the article to be simple, we only use the JPA to be the examples.</span>  
+            </p>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>Data access object with QueryPaths example</legend>
+        	<a name="DAOExample"></a>
+        	<fieldset class="chapter">
+        		<legend>Class diagram</legend>
+	        	<div>
+	        		<img src="../common/entities-example.jpg" border="1px solid gray"/>
+	        	</div>
+	        </fieldset>
+        	<fieldset class="chapter">
+            	<legend>Use non-typed QueryPath to create Data Access Object</legend>
+            	Non-typed QueryPath is <span class="important">NOT</span> suggested, unless your project is very tiny.
+            	You can write the DAO like this
+				<div class="source-code">
+					<pre class="lang-java"><![CDATA[
+package com.yourcompany.youproject.dal.impl;
+
+import java.util.List;
+
+import javax.persistence.PersistenceContext;
+
+import com.yourcompany.yourproject.dal.DepartmentRepository;
+import com.yourcompany.yourproject.entities.Department;
+
+import org.babyfish.persistence.XEntityManager;
+import org.babyfish.persistence.path.QueryPaths;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+@Repository
+@Transactional(propagation = Propagation.MANDATORY)
+public class DepartmentRepositoryImpl implements DepartmentRepository {
+	
+	@PersistenceContext
+	private XEntityManager em;
+
+	@Override
+	public Department getDepartmentById(long id, String ... queryPaths) {
+		return em.find(Department.class, id, queryPaths);
+	}
+	
+	@Override
+	public Department getDepartmentByName(String name, String ... queryPaths) {
+		return 
+			em
+			.createQuery("select d from Department d where d.name = :name")
+			.setParameter("name", name)
+			.setQueryPaths(QueryPaths.compile(queryPaths))
+			.getSingResult(true);
+	}
+	
+	@Override
+	public List<Department> getDepartmentsLikeName(String namePattern, String ... queryPaths) {
+		return 
+			em
+			.createQuery("select d from Department d where d.namePattern like :namePattern")
+			.setParameter("namePattern", namePattern)
+			.setQueryPaths(QueryPaths.compile(queryPaths))
+			.getResultList();
+	}
+}
+					]]></pre>
+				</div>
+				You can invoke it like
+				<div class="source-code">
+					<pre class="lang-java"><![CDATA[
+String namePattern = ... ...;
+DepartmentRepository departmentRepository = ... ...;
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern,
+	"this.company",
+	"this.employees.annualLeaves",
+	"this.employees.supervisor.supervisor.supervisor",
+	"this.employees.all(subordinates).all(subordinates)",
+	"pre order by this.name desc",
+	"post order by this.employees.annualLeaves.startDate asc"
+);
+... ...
+					]]></pre>
+				</div>
+				The example invoked "getDepartmentsLikeName" of DAO with 6 QueryPaths, the last two are SimpleOrderPaths, the others are FetchPaths.
+				<p>
+					In next chapter, we will learn what is FetchPath and SimpleOrderPath.
+				</p>
+				<p>
+					If the QueryPaths specified by the client code are invalid, Java compiler can not find the problem at compilation-time, 
+					and the exception will be thrown in runtime. That is why non-typed query path is not suggested choice unless your project is very tiny.
+				</p>
+            </fieldset>
+            <fieldset class="chapter">
+            	<legend>Use typed QueryPath to create Data Access Object</legend>
+            	Typed QueryPath is suggested choice in most cases, You can write the DAO like this
+				<div class="source-code">
+					<pre class="lang-java"><![CDATA[
+package com.yourcompany.youproject.dal.impl;
+
+import java.util.List;
+
+import javax.persistence.PersistenceContext;
+
+import com.yourcompany.yourproject.dal.DepartmentRepository;
+import com.yourcompany.yourproject.entities.Department;
+
+//It is Department__(With 2 underline characters, JPA QueryPath Metamodel generated by babyfish)
+//Not Department_(With only 1 underline character, JPA Static Metamodel generated by JPA)
+import com.yourcompany.yourproject.entities.Department__; 
+
+import org.babyfish.persistence.XEntityManager;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+@Repository
+@Transactional(propagation = Propagation.MANDATORY)
+public class DepartmentRepositoryImpl implements DepartmentRepository {
+	
+	@PersistenceContext
+	private XEntityManager em;
+
+	@Override
+	public Department getDepartmentById(long id, Department__ ... queryPaths) {
+		return em.find(Department.class, id, queryPaths);
+	}
+	
+	@Override
+	public Department getDepartmentByName(String name, Department__ ... queryPaths) {
+		return 
+			em
+			.createQuery("select d from Department d where d.name = :name")
+			.setParameter("name", name)
+			.setQueryPaths(queryPaths)
+			.getSingResult(true);
+	}
+	
+	@Override
+	public List<Department> getDepartmentsLikeName(String namePattern, Department__ ... queryPaths) {
+		return 
+			em
+			.createQuery("select d from Department d where d.namePattern like :namePattern")
+			.setParameter("namePattern", namePattern)
+			.setQueryPaths(queryPaths)
+			.getResultList();
+	}
+}
+					]]></pre>
+				</div>
+				You can invoke it like
+				<div class="source-code">
+					<pre class="lang-java"><![CDATA[
+String namePattern = ... ...;
+DepartmentRepository departmentRepository = ... ...;
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern,
+	Department__.begin().company().end(),
+	Department__.begin().employees().annualLeaves().end(),
+	Department__.begin().employees().supervisor().supervisor().supervisor().end(),
+	Department__.begin().employees().subordinates(CollectionFetchType.ALL).subordinates(CollectionFetchType.ALL).end(),
+	Department__.postOrderBy().name().desc(),
+	Department__.preOrderBy().employees().annualLeaves().startDate().asc()
+);
+... ...
+					]]></pre>
+				</div>
+				This example is same with the previous example
+				<p>
+					If the QueryPaths specified by the client code are invalid, Java compiler can find the problem at compilation-time at first time,
+					if your project is refectored, you will find it is very useful because it can find the problem very fast after every code refactoring.
+					That is why typed query path is suggested choice.
+				</p>
+				<p>
+					In next chapters, we will learn what is FetchPath and SimpleOrderPath.
+				</p>
+            </fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend><a name="fetchPath">FetchPath</a></legend>
+        	<p class="paragraphs">
+        		Before learn this chapter, please make sure you've viewed the chapter <a href="#DAOExample">Data access object with QueryPaths example</a> and understand the entities relationships
+        	</p>
+        	<fieldset class="chapter">
+        		<legend>How to used Fetchs</legend>
+        		<fieldset class="chapter">
+        			<legend>No Fetches</legend>
+        			<p class="paragraphs">
+		        		For the code with non-typed FetchPath
+		        	</p>
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(namePattern);
+		        		]]></pre>
+		        	</div>
+		        	The JPQL that is executed finally is
+		        	<div class="source-code">
+		        		<pre class="lang-sql"><![CDATA[
+select d 
+from Department d 
+where d.name like :namePattern
+		        		]]></pre>
+		        	</div>
+		        	Only the main entity "Department" will be loaded, no assocaition properties are loaded.
+        		</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Fetch collection(one-to-many/many-to-many)</legend>
+        			<p class="paragraphs">
+		        		For the code with non-typed FetchPath
+		        	</p>
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	"this.employees");
+		        		]]></pre>
+		        	</div>
+		        	or code with typed FetchPath
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	Department__.begin().employees().end());
+		        		]]></pre>
+		        	</div>
+		        	The JPQL that is executed finally is
+		        	<div class="source-code">
+		        		<pre class="lang-sql"><![CDATA[
+select d 
+from Department d 
+left join fetch d.employes 
+where d.name like :namePattern
+		        		]]></pre>
+		        	</div>
+		        	The collection association property "employees" of all departments will be loaded
+        		</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Fetch reference(many-to-one/one-to-one)</legend>
+        			<p class="paragraphs">
+		        		For the code with non-typed FetchPath
+		        	</p>
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	"this.company");
+		        		]]></pre>
+		        	</div>
+		        	or the code with typed FetchPath
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	Department__.begin().company().end());
+		        		]]></pre>
+		        	</div>
+		        	The JPQL that is executed finally is
+		        	<div class="source-code">
+		        		<pre class="lang-sql"><![CDATA[
+select d 
+from Department d 
+left join fetch d.company 
+where d.name like :namePattern
+		        		]]></pre>
+		        	</div>
+		        	The reference association property "company" of all departments will be loaded
+        		</fieldset>
+				<fieldset class="chapter">
+					<legend>Fetch scalar</legend>
+					
+				</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Fetch with depth</legend>
+        			<p class="paragraphs">
+		        		For the code with non-typed FetchPath
+		        	</p>
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	"this.employees.annualLeaves");
+		        		]]></pre>
+		        	</div>
+		        	or code typed FetchPath
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	Department__.begin().employees().annualLeaves().end());
+		        		]]></pre>
+		        	</div>
+		        	The JPQL that is executed finally is
+		        	<div class="source-code">
+		        		<pre class="lang-sql"><![CDATA[
+select d 
+from Department d 
+left join fetch d.employees babyfish_join_node_alias_0
+left join fetch babyfish_join_node_alias_0.annualLeaves 
+where d.name like :namePattern
+		        		]]></pre>
+		        	</div>
+		        	The collection association property "employees" of all departments will be loaded;
+		        	Furthermore, for each employee, the collection association property "annualLeaves" will be loaded.
+        		</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Fetch with breadth</legend>
+        			<p class="paragraphs">
+		        		For the code with non-typed FetchPath
+		        	</p>
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	"this.employees",
+	"this.company");
+		        		]]></pre>
+		        	</div>
+		        	or the code with typed FetchPath
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	Department__.begin().employees().end(),
+	Department__.begin().company().end());
+		        		]]></pre>
+		        	</div>
+		        	The JPQL that is executed finally is
+		        	<div class="source-code">
+		        		<pre class="lang-sql"><![CDATA[
+select d 
+from Department d 
+left join fetch d.employees 
+left join fetch d.company 
+where d.name like :namePattern
+		        		]]></pre>
+		        	</div>
+		        	Both the collection association property "employees" and the association property "company" of department will be loaded.
+        		</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Fetch with both depth and breadth</legend>
+        			<p class="paragraphs">
+		        		For the code with non-typed FetchPath
+		        	</p>
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	"this.company",
+	"this.employees.annualLeaves",
+	"this.employees.supervisor.supervisor.supervisor",
+	"this.employees.subordinates.subordinates");
+		        		]]></pre>
+		        	</div>
+		        	or the code with typed FetchPath
+		    		<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+	namePattern, 
+	Department__.begin().company().end(),
+	Department__.begin().employees().annualLeaves().end(),
+	Department__.begin().employees().supervisor().supervisor(),supervisor().end(),
+	Department__.begin().employees().subordinates().subordinates().end());
+		        		]]></pre>
+		        	</div>
+		        	The JPQL that is executed finally is
+		        	<div class="source-code">
+		        		<pre class="lang-sql"><![CDATA[
+select d from Department d 
+left join fetch d.company
+left join fetch d.employees babyfish_join_node_alias_0
+left join fetch babyfish_join_node_alias_0.annualLeaves
+left join fetch babyfish_join_node_alias_0.supervisor babyfish_join_node_alias_1
+left join fetch babyfish_join_node_alias_1.supervisor babyfish_join_node_alias_2
+left join fetch babyfish_join_node_alias_2.supervisor
+left join fetch babyfish_join_node_alias_0.subordinates babyfish_join_node_alias_3
+left join fetch babyfish_join_node_alias_3.subordinates  
+where d.name like :namePattern
+		        		]]></pre>
+		        	</div>
+		        	This a fetch tree
+		        	<pre><![CDATA[
++this(Current queried entity: Department)
+|
++-----company
+|
++----+employees
+     |
+     +-----annualLeaves
+     |
+     +----+supervisor
+     |    |
+     |    \----+supervisor
+     |         |
+     |         \-----supervisor 
+     |
+     \----+subordinates
+          |
+          \-----subordinates 
+					]]></pre>
+        		</fieldset>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>INNER join fetches</legend>
+        		<p class="paragraphs">
+        			The FetchPath supports left join, also it supports inner join. 
+        			This is the QueryPath join type declaration 
+        		</p>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.path;
+
+public enum GetterType {
+	
+	OPTIONAL, //LEFT JOIN, this is default value
+
+	REQUIRED //INNER JOIN
+}
+        			]]></pre>
+        		</div>
+        		<p class="prargraphs">
+        			Please see the example with non-typed FetchPath
+        		</p>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+					namePattern, 
+					"this..employees..annualLeaves");
+					// Look it carefully, it is "..", not "."
+        			]]></pre>
+        		</div>
+        		or the example with typed FetchPath
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+List<Department> departments = departmentRepository.getDepartmentsLikeName(
+					namePattern, 
+					Department__.begin().employees(GetterType.REQUIRED).annualLeaves(GetterType.REQUIRED).end());
+        			]]></pre>
+        		</div>
+        		The JPQL that is executed finally is
+        		<div class="source-code">
+        			<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+inner join fetch d.employees babyfish_join_node_alias_0
+inner join fetch babyfish_join_node_alias_0.annualLeaves
+        			]]></pre>
+        		</div>
+	        </fieldset>
+	        <fieldset class="chapter">
+        		<legend>ALL and PARTIAL modes for collection fetches</legend>
+        		<p class="paragraphs">
+        			There are two kinds of fetches: collection fetch and reference fetch
+        			<ul>
+        				<li>
+        					If a fetch that is base on an association property that is "one-to-many" or "one-to-many",
+        					it is collection fetch.
+        				</li>
+        				<li>
+        					If a fetch that is base on an association property that is "many-to-one" or "one-to-one",
+        					That is reference fetch.
+        				</li>
+        			</ul>
+        			For collection fetch, babyfish supports two fetch mode: all and partial
+        			<div class="source-code">
+        				<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence.path;
+
+public enum /*{ <a name="CollectionFetchType">CollectionFetchType</a> }*/ {
+
+	ALL("all"), //Default
+	
+	PARTIAL("partial"); //Not default
+	
+	... ...
+}
+        				]]></pre>
+        			</div>
+        		</p>
+        		<fieldset class="chapter">
+        			<legend>Duplicated reference fetch and original reference join</legend>
+        			<p class="paragraphs">
+        				Please see the code with non-typed FetchPaths
+        			</p>
+        			<div class="source-code">
+        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join d.company c where c.name = :companyName",
+			Department.class
+		)
+		.setParameter("companyName", companyName)
+		.setQueryPaths("this.company")
+		.getResultList();
+        				]]></pre>
+        			</div>
+        			or the code with typed FetchPaths
+        			<div class="source-code">
+        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join d.company c where c.name = :companyName",
+			Department.class
+		)
+		.setParameter("companyName", companyName)
+		.setQueryPaths(Department__.begin().company().end())
+		.getResultList();
+        				]]></pre>
+        			</div>
+        			In the original JPQL, there is a explict join "inner join join d.company c", 
+        			in the FetchPath, there is a a implicit join fetch "left join d.company",
+        			These two joins are duplicated.
+        			Because "department.company" is reference assocaition, 
+        			babyfish will merge them together, the JPQL that is executed finally is
+        			(the merge result of LEFT and INNER is INNER)
+        			<div class="soruce-code">
+        				<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+inner join fetch d.company c
+where c.name = :companyName
+        				]]></pre>
+        			</div>
+        		</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Duplicated collection fetch and original collection join when fetch type is CollectionFetchType.ALL</legend>
+        			<fieldset class="chapter">
+        				<legend>Original join is NOT fetch</legend>
+	        			<p class="paragraph">
+	        				Please see the code with non-typed FetchPath
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join d.employees e where e.name like :employeeNamePattern",
+			Department.class
+		)
+		.setParameter("employeeNamePattern", employeeNamePattern)
+		.setQueryPaths("this.all(employees)")
+		/* or "this.employees" because "all" is default mode */
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			or the code with typed FetchPath
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join d.employees e where e.name like :employeeNamePattern",
+			Department.class
+		)
+		.setParameter("employeeNamePattern", employeeNamePattern)
+		.setQueryPaths(Department__.begin().employees(CollectionFetchType.ALL).end())
+		/* or "Department__.begin().employees().end()" because "all" is default mode */
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			In the original JPQL, there is a explict join "inner join d.employees e", 
+	        			in the FetchPath, there is a a implicit join fetch "left join d.employees",
+	        			These two joins are duplicated.
+	        			When the CollectionFetchType is ALL, babyfish will not merge them together.
+	        			<div class="soruce-code">
+	        				<pre class="lang-java"><![CDATA[
+select d
+from Department d
+inner join d.employees e
+left join fetch d.employees
+where e.name like :employeeNamePattern
+	        				]]></pre>
+	        			</div>
+	        			<p>
+	        				In this case, our JPQL uses two joins. 
+	        				The first join is used to apply query condition,
+	        				the second join fetch is used to fetch the "employees" of department.
+	        				Database must join the EMPLOYEE table twice but the fetched assoication collection is complete.
+	        			</p>
+	        		</fieldset>
+	        		<fieldset class="chapter">
+	        			<legend>Original join is fetch</legend>
+	        			<p class="paragraph">
+	        				But when the for existing fetches in the original JPQL, the implicit join fetch will be merged
+	        				into the exsiting join fetch even if the CollectonFetchType is ALL,
+	        				please see the code with non-typed FetchPath
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join fetch d.employees",
+			Department.class
+		)
+		.setQueryPaths("this.all(employees)")
+		/* or "this.employees" because "all" is default mode */
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			or the code with typed FetchPath
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join fetch d.employees",
+			Department.class
+		)
+		.setQueryPaths(Department__.begin().employees(CollectionFetchType.ALL).end())
+		/* or "Department__.begin().employees().end()" because "all" is default mode */
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			In the original JPQL, there is a explict join fetch "inner join d.employees e", 
+	        			in the FetchPath, there is a a implicit join fetch "left join d.employees",
+	        			These two joins are duplicated. The existing join in the original JPQL is fetch already,
+	        			so babyfish will merge them together even if the CollectionFetchType is ALL
+	        			(The merge result of INNER and LEFT is INNER).
+	        			<div class="soruce-code">
+	        				<pre class="lang-java"><![CDATA[
+select d
+from Department d
+inner join fetch d.employees
+	        				]]></pre>
+	        			</div>
+	        		</fieldset>
+        		</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Duplicated collection fetch and original collection join when fetch type is CollectionFetchType.PARTIAL</legend>
+        			<p class="paragraph">
+        				Please see the code with non-typed FetchPath
+        			</p>
+        			<div class="source-code">
+        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join d.employees e where e.name like :employeeNamePattern",
+			Department.class
+		)
+		.setParameter("employeeNamePattern", employeeNamePattern)
+		.setQueryPaths("this.partial(employees)")
+		.getResultList();
+        				]]></pre>
+        			</div>
+        			or the code with typed FetchPath
+        			<div class="source-code">
+        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join d.employees e where e.name like :employeeNamePattern",
+			Department.class
+		)
+		.setParameter("employeeNamePattern", employeeNamePattern)
+		.setQueryPaths(Department__.begin().employees(CollectionFetchType.PARTIAL).end())
+		.getResultList();
+        				]]></pre>
+        			</div>
+        			In the original JPQL, there is a explict join "inner join d.employees e", 
+        			in the FetchPath, there is a a implicit join fetch "left join d.employees",
+        			These two joins are duplicated.
+        			When the CollectionFetchType is PARTIAL, babyfish will merge them together
+        			(the merge result of LEFT and INNER is INNER).
+        			<div class="soruce-code">
+        				<pre class="lang-java"><![CDATA[
+select d
+from Department d
+inner join fetch d.employees e
+where e.name like :employeeNamePattern
+        				]]></pre>
+        			</div>
+        			<p>
+        				In this case, our JPQL uses only one joins. 
+        				This join is used to apply query condition and it is also used to fetch the "employees" of department.
+        				Database need only join the EMPLOYEE table for once but the fetched assoication collection is incomplete.
+        			</p>
+        		</fieldset>
+	        </fieldset>
+	        <fieldset class="chapter">
+        		<legend><a name="fetchesMergingRules">Fetches merging rules</a></legend>
+        		<fieldset class="chapter">
+        			<legend>Merge rules between FetchPaths</legend>
+        			If several FetchPaths has some same joins, the will be merget together
+        			<div>
+	        			GetterType merge rule
+	        			<table class="grid" border="1" border-color="black">
+	        				<tr class="grid-title">
+	        					<td>GetterType1</td>
+	        					<td>GetterType2</td>
+	        					<td>Merged GetterType</td>
+	        				</tr>
+	        				<tr>
+	        					<td>GetterType.OPTIONAL</td>
+	        					<td>GetterType.OPTIONAL</td>
+	        					<td>GetterType.OPTIONAL</td>
+	        				</tr>
+	        				<tr>
+	        					<td>GetterType.REQURIED</td>
+	        					<td>GetterType.OPTIONAL</td>
+	        					<td>GetterType.REQUIRED</td>
+	        				</tr>
+	        				<tr>
+	        					<td>GetterType.OPTIONAL</td>
+	        					<td>GetterType.REQUIRED</td>
+	        					<td>GetterType.REQUIRED</td>
+	        				</tr>
+	        				<tr>
+	        					<td>GetterType.REQUIRED</td>
+	        					<td>GetterType.REQUIRED</td>
+	        					<td>GetterType.REQUIRED</td>
+	        				</tr>
+	        			</table>
+        			</div>
+        			<div>
+	        			CollectionFetchType merge rule
+	        			<table class="grid" border="1" border-color="black">
+	        				<tr class="grid-title">
+	        					<td>CollectionFetchType1</td>
+	        					<td>CollectionFetchType2</td>
+	        					<td>Merged CollectionFetchType</td>
+	        				</tr>
+	        				<tr>
+	        					<td>CollectionFetchType.ALL</td>
+	        					<td>CollectionFetchType.ALL</td>
+	        					<td>CollectionFetchType.ALL</td>
+	        				</tr>
+	        				<tr>
+	        					<td>CollectionFetchType.PARTIAL</td>
+	        					<td>CollectionFetchType.ALL</td>
+	        					<td>CollectionFetchType.PARTIAL</td>
+	        				</tr>
+	        				<tr>
+	        					<td>CollectionFetchType.ALL</td>
+	        					<td>CollectionFetchType.PARTIAL</td>
+	        					<td>CollectionFetchType.PARTIAL</td>
+	        				</tr>
+	        				<tr>
+	        					<td>CollectionFetchType.PARTIAL</td>
+	        					<td>CollectionFetchType.PARTIAL</td>
+	        					<td>CollectionFetchType.PARTIAL</td>
+	        				</tr>
+	        			</table>
+        			</div>
+        			<ul>
+        				<li>
+	        				Non-typed example
+	        				<div class="source-code">
+	        					<pre class="lang-java"><![CDATA[
+	return this
+			.entityManager
+			.createQuery("select d from Department d")
+			.setQueryPaths(
+				"this..employees.annualLeaves",
+				"this.employees.partial(annualLeaves)"
+			)
+			.getResultList();
+	        					]]></pre>
+	        				</div>
+	        				and the example
+	        				<div class="source-code">
+	        					<pre class="lang-java"><![CDATA[
+	return this
+			.entityManager
+			.createQuery("select d from Department d")
+			.setQueryPaths("this..employees.partial(annualLeaves)")
+			.getResultList();
+	        					]]></pre>
+	        				</div>
+	        				are equivalent.
+	        			</li>
+	        			<li>
+	        				Typed example, the example
+	        				<div class="source-code">
+	        					<pre class="lang-java"><![CDATA[
+	return this
+			.entityManager
+			.createQuery("select d from Department d")
+			.setQueryPaths(
+				Department__.begin().employees(GetterType.REQUIRED).annualLeaves().end(),
+				Department__.begin().employees().annualLeaves(CollectionFetchType.PARTIAL).end()
+			)
+			.getResultList();
+	        					]]></pre>
+	        				</div>
+	        				and the example
+	        				<div class="source-code">
+	        					<pre class="lang-java"><![CDATA[
+	return this
+			.entityManager
+			.createQuery("select d from Department d")
+			.setQueryPaths(Department__.begin().employees(GetterType.REQUIRED).annualLeaves(CollectionFetchType.PARTIAL).end())
+			.getResultList();
+	        					]]></pre>
+	        				</div>
+	        				are equivalent.
+	        			</li>
+        			</ul>
+        		</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Merge rules between FetchPath and original JPQL</legend>
+	        		<p class="paragraphs">
+	        			When the FetchPaths are applied, many join nodes will be added into the original JPQL query.
+	        			If this join is not existing in this original JPQL query, babyfish will created a new join node
+	        			and add it, but if the join node is existing, babyfish may create new join node and add it, 
+	        			also may merge the fetch with the existing join node.
+	        		</p> 
+	        		<fieldset class="chapter">
+	        			<legend><a name="specialAliasPrefix">Special alias prefix "babyfish_not_shared_alias_"</a></legend>
+	        			<p class="paragraphs">
+	        				Please see the code with non-typed FetchPath
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d " +
+			"from Department d " +
+			"inner join d.company babyfish_not_shared_alias_c " +
+			"inner join d.employees babyfish_not_shared_alias_e",
+			Department.class
+		)
+		.setQueryPaths(
+			"this.company",
+			"this.pertial(employees)"
+		)
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			or 
+	        			the code with typed FetchPath
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d " +
+			"from Department d " +
+			"inner join d.company babyfish_not_shared_alias_c " +
+			"inner join d.employees babyfish_not_shared_alias_e",
+			Department.class
+		)
+		.setQueryPaths(
+			Department__.begin().company().end(),
+			Department__.begin().employees(Collection.PARTIAL).end()
+		)
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			<p class="paragraphs">
+	        				The orignal JPQL has two explict joins
+	        				"inner join d.company babyfish_not_shared_alias_c"
+	        				and 
+	        				"inner join d.employees babyfish_not_shared_alias_e".
+	        				The FetchPath has two implict joins
+	        				"left join d.company" and "left join d.partial(employees)".
+	        				We have learned, reference fetch and
+	        				collection fetch that uses CollectionFetchType.PARTIAL will
+	        				be marged into the existing join of original JPQL.
+	        			</p>
+	        			<p class="paragraphs">
+	        				<span class="important">BUT</span>, when the alias of
+	        				the existing join of original join starts with
+	        				<span class="important">"babyfish_not_shared_alias_"</span>, 
+	        				neither reference fetch nor collection fetch that uses CollectionFetchType.PARTIAL 
+	        				can be merged into the existing join.
+	        				So the JPQL is executed finally is
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-sql"><![CDATA[
+select d
+from Department d 
+inner join d.company babyfish_not_shared_alias_c 
+inner join d.employees babyfish_not_shared_alias_e
+left join fetch d.company
+left join fetch e.employees
+	        				]]></pre>
+	        			</div>
+	        			Both the reference fetch and collection fetch uses CollectionFetchType.PARTIAL
+	        			can not be merged into existing joins but is used to create new join nodes,
+	        			because the all aliases of existing joins starts with 
+	        			<span class="important">"babyfish_not_shared_alias_"</span>
+	        			<p class="important-section paragraphs">
+	        				The sepecial prefix "babyfish_not_shared_alias_" can guarantee that the joines in the original JPQL 
+	        				will not be merged by QueryPath absolutely. 
+	        				BUT it may cause some unnecessary SQL performance spending, please think whether it is a good idea in your case
+	        				carefully before you do it.
+	        			</p>
+	        		</fieldset>
+					<fieldset class="chapter">
+						<legend>Existing join with JPA2.1 "ON" condition can not be merged</legend>
+						<p class="paragraphs">
+							In JPA2.1, JPQL's join supports "ON", like the code with non-typed QueryPath
+						</p>
+						<div class="source-code">
+							<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join d.company c on c.name = :companyName" +
+			Department.class
+		)
+		.setParameter("companyName", companyName)
+		.setQueryPaths("this.company")
+		.getResultList();
+							]]></pre>
+						</div>
+						or the code with typed QueryPath
+						<div class="source-code">
+							<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d from Department d inner join d.company c on c.name = :companyName" +
+			Department.class
+		)
+		.setParameter("companyName", companyName)
+		.setQueryPaths(Department__.begin().company().end())
+		.getResultList();
+							]]></pre>
+						</div>
+						<p class="paragaphs">
+							In the original JQPL, there is an explicit existing join "inner d.company c on c.name = :companyName"
+							In the FetchPath, there is an implicit existing join fetch "left join fetch d.comany".
+							Though the "d.company" is a reference association property, not collection association property,
+							but the join fetch declared in FetchPath can not be merged into that existing join because that existing 
+							join is declared with the "ON" condition that is supported from JPA2.1. The join with "ON" condition does not
+							support fetch, an exception will be raised if you do that. 
+						</p>
+	        			<p class="paragraphs">
+	        				Though babyfish knows that merge them together can get the nice SQL performance and babyfish
+	        				<span class="important">particularly</span> wants to
+	        				do it, but babyfish have no choice, because join uses "ON" can not use "FETCH" too even if the current 
+	        				assocation property is reference, not collection. Babyfish <span class="important">has to</span> 
+	        				generated the final JPQL that is execute
+	        				actually like this
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-sql"><![CDATA[
+select d 
+from Department d
+inner join d.company c on c.name = :companyName
+left join fetch d.company
+	        				]]></pre>
+	        			</div>
+	        			This JPQL will cause duplicated join in generated SQL. Actually, for reference association, it is <span class="important">unnecessary</span>
+	        			because the assocaition property is not collection!
+	        			<p class="important-section paragraphs">
+	        				It is not a good idea to use joins with "ON" conditions of JPA2.1 in babyfish-jpa/babyfish-hibernate because
+	        				it will cause some unnecessary SQL performance spending.
+	        			</p> 
+	        		</fieldset>
+	        		<fieldset class="chapter">
+	        			<legend>Existing fetches have priority over others</legend>
+	        			<p class="paragraphs">
+	        				Please view the code with non-typed FetchPath
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"inner join d.employees " +
+			"left join fetch d.employees",
+			Department.class
+		)
+		.setQueryPaths("this..partial(employees)")
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			or the code with typed FetchPath
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"inner join d.employees " +
+			"left join fetch d.employees",
+			Department.class
+		)
+		.setQueryPaths(Department__.begin().employees(GetterType.REQUIRED, CollectionFetchType.PARTIAL).end())
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			In the original JPQL, there are two existing joines "inner join d.employees" and "left join fetch d.employees";
+	        			in the FetchPath, there is on implicit join fetch "inner join fetch d.employees".
+	        			The FetchPath's collection join declared by the CollectionFetchType.PARTIAL mode, so this FetchPath can be
+	        			merged into an existing join, but which existing join should be used to merge?
+	        			
+	        			<table class="grid" border="1" border-color="black">
+	        				<tr class="grid-title">
+	        					<td>The first existing join in the original JPQL</td>
+	        					<td>The implicit join in the FetchPath</td>
+	        				</tr>
+	        				<tr>
+	        					<td>inner join d.employees</td>
+	        					<td>inner join fetch d.employees</td>
+	        				</tr>
+	        				<tr>
+	        					<td colspan="2">JoinType is matched, but Fetchable state is not matched</td>
+	        				</tr>
+	        				<tr class="grid-title">
+	        					<td>The second existing join in the original JPQL</td>
+	        					<td>The implicit join in the FetchPath</td>
+	        				</tr>
+	        				<tr>
+	        					<td>left join fetch d.employees</td>
+	        					<td>inner join fetch d.employees</td>
+	        				</tr>
+	        				<tr>
+	        					<td colspan="2">Fetchable state is matched, but join type is not matched</td>
+	        				</tr>
+	        			</table>
+	        			Actually, the FetchPath will be merged with the second existing join of original JPQL because existing fetches have priority over others.
+	        			The JPQL is executed finally is
+	        			<div class="source-code">
+	        				<pre class="lang-sql"><![CDATA[
+select d 
+from Department d
+inner join d.employees
+inner join fetch d.employees
+	        				]]></pre>
+	        			</div>
+	        		</fieldset>
+	        		<fieldset class="chapter">
+	        			<legend>JoinType matched existing joins have priority over other joins</legend>
+	        			<p class="paragraphs">
+	        				Please look the code with non-typed QueryPath
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"left join d.company " +
+			"inner join d.company",
+			Department.class
+		)
+		.setQueryPaths("this..employees")
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			or the code with typed QueryPath
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"left join d.company " +
+			"inner join d.company",
+			Department.class
+		)
+		.setQueryPaths(Department__.begin().employees(GetterType.REQUIRED).end())
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			In the original JPQL, there are two existing join "left join d.company" and "inner join d.company";
+	        			in the FetchPath, there is one implicit join fetch "inner join fetch d.company". 
+	        			"d.company" is reference association, not collection association, so it can merge with the existing join.
+	        			The second existing join "inner join d.company" will be used to marge with the FetchPath because its join type is matched. 
+	        			The JPQL is executed finally is
+	        			<div class="source-code">
+	        				<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join d.company
+inner join fetch d.company
+	        				]]></pre>
+	        			</div>
+	        		</fieldset>
+		        </fieldset>
+		    </fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>SimpleOrderPath</legend>
+        	<fieldset class="chapter">
+        		<legend>INNER join simple orders</legend>
+        		Please look the code with non-typed SimpleOrderPath
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d", Department.class)
+		.setQueryPaths("pre order by d..company.name asc") //It is "..", not "."
+		.getResultList();
+        			]]></pre>
+        		</div>
+        		or the code with typed SimpleOrderPath
+        		<div>
+        			<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d")
+		.setQueryPaths(Department__.preOrderBy().company(GetterType.REQUIRED).name().asc())
+		.getResultList();
+        			]]></pre>
+        		</div>
+        		The JPQL that is executed finally is
+       			<div class="source-code">
+       				<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+inner join d.company babyfish_
+order by c.name asc
+       				]]></pre>
+       			</div>
+	        </fieldset>
+	        <fieldset class="chapter">
+        		<legend>PRE and POST modes for simple orders</legend>
+        		SimpleOrderPath supports two modes: pre order and post order.
+        		It means the SimpleOrderPath should be before or after the order by clause in the orignal JPQL.
+        		Please look the code with non-typed SimpleOrderPath
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d", Department.class)
+		.setQueryPaths(
+			"post order by d.employees.name desc",
+			"pre order by d.company.name desc"
+		)
+		.getResultList();
+        			]]></pre>
+        		</div>
+        		or the code with typed SimpleOrderPath
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d order by d.name asc", Department.class)
+		.setQueryPaths(
+			Department__.postOrderBy().employees().name().desc(),
+			Department__.preOrderBy().company().name().desc()
+		)
+		.getResultList();
+        			]]></pre>
+        		</div>
+        		The JPQL that is executed finally is
+        		<div class="source-code">
+        			<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join d.employees babyfish_join_node_alias_0
+left join d.company babyfish_join_node_alias_1
+order by
+	babyfish_join_node_alias_1.name desc,
+	d.name asc, //original ORDER BY of orignal JPQL
+	babyfish_join_node_alias_0.name desc
+        			]]></pre>
+        		</div>
+	        </fieldset>
+	        <fieldset class="chapter">
+        		<legend>Simple orders merging rules</legend>
+        		<fieldset class="chapter">
+        			<legend>Merge rules between SimpleOrderPaths</legend>
+        			<p class="paragraphs">
+        				If several SimpleOrderPaths has same join node, babyfish merges them together.
+        			</p>
+        			<div>
+        				GetterType merge rule
+        				<table class="grid" border="1" border-color="black">
+        					<tr class="grid-title">
+        						<td>GetterType1</td>
+        						<td>GetterType2</td>
+        						<td>Merged GetterType</td>
+        					</tr>
+        					<tr>
+        						<td>GetterType.OPTIONAL</td>
+        						<td>GetterType.OPTIONAL</td>
+        						<td>GetterType.OPTIONAL</td>
+        					</tr>
+        					<tr>
+        						<td>GetterType.REQUIRED</td>
+        						<td>GetterType.OPTIONAL</td>
+        						<td>GetterType.REQUIRED</td>
+        					</tr>
+        					<tr>
+        						<td>GetterType.OPTIONAL</td>
+        						<td>GetterType.REQUIRED</td>
+        						<td>GetterType.REQUIRED</td>
+        					</tr>
+        					<tr>
+        						<td>GetterType.REQUIRED</td>
+        						<td>GetterType.REQUIRED</td>
+        						<td>GetterType.REQUIRED</td>
+        					</tr>
+        				</table>
+        			</div>
+        			<ul>
+        				<li>
+        					Non-typed SimpleOrderPath example: the code
+        					<div class="source-code">
+        						<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d")
+		.setQueryPaths(
+			"pre order by this..employees.annualLeaves.startTime asc",
+			"pre order by this.employees..annualLeaves.startTime asc"
+		)
+		.getResultList();
+        						]]></pre>
+        					</div>
+        					and the code
+        					<div class="source-code">
+        						<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d")
+		.setQueryPaths("pre order by this.employees..annualLeaves..startTime asc")
+		.getResultList();
+        						]]></pre>
+        					</div>
+        					are equivalent.
+        				</li>
+        				<li>
+        					Typed SimpleOrderPath example: the code
+        					<div class="source-code">
+        						<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d")
+		.setQueryPaths(
+			Department__.preOrderBy().employees(GetterType.PARTIAL).annualLeaves().asc(),
+			Department__.preOrderBy().employees().annualLeaves(GetterType.PARTIAL).asc()
+		)
+		.getResultList();
+        						]]></pre>
+        					</div>
+        					and the code
+        					<div class="source-code">
+        						<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d")
+		.setQueryPaths(Department__.preOrderBy().employees(GetterType.PARTIAL).annualLeaves(GetterType.PARTIAL).asc())
+		.getResultList();
+        						]]></pre>
+        					</div>
+        					are equivalent.
+        				</li>
+        			</ul>
+        			<div>
+        				Difference order opportunities(pre order by, post order by) can not be merged together
+        				<table class="grid" border="1" border-color="black">
+        					<tr class="grid-title">
+        						<td>order opportunity 1</td>
+        						<td>order opportunity 2</td>
+        						<td>Merged order opportunity</td>
+        					</tr>
+        					<tr>
+        						<td>pre order by</td>
+        						<td>pre order by</td>
+        						<td>pre order by</td>
+        					</tr>
+        					<tr>
+        						<td>pre order by</td>
+        						<td>post order by</td>
+        						<td><span class="important">Not supported, throws exception</span></td>
+        					</tr>
+        					<tr>
+        						<td>post order by</td>
+        						<td>pre order by</td>
+        						<td><span class="important">Not supported, throws exception</span></td>
+        					</tr>
+        					<tr>
+        						<td>post order by</td>
+        						<td>post order by</td>
+        						<td>post order by</td>
+        					</tr>
+        				</table>
+        			</div>
+        			<div>
+        				Difference OrderModes(asc, desc) can not be merged together
+        				<table class="grid" border="1" border-color="black">
+        					<tr class="grid-title">
+        						<td>orderMode1</td>
+        						<td>orderMode2</td>
+        						<td>Merged OrderMode</td>
+        					</tr>
+        					<tr>
+        						<td>asc</td>
+        						<td>asc</td>
+        						<td>asc</td>
+        					</tr>
+        					<tr>
+        						<td>asc</td>
+        						<td>desc</td>
+        						<td><span class="important">Not supported, throws exception</span></td>
+        					</tr>
+        					<tr>
+        						<td>desc</td>
+        						<td>asc</td>
+        						<td><span class="important">Not supported, throws exception</span></td>
+        					</tr>
+        					<tr>
+        						<td>desc</td>
+        						<td>desc</td>
+        						<td>desc</td>
+        					</tr>
+        				</table>
+        			</div>
+        		</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Merge rules between SimpleOrderPath and FetchPath</legend>
+        			<ul>
+        				<li>
+        					When a join node is only used by SimpleOrderPath, not by FetchPath,
+        					babyfish should grantee to create "JOIN" in the final JPQL, not grantee to create "FETCH".
+        					Please look the code with non-typed SimpleOrderPath
+        					<div class="source-code">
+        						<pre class="lang-java">
+return this
+		.entityManager
+		.createQuery("select d from Department d", Department.class)
+		.setQueryPaths("pre order by this.company.name asc")
+		.getResultList();
+        						</pre>
+        					</div>
+        					or the code with typed SimpleOrderPath
+        					<div class="source-code">
+        						<pre class="lang-java">
+return this
+		.entityManager
+		.createQuery("select d from Department d", Department.class)
+		.setQueryPaths(Department__.preOrderBy().company().name().asc())
+		.getResultList();
+        						</pre>
+        					</div>
+        					The JPQL is executed finally is
+							<div class="source-code">
+								<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join /* Only JOIN, no FETCH */ d.company babyfish_join_node_alias_0
+order by babyfish_join_node_alias_0.name asc
+								]]></pre>
+							</div>
+        				</li>
+        				<li>
+        					When a join node is only used both SimpleOrderPath and FetchPath,
+        					babyfish should grantee to create both "JOIN" and "FETCH" in the final JPQL
+        					Please look the code with non-typed SimpleOrderPath
+        					<div class="source-code">
+        						<pre class="lang-java">
+return this
+		.entityManager
+		.createQuery("select d from Department d", Department.class)
+		.setQueryPaths(
+			"this.company",
+			"pre order by this.company.name asc"
+		)
+		.getResultList();
+        						</pre>
+        					</div>
+        					or the code with typed SimpleOrderPath
+        					<div class="source-code">
+        						<pre class="lang-java">
+return this
+		.entityManager
+		.createQuery("select d from Department d", Department.class)
+		.setQueryPaths(
+			Dpeartment__.begin().company().end(),
+			Department__.preOrderBy().company().name().asc()
+		)
+		.getResultList();
+        						</pre>
+        					</div>
+        					The JPQL is executed finally is
+							<div class="source-code">
+								<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join fetch /* Both JOIN and FETCH */ d.company babyfish_join_node_alias_0
+order by babyfish_join_node_alias_0.name asc
+								]]></pre>
+							</div>
+        				</li>
+        			</ul>
+        		</fieldset>
+        		<fieldset class="chapter">
+        			<legend>Merge rules between SimpleOrderPath and original JPQL</legend>
+        			<fieldset class="chapter">
+        				<legend>Special alias prefix "babyfish_not_shared_alias_"</legend>
+        				<p class="paragraphs">
+	        				If join node of the SimpleOrderPath is same existing join node with declared in the orignal JPQL
+	        				but the existing join node is joined from the entity which alias starts with the special prefix 
+	        				<span class="important">"babyfish_not_shared_alias_"</span>, babyfish will give up merging.
+        				</p>
+        				Please look the code with non-typed SimpleOrderPath
+        				<div class="source-code">
+        					<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d " +
+			"from Department d " +
+			"left join d.company babyfish_not_shared_alias_c " + 
+			"where babyfish_not_shared_alias_c.name like :companyNamePattern"
+		)
+		.setQueryPaths("pre order by this.company.name asc")
+		.getResultList();
+        					]]></pre>
+        				</div>
+        				or the code with typed SimpleOrderPath
+        				<div class="source-code">
+        					<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d " +
+			"from Department d " +
+			"left join d.company babyfish_not_shared_alias_c " + 
+			"where babyfish_not_shared_alias_c.name like :companyNamePattern"
+		)
+		.setQueryPaths(Department__.preOrderBy().company().name().asc())
+		.setParameter("companyNamePattern", companyNamePattern)
+		.getResultList();
+        					]]></pre>
+        				</div>
+        				The JPQL that is executed finally is
+        				<div class="source-code">
+        					<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join d.company babyfish_not_shared_alias_c
+left join d.company babyfish_join_node_alias_0
+where babyfish_not_shared_alias_c.name like companyNamePattern
+order by d.company babyfish_join_node_alias_0.name asc
+        					]]></pre>
+        				</div>
+        			</fieldset>
+        			<div class="important-block">
+        				The sepecial prefix "babyfish_not_shared_alias_" can guarantee that the joines in the original JPQL will not be merged by QueryPath absolutely. 
+        				BUT it may cause some unnecessary SQL performance spending, please think whether it is a good idea in your case carefully before you do it.
+        			</div>
+        			<fieldset class="chapter">
+	        			<legend>Merge with existing join with JPA2.1 "ON" condition</legend>
+	        			Be different with FetchPath, SimpleOrderPath can be merged with the existing join with JPA2.1 "ON" condition
+	        			Please look the code with non-typed SimpleOrderPath
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d " +
+			"from Department d " +
+			"inner join d.company c on c.name like :companyNamePattern",
+			Department.class
+		)
+		.setQueryPaths("pre order by this.company.name asc")
+		.setParameter("companyNamePattern", companyNamePattern)
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			and the code with typed SimpleOrderPath
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d " +
+			"from Department d " +
+			"inner join d.company c on c.name like :companyNamePattern",
+			Department.class
+		)
+		.setQueryPaths(Department__.preOrderBy().company().name().asc())
+		.setParameter("companyNamePattern", companyNamePattern)
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			The JPQL that is executed finally is
+	        			<div class="source-code">
+	        				<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+inner join d.company c on c.name like :companyNamePattern
+order by c.name asc
+	        				]]></pre>
+	        			</div>
+	        			<p class="paragraphs">
+	        				Let's image another interesting case.
+	        				for the existing join with JPA2.1 "ON" condition in the original JPQL
+	        			</p>
+	        			<ul>
+	        				<li>
+	        					FetchPath can <span class="important">NOT</span> be used to merge with it, 
+	        					so the FetchPath with same join node will create a join node
+	        				</li>
+	        				<li>
+	        					SimpleOrderPath can be used to merge with it. When there is no FetchPath with
+	        					same join node, SimpleOrderPath will reuse the existing join in the original JPQL
+	        				</li>
+	        			</ul>
+	        			<div>
+	        				When both FetchPath and SimpleOrderPath are specified, and there is an exisiting join with
+	        				same join node nad JPA2.1 "ON" condition in the original JPQL, What will babyfish do?
+	        			</div>
+	        			Please see the code with non-typed QueryPaths
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d " +
+			"from Department d " +
+			"inner join d.company c on c.name like :companyNamePattern",
+			Department.class
+		)
+		.setQueryPaths(
+			"this.company",
+			"pre order by this.company.name asc"
+		)
+		.setParameter("companyNamePattern", companyNamePattern)
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			and the code with typed QueryPaths
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery(
+			"select d " +
+			"from Department d " +
+			"inner join d.company c on c.name like :companyNamePattern",
+			Department.class
+		)
+		.setQueryPaths(
+			Department__.begin().company().end(),
+			Department__.preOrderBy().company().name().asc()
+		)
+		.setParameter("companyNamePattern", companyNamePattern)
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			<ul>
+	        				<li>The original JPQL has an existing join, let's call it <span class="important">A</span>.</li>
+	        				<li>
+	        					FetchPath can not be merged with the existing join that is declared with JPA2.1 "ON" condition. 
+	        					it will create new join, let's call it <span class="important">B</span>.
+	        				</li>
+	        			</ul>
+	        			<div>
+	        				For SimpleOrderPath, merge with FetchPath has priority over merge with original JPQL. 
+	        				so the simple order path will be merged with <span class="important">B</span>, not <span class="important">A</span>.
+	        			</div> 
+	        			The JPQL that is executed finally is
+	        			<div class="source-code">
+	        				<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+inner join d.company c on c.name like :companyNamePattern
+left join fetch /* This JOIN with FETCH is created by FetchPath */ d.company babyfish_join_node_alias_0
+order by babyfish_join_node_alias_0.name asc
+	        				]]></pre>
+	        			</div>
+	        		</fieldset>
+	        		<fieldset class="chapter">
+	        			<legend>When SimpleOrderPath is used with FetchPath together, existing fetches have priority over others</legend>
+	        			<p class="paragraphs">
+	        				Please view the code with non-typed QueryPaths
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"inner join d.employees " +
+			"left join fetch d.employees",
+			Department.class
+		)
+		.setQueryPaths(
+			"this..partial(employees)",
+			"pre order by this.employees.name asc"
+		)
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			or the code with typed QueryPaths
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"inner join d.employees " +
+			"left join fetch d.employees",
+			Department.class
+		)
+		.setQueryPaths(
+			Department__.begin().employees(GetterType.REQUIRED, CollectionFetchType.PARTIAL).end(),
+			Department__.preOrderBy().employees().name().asc()
+		)
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			In the original JPQL, there are two existing joines "inner join d.employees" and "left join fetch d.employees";
+	        			The SimpleOrderPath is specified with FetchPath together, that FetchPath is collection join declared by the CollectionFetchType.PARTIAL mode, 
+	        			so that FetchPath can be merged into an existing join "left join fetch d.employees". 
+	        			When the FetchPath with same joins has been merged with the existing join with fetch at first,
+	        			the merging of SimpleOrderPath and that join with fetch has priority the merging of SimpleOrderPath and other joins,
+	        			so SimpleOrderPath will use the existing join "left join fetch d.employees" to apply order by <span class="important">TOO</span>. 
+	        			The JPQL is executed finally is
+	        			<div class="source-code">
+	        				<pre class="lang-sql"><![CDATA[
+select d 
+from Department d
+inner join d.employees
+inner join fetch /* This JOIN is merged by both FetchPath and SimpleOrderPath */ d.employees babyfish_join_node_alias_0
+order by babyfish_join_node_alias_0.name asc
+	        				]]></pre>
+	        			</div>
+	        		</fieldset>
+	        		<fieldset class="chapter">
+	        			<legend>When SimpleOrderPath is used without FetchPath together, existing join without fetch have priority over others</legend>
+	        			<p class="paragraphs">
+	        				Please view the code with non-typed SimpleOrderPath
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"inner join d.employees " +
+			"left join fetch d.employees",
+			Department.class
+		)
+		.setQueryPaths("pre order by this.employees.name asc")
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			or the code with typed SimpleOrderPath
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"inner join d.employees " +
+			"left join fetch d.employees",
+			Department.class
+		)
+		.setQueryPaths(Department__.preOrderBy().employees().name().asc())
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			In the original JPQL, there are two existing joines "inner join d.employees" and "left join fetch d.employees";
+	        			When SimpleOrderPath is specified <span class="important">WITHOUT</span> FetchPath together, 
+	        			the merging of SimpleOrderPath and existing joines without fetches has priority over 
+	        			the merging of SimpleOrderPath and existing joines with fetches. 
+	        			The JPQL that is executed finally is
+	        			<div class="source-code">
+	        				<pre class="lang-sql"><![CDATA[
+select d 
+from Department d
+inner join d.employees babyfish_join_node_alias_0
+inner join fetch d.employees
+order by babyfish_join_node_alias_0.name asc
+	        				]]></pre>
+	        			</div>
+	        		</fieldset>
+	        		<fieldset class="chapter">
+	        			<legend>JoinType matched existing joins have priority over other joins</legend>
+	        			<p class="paragraphs">
+	        				Please look the code with non-typed QueryPath
+	        			</p>
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"left join d.company " +
+			"inner join d.company",
+			Department.class
+		)
+		.setQueryPaths("pre order by this..employees.name asc")
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			or the code with typed QueryPath
+	        			<div class="source-code">
+	        				<pre class="lang-java"><![CDATA[
+return
+		this
+		.entitymanager
+		.createQuery(
+			"select d " + 
+			"from Department d " +
+			"left join d.company " +
+			"inner join d.company",
+			Department.class
+		)
+		.setQueryPaths(Department__.preOrderBy().employees().name().asc())
+		.getResultList();
+	        				]]></pre>
+	        			</div>
+	        			In the original JPQL, there are two existing join "left join d.company" and "inner join d.company";
+	        			in the SimpleOrderPath, there is one implicit join fetch "inner join d.company". 
+	        			"d.company" is reference association, not collection association, so it can merge with the existing join.
+	        			The second existing join "inner join d.company" will be used to marge with the SimpleOrderPath because its join type is matched. 
+	        			The JPQL is executed finally is
+	        			<div class="source-code">
+	        				<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join d.company
+inner join d.company babyfish_join_node_alias_0
+order by babyfish_join_node_alias_0.name asc
+	        				]]></pre>
+	        			</div>
+	        		</fieldset>
+        		</fieldset>
+	        </fieldset>
+	        <fieldset class="chapter">
+	        	<legend>Scalar property in SimpleOrderPath</legend>
+	        	<fieldset class="chapter">
+	        		<legend>When scalar property is not id property</legend>
+	        		<p class="paragraphs">
+		        		SimpleOrderPath can contains many properties, the last one is scalar property and others are association properties, Like this 
+		        	</p>
+		        	Non-typed SimpleOrderPath:
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+pre order by this.employees.supervisor.supervisor.supervisor.supervisor.name asc
+		        		]]></pre>
+		        	</div>
+		        	or typed SimpleOrderPath
+		        	<div class="source-code">
+		        		<pre class="lang-java"><![CDATA[
+Department__.preOrderBy().employees().supervisor().supervisor().supervisor().supervisor().name().asc()
+		        		]]></pre>
+		        	</div>
+		        	The scalar property "name" is not id property, in this case, 
+		        	all the association properties are translated as join, like this JPQL(The original JPQL is "select d from Department d")
+					<div class="source-code">
+						<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join employees babyfish_join_node_alias_0
+left join babyfish_join_node_alias_0.supervisor babyfish_join_node_alias_1
+left join babyfish_join_node_alias_1.supervisor babyfish_join_node_alias_2
+left join babyfish_join_node_alias_2.supervisor babyfish_join_node_alias_3
+left join babyfish_join_node_alias_3.supervisor babyfish_join_node_alias_4
+order by babyfish_join_node_alias_4.name asc
+						]]></pre>
+					</div>
+	        	</fieldset>
+	        	<fieldset class="chapter">
+	        		<legend>Simple order optimization when scalar property is missing or id property</legend>
+	        		<p class="paragraphs">
+	        			When scalar property is missing or id property, babyfish can do a small optimziation
+	        		</p>
+	        		<fieldset class="chapter">
+	        			<legend>Optimizable</legend>
+		        		<p class="paragraphs">
+			        		When the last assocation is reference(not collection) and optional(left join)
+			        	</p>
+			        	Non-typed SimpleOrderPath:
+			        	<div class="source-code">
+			        		<pre class="lang-java"><![CDATA[
+pre order by this.employees.supervisor.supervisor.supervisor.supervisor.id asc
+			        		]]></pre>
+			        		or
+			        		<pre class="lang-java"><![CDATA[
+pre order by this.employees.supervisor.supervisor.supervisor.supervisor asc
+			        		]]></pre>
+			        	</div>
+			        	or typed SimpleOrderPath
+			        	<div class="source-code">
+			        		<pre class="lang-java"><![CDATA[
+Department__.preOrderBy().employees().supervisor().supervisor().supervisor().supervisor().id().asc()
+			        		]]></pre>
+			        		or
+			        		<pre class="lang-java"><![CDATA[
+Department__.preOrderBy().employees().supervisor().supervisor().supervisor().supervisor().asc()
+			        		]]></pre>
+			        	</div>
+			        	The scalar property and the join operation of last association property will be ignored,
+			        	like this JPQL(The original JPQL is "select d from Department d")
+						<div class="source-code">
+							<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join employees babyfish_join_node_alias_0
+left join babyfish_join_node_alias_0.supervisor babyfish_join_node_alias_1
+left join babyfish_join_node_alias_1.supervisor babyfish_join_node_alias_2
+left join babyfish_join_node_alias_2.supervisor babyfish_join_node_alias_3
+/* Need not JOIN babyfish_join_node_alias_3.supervisor */
+order by babyfish_join_node_alias_3.supervisor asc
+							]]></pre>
+						</div>
+						babyfish generates 4 joins, it is different with 5 joins previous chapter. 
+					</fieldset>
+					<fieldset class="chapter">
+						<legend>Not optimizable</legend>
+						When When the last assocation is collection or required(inner join), no optimization will be applied
+					</fieldset>
+	        	</fieldset>
+	        </fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+       		<legend>QueryPaths for tuple query</legend>
+       		<p class="paragraphs">
+       			If the JPQL query does not query an entity, it queries many columns, each column can query entity or any data type that is is not entity, it is <span class="important">TUPLE QUERY</span>! 
+       		</p>
+       		<div> 
+       			Babyfish can support QueryPaths for tuple query too, for example
+       		</div>
+    		<div class="source-code">
+    			<pre class="lang-java"><![CDATA[
+      				
+package com.yourcompany.youproject.dal.impl;
+ 
+import java.util.List;
+ 
+import javax.persistence.PersistenceContext;
+ 
+import com.yourcompany.yourproject.dal.EmployeeRepository;
+import com.yourcompany.yourproject.entities.Employee;
+import com.yourcompany.yourproject.entities.Employee__;
+import com.yourcompany.yourproject.entities.Employee;
+ 
+import org.babyfish.persistence.XEntityManager;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+@Repository
+@Transactional(propagation = Propagation.MANDATORY)
+public class EmployeeRepositoryImpl implements EmployeeRepository {
+
+	@PersistenceContext
+	private XEntityManager em;
+	
+	/**
+	 * Find the name conflicts of all employees
+	 * @return The tuple contains 3 elements
+	 * <ol>
+	 *    <li>An employee.</li>
+	 *    <li>Another employee with same name.</li>
+	 *    <li>A boolean value to specify whether these two employees are belong to one department.</li>
+	 * </ol>
+	 */
+	public List<Object[]> getDepartmentTuples(
+		//Unfortunately, 2 querypaths, we can not use "Employee__ ...", T_T
+		Employee__[] firstQueryPaths, 
+		Employee__[] secondQueryPaths) {
+		return this
+				.entityManager
+				.createQuery(
+					"select e1, e2, e1.department = e2.department " +
+					"from Employee e1, Employee e2 " +
+					"where e1.name = e2.name and e1 != e2"
+				)
+				.setQueryPaths("e1", firstQueryPaths)
+				.setQueryPaths("e2", secondQueryPaths)
+				.getResultList();
+	}
+}
+   				]]></pre>
+   			</div>
+        </fieldset>
+        <fieldset class="chapter">
+       		<legend>Others</legend>
+       		<fieldset class="chapter">
+       			<legend>Non typed query path grammar</legend>
+       		</fieldset>
+       		<fieldset class="chapter">
+       			<legend>Typed QueryPath generation mechanism</legend>
+       		</fieldset>
+        </fieldset>
+    </div>
+    <div style="display:none;">
+        	<div id="jpaQueryPathModelEntityProcessorDialog" title="JPA QueryPath model entity processor example">
+        		<div id="jpaQueryPathModelEntityProcessorAccordion">
+        			<ul>
+        				<li><a href="#jpaQueryPathModelEntityProcessorAccordion_1">Source code of JPA Entity</a></li>
+        				<li><a href="#jpaQueryPathModelEntityProcessorAccordion_2">Generated QueryPath metamodel source code</a></li>
+        			</ul>
+        			<div id="jpaQueryPathModelEntityProcessorAccordion_1">
+        				<div class="ui-embed-source-code">
+        					<pre class="lang-java"><![CDATA[
+package org.babyfish.springframework.test.entities;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "PRODUCT_CATEGORY")
+@SequenceGenerator(
+		name = "productCategorySequence", 
+		sequenceName = "SEQ_PRODUCT_CATEGORY",
+		initialValue = 1,
+		allocationSize = 1
+)
+public class ProductCategory {
+	
+	@Id
+	@Column(name = "PRODUCT_CATEGORY_ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "productCategorySequence")
+	private Long id;
+
+	@Column(name = "NAME")
+	private String name;
+
+	@OneToMany(mappedBy = "productCategory", fetch = FetchType.LAZY)
+	private Set<Product> products;
+	
+	public Long getId() {
+		return this.id;
+	}
+	
+	protected void setId(Long id) {
+		this.id = id;
+	}
+
+	
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Set<Product> getProducts() {
+		if (this.products == null) {
+			this.products = new HashSet<>();
+		}
+		return this.products;
+	}
+
+	public void setProducts(Set<Product> products) {
+		this.products = products;
+	}
+}
+        					]]></pre>
+        				</div>
+        			</div>
+        			<div id="jpaQueryPathModelEntityProcessorAccordion_2">
+        				<div class="ui-embed-source-code">
+        					<pre class="lang-java"><![CDATA[
+package org.babyfish.springframework.test.entities;
+
+import org.babyfish.lang.BinaryFunc;
+
+import org.babyfish.lang.Func;
+
+import org.babyfish.persistence.path.CollectionFetchType;
+import org.babyfish.persistence.path.FetchPath;
+import org.babyfish.persistence.path.FetchPathWrapper;
+import org.babyfish.persistence.path.GetterType;
+import org.babyfish.persistence.path.QueryPaths;
+import org.babyfish.persistence.path.SimpleOrderPath;
+import org.babyfish.persistence.path.SimpleOrderPathWrapper;
+import org.babyfish.persistence.path.TypedFetchPath;
+import org.babyfish.persistence.path.TypedQueryPath;
+import org.babyfish.persistence.path.TypedSimpleOrderPath;
+
+public abstract class ProductCategory__ implements TypedQueryPath<ProductCategory> {
+
+	private static final long serialVersionUID = -4311121990014790549L;
+
+	private static final BinaryFunc<SimpleOrderPath.Builder, Boolean, SimpleOrderPathImpl> SIMPLE_ORDER_PATH_CREATOR = 
+		new BinaryFunc<SimpleOrderPath.Builder, Boolean, SimpleOrderPathImpl>() {
+			@Override
+			public SimpleOrderPathImpl run(SimpleOrderPath.Builder builder, Boolean desc) {
+				if (desc.booleanValue()) {
+					return new SimpleOrderPathImpl(builder.desc());
+				}
+				return new SimpleOrderPathImpl(builder.asc());
+			}
+		};
+
+	@Override
+	public Class<ProductCategory> getRootType() {
+		return ProductCategory.class;
+	}
+
+	public static FetchPathBuilder<ProductCategory, FetchPathImpl> begin() {
+		return new FetchPathBuilder<ProductCategory, FetchPathImpl>(
+			QueryPaths.begin(), 
+			new Func<FetchPath.Builder, FetchPathImpl>() {
+				@Override
+				public FetchPathImpl run(FetchPath.Builder builder) {
+					return new FetchPathImpl(builder.end());
+				}
+			}
+		);
+	}
+
+	public static SimpleOrderPathBuilder<ProductCategory, SimpleOrderPathImpl> preOrderBy() {
+		return new SimpleOrderPathBuilder<ProductCategory, SimpleOrderPathImpl>(QueryPaths.preOrderBy(), SIMPLE_ORDER_PATH_CREATOR);
+	}
+
+	public static SimpleOrderPathBuilder<ProductCategory, SimpleOrderPathImpl> postOrderBy() {
+		return new SimpleOrderPathBuilder<ProductCategory, SimpleOrderPathImpl>(QueryPaths.postOrderBy(), SIMPLE_ORDER_PATH_CREATOR);
+	}
+
+	public static class FetchPathImpl extends ProductCategory__ implements TypedFetchPath<ProductCategory>, FetchPathWrapper {
+
+		private static final long serialVersionUID = -38398163218748L;
+
+		private FetchPath fetchPath;
+
+		FetchPathImpl(FetchPath fetchPath) {
+			this.fetchPath = fetchPath;
+		}
+
+		@Override
+		public Node getFirstNode() {
+			return this.fetchPath.getFirstNode();
+		}
+
+		@Override
+		public FetchPath unwrap() {
+			return this.fetchPath;
+		}
+	}
+
+	public static class FetchPathBuilder<R, P extends TypedFetchPath<R>> extends TypedFetchPath.TypedBuilder<R, P> {
+
+		FetchPathBuilder(FetchPath.Builder builder, Func<FetchPath.Builder, P> pathCreator) {
+			super(builder, pathCreator);
+		}
+
+		public Product__.FetchPathBuilder<R, P>products() {
+			return new Product__.FetchPathBuilder<R, P>(this.builder.get("products"), this.pathCreator);
+		}
+
+		public Product__.FetchPathBuilder<R, P>products(GetterType getterType) {
+			return new Product__.FetchPathBuilder<R, P>(this.builder.get("products", getterType), this.pathCreator);
+		}
+
+		public Product__.FetchPathBuilder<R, P>products(CollectionFetchType collectionFetchType) {
+			return new Product__.FetchPathBuilder<R, P>(this.builder.get("products", collectionFetchType), this.pathCreator);
+		}
+
+		public Product__.FetchPathBuilder<R, P>products(GetterType getterType, CollectionFetchType collectionFetchType) {
+			return new Product__.FetchPathBuilder<R, P>(this.builder.get("products", getterType, collectionFetchType), this.pathCreator);
+		}
+	}
+
+	public static class SimpleOrderPathImpl extends ProductCategory__ implements TypedSimpleOrderPath<ProductCategory>, SimpleOrderPathWrapper {
+
+		private static final long serialVersionUID = 35746025049796L;
+
+		private SimpleOrderPath simpleOrderPath;
+
+		SimpleOrderPathImpl(SimpleOrderPath simpleOrderPath) {
+			this.simpleOrderPath = simpleOrderPath;
+		}
+
+		@Override
+		public boolean isPost() {
+			return this.simpleOrderPath.isPost();
+		}
+
+		@Override
+		public boolean isDesc() {
+			return this.simpleOrderPath.isDesc();
+		}
+
+		@Override
+		public Node getFirstNode() {
+			return this.simpleOrderPath.getFirstNode();
+		}
+
+		@Override
+		public SimpleOrderPath unwrap() {
+			return this.simpleOrderPath;
+		}
+	}
+
+	public static class SimpleOrderPathBuilder<R, P extends TypedSimpleOrderPath<R>> extends TypedSimpleOrderPath.TypedBuilder<R, P> {
+
+		SimpleOrderPathBuilder(SimpleOrderPath.Builder builder, BinaryFunc<SimpleOrderPath.Builder, Boolean, P> pathCreator) {
+			super(builder, pathCreator);
+		}
+
+		public Product__.SimpleOrderPathBuilder<R, P>products() {
+			return new Product__.SimpleOrderPathBuilder<R, P>(this.builder.get("products"), this.pathCreator);
+		}
+
+		public Product__.SimpleOrderPathBuilder<R, P>products(GetterType getterType) {
+			return new Product__.SimpleOrderPathBuilder<R, P>(this.builder.get("products", getterType), this.pathCreator);
+		}
+
+		public TypedSimpleOrderPath.TypedBuilder<R, P>id() {
+			return new TypedSimpleOrderPath.TypedBuilder<R, P>(this.builder.get("id"), this.pathCreator);
+		}
+
+		public TypedSimpleOrderPath.TypedBuilder<R, P>name() {
+			return new TypedSimpleOrderPath.TypedBuilder<R, P>(this.builder.get("name"), this.pathCreator);
+		}
+	}
+}
+        					]]></pre>
+        				</div>
+        			</div>
+        		</div>
+        	</div>
+    </div>
+</body>
+</html>

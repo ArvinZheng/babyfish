@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>BabyFish-GetStarted</title>
+        <style type="text/css">
+            body {
+                font-family:Arial;
+                margin: 0px;
+            }
+            body {
+                font-size: 14px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            thead, tr.head {
+                background-color: rgb(200, 200, 255);
+                font-size: 18px;
+                font-weight: bold;
+            }
+            tr.sub-head {
+                background-color: rgb(240, 240, 240);
+                font-weight: bold;
+            }
+            th, td {
+                border: solid 1px gray;
+            }
+            p {
+                text-indent: 50px;
+            }
+            h1 {
+                font-size: 30px;
+                font-weight: bold;
+            }
+            h2 {
+                font-size: 25px;
+                font-weight: bold;
+            }
+            h3 {
+                font-size: 20px;
+                font-weight: bold;
+            }
+            pre {
+                margin: 0px;
+            }
+            div.title {
+                text-align: center;
+                font-weight: bold;
+                font-size: 40px;
+                padding: 10px;
+                background-color: rgb(0, 0, 100);
+                color: white;
+            }
+            div.content {
+                padding: 10px;
+            }
+            div.sub-content {
+                padding-left: 50px;
+            }
+            div.code {
+                background-color: rgb(240, 240, 240);
+                border: solid 1px gray;
+                padding: 5px;
+            }
+            div.wrong-code {
+                text-decoration:line-through;
+            }
+            div.warning {
+                background-color: rgb(255, 230, 230);
+                border: solid 1px gray;
+                padding: 5px;
+            }
+            div.author {
+                font-size: 16px;
+                font-weight: bold;
+                text-align: right;
+            }
+            span.comment {
+                font-style: italic;
+                color: rgb(63, 127, 63);
+            }
+            span.important {
+                font-weight: bold;
+                color: red;
+            }
+            span.variable {
+                font-weight: bold;
+                color: rgb(104, 23, 23);
+            }
+            span.anything {
+                color: rgb(104, 23, 23);
+            }
+            td.account {
+                font-weight: bold;
+                color: rgb(64, 64, 127);
+                background: rgb(245, 255, 245);
+            }
+            ul.links {
+                font-size: 20px;
+            }
+            a:hover {
+                border: solid 1px rgb(127, 127, 140);
+                background-color: rgb(240, 240, 255);
+                text-decoration: none;
+            }
+            div.tab {
+                margin: 20px;
+                border-bottom: solid 1px rgb(0, 0, 127);
+                font-size: 18px;
+                font-weight: bold;
+            }
+            div.tab > a, div.tab > span {
+                display: inline-block;
+                border: solid 1px rgb(0, 0, 127);
+                border-bottom: none;
+                padding: 5px;
+                border-radius: 5px 5px 0px 0px;
+                cursor: default;
+                text-decoration: none;
+            }
+            div.tab > a:hover {
+                background-color: rgb(230, 230,255);
+            }
+            div.tab > a:visited {
+                color: black;
+            }
+            div.tab > span {
+                background-color: rgb(0, 0, 127) ! important;
+                color: white ! important;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="title">BabyFish GetStarted</div>
+        <div class="tab">
+            <a href="./babyfish.html">Introduction</a>
+            <span>Get Started</span>
+            <a href="./demo/demo-guide.html">Demo Guide</a>
+            <a href="./to-dotnet-developers.html">To .NET Developers</a>
+        </div>
+        <div class="content">
+            <h1>Requirements</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Optional</th>
+                        <th>Version</th>
+                        <th>Download URL</th>
+                        <th>Remark</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>JDK</td>
+                    <td>Required</td>
+                    <td>&gt;=7</td>
+                    <td>
+                        <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank">
+                            http://www.oracle.com/technetwork/java/javase/downloads/index.html
+                        </a>
+                    </td>
+                    <td>Babyfish does not support Java6 or earlier</td>
+                </tr>
+                <tr>
+                    <td>Apache Maven</td>
+                    <td>Required</td>
+                    <td>&gt;=3.1</td>
+                    <td>
+                        <a href="http://maven.apache.org/download.cgi#" target="_blank">
+                            http://maven.apache.org/download.cgi#
+                        </a>
+                    </td>
+                    <td>
+                        Don't forget add the directory of "mvn" command into the PATH variable of OS
+                    </td>
+                </tr>
+                <tr>
+                    <td>Oracle Server</td>
+                    <td>Optional</td>
+                    <td>&gt;=11g</td>
+                    <td>
+                        <a href="http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html" target="_blank">
+                            http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html
+                        </a>
+                    </td>
+                    <td>
+                        Oracle is optional, but it would better be downloaded and installed,
+                        because babyfish supports a functionality named 
+                        <a href="doc/distinct-limit-query/index.xhtml" target="_blank">DistincitLimitQuery</a>
+                        that can markedly optimize the peformance when the database is Oracle
+                    </td>
+                </tr>
+            </table>
+
+            <h1>Variable Assumption</h1>
+            <ul>
+                <li>
+                    Let's call the directory of the unziped directory of babyfish(the directory of this page)
+                    <span class="variable">${babyfish-dir}</span>
+                </li>
+                <li>
+                    Let's call the oracle host name <span class="variable">${oracle-host}</span>. 
+                    It should be localhost(or 127.0.0.1) if the oracle is installed on the same machine.
+                </li>
+                <li>
+                    Let's call the oracle port number <span class="variable">${oracle-port}</span>. 
+                    Its default value should be 1521.
+                </li>
+                <li>
+                    Let's call the oracle instance name <span class="variable">${oracle-sid}</span>. 
+                    It's decided by the user when the Oracle Server is installed.
+                </li>
+            </ul>
+
+            <h1>Attention please</h1>
+            <p>
+                Before taste this framework, please pay attention to the following two points. 
+            </p>
+            <ol>
+                <li>
+                    In the directory "<span class="variable">${babyfish-dir}</span>/install", 
+                    there are many "bat" files and "sh" files.
+                    All of them should be executed under its own directory.
+                    <div>
+                        Illegal example:
+                        <div class="code wrong-code">
+                            <pre><span class="variable">${babyfish-dir}</span>/install/babyfish/install.sh</pre>
+                        </div>
+                        Concurrent example:
+                        <div class="code">
+                            <pre>cd <span class="variable">${babyfish-dir}</span>/install/babyfish
+./install.sh</pre>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    Though the shell file "<span class="variable">${babyfish-dir}</span>/install/ojdbc/install.sh"
+                    will not be executed by the user directly; but it's depended by other shell files.
+                    In order to make other shell files can be executed successfully, plase execute 
+                    <div class="code">
+                        <pre>chmod +x <span class="variable">${babyfish-dir}</span>/install/ojdbc/install.sh</pre>
+                    </div>
+                    before execute other shells files 
+                    if the current linux account does not have the execution permission of that file.
+                </li>
+            </ol>
+
+            <h1>Install the babyfish framework</h1>
+            <p>
+                There are two ways to test the babyfish framework
+            </p>
+            <ol>
+                <li>
+                    Use the install script
+                    <div class="code">
+                        <pre>cd <span class="variable">${babyfish-dir}</span>/install/babyfish
+./install.sh<span class="comment">(For windows: it should'be "install.bat")</span>
+<span class="comment">&lt;Finally, please answer all the questions&gt;</span></pre>
+                    </div>
+                </li>
+                <li>
+                    Use maven directly
+                    <p>
+                        During the babyfish framework installation, there are two ways to
+                        test all the functionalities.
+                    </p>
+                    <ol style="list-style-type:lower-alpha">
+                        <li>
+                            Use hsqldb memory database
+                            <div class="code">
+                                <pre>cd <span class="variable">${babyfish-dir}</span>/src
+mvn clean install</pre>
+                            </div>
+                        </li>
+                        <li>
+                            Use the oracle database
+                            <div class="code">
+                                <pre>cd <span class="variable">${babyfish-dir}</span>/src
+mvn clean install -Doracle=jdbc:oracle:thin:@<span class="variable">${oracle-host}</span>:<span class="variable">${oracle-port}</span>:<span class="variable">${oracle-sid}</span> -Doracle.user=<span class="anything">&lt;your_user&gt;</span> -Doracle.password=<span class="anything">&lt;your_password&gt;</span></pre>
+                            </div>
+                        </li>
+                    </ol>
+                </li>
+            </ol>
+
+            <h1>Run demo</h1>
+            <div class="sub-content">
+                <h2>Part-I: Compile and test all the demos</h2>
+                <p>
+                    There are two ways to install the babyfish demo
+                </p>
+                <ol>
+                    <li>
+                        Use the install script
+                        <div class="code">
+                            <pre>cd <span class="variable">${babyfish-dir}</span>/install/babyfish
+    ./install-demo.sh<span class="comment">(For windows: it should'be "install-demo.bat")</span>
+    <span class="comment">&lt;Finally, please answer all the questions&gt;</span></pre>
+                        </div>
+                    </li>
+                    <li>
+                        Use maven directly
+                        <ol style="list-style-type:lower-alpha">
+                            <li>
+                                Use hsqldb memory database
+                                <div class="code">
+                                    <pre>cd <span class="variable">${babyfish-dir}</span>/demo
+mvn clean install</pre>
+                                </div>
+                            </li>
+                            <li>
+                                Use the oracle database
+                                <div class="code">
+                                    <pre>cd <span class="variable">${babyfish-dir}</span>/demo
+mvn clean install -Doracle=jdbc:oracle:thin:@<span class="variable">${oracle-host}</span>:<span class="variable">${oracle-port}</span>:<span class="variable">${oracle-sid}</span> -Doracle.user=<span class="anything">&lt;your_user&gt;</span> -Doracle.password=<span class="anything">&lt;your_password&gt;</span></pre>
+                                </div>
+                            </li>
+                        </ol>
+                    </li>
+                </ol>
+                <div class="warning">
+                    Note:
+                    <p>
+                        In order to execute the test cases about Oracle by Eclipse IDE,
+                        the generated eclipse project file contains ojdbc dependency.
+                        There are two ways to make the generated eclipse project files contain that.
+                    </p>
+                    <ol>
+                        <li>Choose Oracle during answer questions of install-demo.sh(or install-demo.bat)</li>
+                        <li>
+                            <pre>cd <span class="variable">${babyfish-dir}</span>/demo
+mvn eclipse:eclipse -Doracle</pre>
+                        </li>
+                    </ol>
+                    <p>
+                        In Eclipse IDE, when open "Run Configrations..."(or "Debug Configurations...") dialog
+                        to create the junit runner, please add 
+                        "-Doracle=jdbc:oracle:thin:@<span class="variable">${oracle-host}</span>:<span class="variable">${oracle-port}</span>:<span class="variable">${oracle-sid}</span> -Doracle.user=<span class="anything">&lt;your_user&gt;</span> -Doracle.password=<span class="anything">&lt;your_password&gt;</span>" 
+                        into the text field "VM arguments" of the tab page "Arguments".
+                    </p>
+                    <p>
+                        Maybe sometimes some test cases can't be passed under Eclipse JUnit runner,
+                        that's because some projects use the maven plugin(ant task) to do some 
+                        byte-code instrument work in compilation-time so that the final byte-code 
+                        is not the simple compilation result of java soruce file but Eclipse may 
+                        do some default compliation when these projects are imported. If this problem
+                        happen, use maven to recompile the project that reports error, then the test
+                        cases can be passed by Eclipse IDE. 
+                    </p>
+                </div>
+                <p>
+                    If demo is installed sucessfully, please view
+                    <a href="demo/demo-guide.html">Demo Learning Guide</a>
+                    to learn the functionality of babyfish framework one by one.
+                </p>
+
+                <h2>Part-II: Run the comprehensive demo: war3shop</h2>
+                <p>
+                    Babyfish-Demo contains an integrative web project: "war3shop", its directory is
+                    "<span class="variable">${babyfish-dir}</span>/demo/babyfishdemo-war3shop". 
+                    Now let's run it.
+                </p>
+                <div class="warning">
+                    Note:
+                    <p>
+                        Be different with this comprehensive demo 
+                        that shows all the functionalities of babyfish framework together, 
+                        the other demos show the functionalities one by one, please view
+                        <a href="demo/demo-guide.html">Demo Learning Guide</a>
+                        to learn other demos one by one.
+                    </p>
+                </div>
+                <div class="sub-content">
+
+                    <h3>Step-I: Start the database server</h3>
+                    <p>
+                        There are two ways to run war3shop, standalone hsqldb server or Oracle.
+                    </p>
+                    <p>
+                        Oracle is suggested because babyfish supports a functionality named 
+                        <a href="doc/distinct-limit-query/index.xhtml" target="_blank">DistincitLimitQuery</a>
+                        that can markedly optimize the peformance when the database is Oracle,
+                        but hsqldb standalone server is another choice if there is no Oracle server.
+                    </p>
+                    <ol>
+                        <li>
+                            In order to start the hsqldb server, please use this script:                            <div class="code">
+                                <pre>cd <span class="variable">${babyfish-dir}</span>/install/war3shop-demo
+./start-hsqldb.sh<span class="comment">(For windows: it should'be "start-hsqldb.bat")</span></pre>
+                            </div>
+                            <p>Press "Ctrl+C" when it should be stopped.</p>
+                        </li>
+                        <li>
+                            Orace is suggested, please make sure the Oracle instance is started.
+                        </li>
+                    </ol>
+
+                    <h3>Step-II: Create database schema and import demonstration data</h3>
+                    <div class="code">
+                        <pre>cd <span class="variable">${babyfish-dir}</span>/install/war3shop-demo
+./war3shop-install.sh<span class="comment">(For windows: it should'be "war3shop-install.bat")</span></pre>
+                    </div>
+                    After this shell(or bat) is started, please answer some questions:
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Question</th>
+                                <th>Description</th>
+                                <th>Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Please choose database, o(Oracle, suggested) or h(HSQLDB):</td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the host name of the oracle server(nothing means "localhost"): </td>
+                                <td>You can input the IP address too.</td>
+                                <td>Only appear when the oralce has been choosed</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the ip port of the oracle server(nothing means 1521): </td>
+                                <td>N/A</td>
+                                <td>Only appear when the oralce has been choosed</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the SID of the oracle: </td>
+                                <td>N/A</td>
+                                <td>Only appear when the oralce has been choosed</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the dba user name of oracle(nothing means "system"): </td>
+                                <td>
+                                    <span class="important">Note!</span>
+                                    This is <span class="important">NOT</span> the user name to run war3shop,
+                                    but is the <span class="important">DBA</span> user name of your Oracle instance.
+                                    The installation application uses the DBA user to create another 
+                                    Oracle user "WAR3SHOP" that is used to run war3shop.
+                                </td>
+                                <td>Only appear when the oralce has been choosed</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the dba password of oracle: </td>
+                                <td>
+                                    <span class="important">Note!</span>
+                                    No reply the keyboard is pressed, password should never be shown. 
+                                </td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the protocol of war3shop system email(nothing means smtp): </td>
+                                <td>N/A</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Please choose whether the war3shop system email server supports SSL(y/n, 'y' is required for gmail or qqmail): </td>
+                                <td>For example: google mail or qq mail(China) should be "y"; 163 mail(China) should be "n".</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the port of war3shop system email(nothing means 465): </td>
+                                <td>N/A</td>
+                                <td>Only appear when "y" is choosed in previous answer</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the port of war3shop system email(nothing means 25):</td>
+                                <td>N/A</td>
+                                <td>Only appear when "n" is choosed in previous answer</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the host of war3shop system email server: </td>
+                                <td>
+                                    This a global email address, war3shop uses it to send email to all the war3shop users,
+                                    so you must enter a real smtp server address, for example:
+                                    <ul> 
+                                        <li>smtp.gmail.com</li>
+                                        <li>smtp.qq.com(If you are using the network in china mainland without VPN)</li>
+                                        <li>smtp.163.com(If you are using the network in china mainland without VPN)</li>  
+                                    </ul>
+                                </td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the user of war3shop system email: </td>
+                                <td>
+                                    The global address used by war3shop to send email to all the war3shop users,
+                                    it must be real email address that can be accepted by the smtp server 
+                                    specified by you in previous answer, for example
+                                    <ul>
+                                        <li>Please eneter "yourname@gmail.com" if "smtp.gmail.com" is specified in previous answer</li>
+                                        <li>Please eneter "yourname@qq.com" if "smtp.qq.com" is specified in previous answer</li>
+                                        <li>Please eneter "yourname@163.com" if "smtp.163.com" is specified in previous answer</li>
+                                    </ul>
+                                </td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the password of war3shop system email: </td>
+                                <td>
+                                    <span class="important">Note!</span>
+                                    <ul>
+                                        <li>No reply the keyboard is pressed, password should never be shown.</li>
+                                        <li>
+                                            If smtp server is "smtp.gmail.com" and the 2 steps validation is enabled for gmail account
+                                            which is answered in previous question,
+                                            the password should not be gmail password, it should be google account password.
+                                        </li>
+                                        <li>
+                                            If smtp server is "smtp.qq.com", please login into the qq mail UI and
+                                            enable the SMTP service, during this processing, a new singleton password
+                                            that's not qq password will be required. please enter this new standalone password.
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Please input the password of war3shop user: </td>
+                                <td>
+                                    <ul>
+                                        <li>
+                                            In real environment, users of war3shop should have different passwords,
+                                            but, in order to make this installation application to be simple, 
+                                            all the demonstration users created by this installation application 
+                                            share one initialized password.
+                                        </li>
+                                        <li>
+                                            <span class="important">Note!</span>
+                                            No reply the keyboard is pressed, password should never be shown. 
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>Please enter the email address of the war3shop user: </td>
+                                <td>
+                                    <ul>
+                                        <li>
+                                            In real environment, users of war3shop should have different email addresses,
+                                            but, in order to make this installation application to be simple, 
+                                            all the demonstration users created by this installation application 
+                                            share one initialized email address.
+                                        </li>
+                                        <li>
+                                            Only one requirment: it must be a real email address.   
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>N/A</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Step-III: Start the war3shop web server</h3>
+                    <p>
+                        The previous step can generate a new file "start-war3shop-by-oracle.sh"
+                        (or "start-war3shop-by-oracle.bat", "start-war3shop-by-hsqdb.sh", "start-war3shop-by-oracle.bat").
+                        Please run this generated file to start the jetty server.
+                    </p>
+                    <ul>
+                        <li>
+                            If Oracle is specified in previous step
+                            <div class="code">
+                                <pre>cd <span class="variable">${babyfish-dir}</span>/install/war3shop-demo
+./start-war3shop-by-oracle.sh<span class="comment">(For windows: it should'be "start-war3shop-by-oracle.bat")</span></pre>
+                            </div>
+                        </li>
+                        <li>
+                            If hsqldb is specified in previous step
+                            <div class="code">
+                                <pre>cd <span class="variable">${babyfish-dir}</span>/install/war3shop-demo
+./start-war3shop-by-hsqldb.sh<span class="comment">(For windows: it should'be "start-war3shop-by-hsqldb.bat")</span></pre>
+                            </div>
+                        </li>
+                    </ul>
+                    <p>press "Ctrl+C" when it should be stopped.</p>
+
+                    <h3>Step-IV: Access war3shop</h3>
+                    <p>
+                        Open browser, access <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>
+                    </p>
+                    <div class="warning">
+                        Note:
+                            <ul>
+                                <li>
+                                    For IE, please make sure its version >= 11. 
+                                    IE11 can run this page normally except the full-screen functionality.
+                                </li>
+                                <li>
+                                    For other browsers, such as Chrome, FireFox, Opera, Safri, 
+                                    Edge, no problem unless its version is too old.
+                                </li>
+                            </ul> 
+                    </div>
+                    <p>
+                        This table list all the user names and corresponding privileges, 
+                        try to use these initialized user to login into war3shop 
+                    </p>
+                    <table>
+                        <tr class="head">
+                            <td colspan="3">Super Administrator</td>
+                        </tr>
+                        <tr class="sub-head">
+                            <td>User Name</td>
+                            <td colspan="2">Permissions</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="8" class="account">Blizzard</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Change the system mail settings</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Create/Read/Update/Delete administrators</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Create/Read/Update/Delete roles</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Grant roles to administrators</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Grant privileges to administrators</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Activate/Deactivate administrators</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Activate/Deactivate customers</td>
+                        </tr>
+                        <tr class="head">
+                            <td colspan="3">Administrators</td>
+                        </tr>
+                        <tr class="sub-head">
+                            <td>User Name</td>
+                            <td>Privilege</td>
+                            <td>Privilege Descrption</td>
+                        </tr>
+                        <tbody>
+                            <tr>
+                                <td rowspan="10" class="account">Ted</td>
+                                <td rowspan="2">manage-manufacturers</td>
+                                <td>Create/Read/Update/Delete manufacturers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who can purchase the products made by a manufacturer</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">manage-products</td>
+                                <td>Create/Read/Update/Delete products</td>
+                            </tr>
+                            <tr>
+                                <td>Maintain the relationship between products and manufacturers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who can purchase a product</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">manage-preferentials</td>
+                                <td>Create/Read/Update/Delete preferentials</td>
+                            </tr>
+                            <tr>
+                                <td>Activate/Deactivate preferentials</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">purchase-products</td>
+                                <td>Create/Read purchasing records of the products that can be purchased by me</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete inventory alarms of the products that can be purchased by me, inventory alarms will be raised
+                                    <ul>
+                                        <li>The inventory quantity of a product is too low so that customer failed on creating new order</li>
+                                        <li>After customer created new order, the remanent inventory quantity of a product become a number less than 10</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Read the inventory quantity of each product that can be purchased by me</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="7" class="account">Sky</td>
+                                <td rowspan="2">manage-manufacturers</td>
+                                <td>Create/Read/Update/Delete manufacturers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who can purchase the products made by a manufacturer</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">manage-products</td>
+                                <td>Create/Read/Update/Delete products</td>
+                            </tr>
+                            <tr>
+                                <td>Maintain the relationship between products and manufacturers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who can purchase a product</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">manage-preferentials</td>
+                                <td>Create/Read/Update/Delete preferentials</td>
+                            </tr>
+                            <tr>
+                                <td>Activate/Deactivate preferentials</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="7" class="account">Grubby</td>
+                                <td rowspan="2">manage-manufacturers</td>
+                                <td>Create/Read/Update/Delete manufacturers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who can purchase the products made by a manufacturer</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">manage-products</td>
+                                <td>Create/Read/Update/Delete products</td>
+                            </tr>
+                            <tr>
+                                <td>Maintain the relationship between products and manufacturers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who can purchase a product</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">manage-preferentials</td>
+                                <td>Create/Read/Update/Delete preferentials</td>
+                            </tr>
+                            <tr>
+                                <td>Activate/Deactivate preferentials</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="7" class="account">Moon</td>
+                                <td rowspan="2">manage-manufacturers</td>
+                                <td>Create/Read/Update/Delete manufacturers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who can purchase the products made by a manufacturer</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">manage-products</td>
+                                <td>Create/Read/Update/Delete products</td>
+                            </tr>
+                            <tr>
+                                <td>Maintain the relationship between products and manufacturers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who can purchase a product</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">manage-preferentials</td>
+                                <td>Create/Read/Update/Delete preferentials</td>
+                            </tr>
+                            <tr>
+                                <td>Activate/Deactivate preferentials</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="3" class="account">TH000</td>
+                                <td rowspan="3">purchase-products</td>
+                                <td>Create/Read purchasing records of the products that can be purchased by me</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete inventory alarms of the products that can be purchased by me, inventory alarms will be raised
+                                    <ul>
+                                        <li>The inventory quantity of a product is too low so that customer failed on creating new order</li>
+                                        <li>After customer created new order, the remanent inventory quantity of a product become a number less than 10</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Read the inventory quantity of each product that can be purchased by me</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="3" class="account">Happy</td>
+                                <td rowspan="3">purchase-products</td>
+                                <td>Create/Read purchasing records of the products that can be purchased by me</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete inventory alarms of the products that can be purchased by me, inventory alarms will be raised
+                                    <ul>
+                                        <li>The inventory quantity of a product is too low so that customer failed on creating new order</li>
+                                        <li>After customer created new order, the remanent inventory quantity of a product become a number less than 10</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Read the inventory quantity of each product that can be purchased by me</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="3" class="account">Fly100%</td>
+                                <td rowspan="3">purchase-products</td>
+                                <td>Create/Read purchasing records of the products that can be purchased by me</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete inventory alarms of the products that can be purchased by me, inventory alarms will be raised
+                                    <ul>
+                                        <li>The inventory quantity of a product is too low so that customer failed on creating new order</li>
+                                        <li>After customer created new order, the remanent inventory quantity of a product become a number less than 10</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Read the inventory quantity of each product that can be purchased by me</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="3" class="account">Creolophus</td>
+                                <td rowspan="3">purchase-products</td>
+                                <td>Create/Read purchasing records of the products that can be purchased by me</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete inventory alarms of the products that can be purchased by me, inventory alarms will be raised
+                                    <ul>
+                                        <li>The inventory quantity of a product is too low so that customer failed on creating new order</li>
+                                        <li>After customer created new order, the remanent inventory quantity of a product become a number less than 10</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Read the inventory quantity of each product that can be purchased by me</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="3" class="account">Infi</td>
+                                <td rowspan="3">purchase-products</td>
+                                <td>Create/Read purchasing records of the products that can be purchased by me</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete inventory alarms of the products that can be purchased by me, inventory alarms will be raised
+                                    <ul>
+                                        <li>The inventory quantity of a product is too low so that customer failed on creating new order</li>
+                                        <li>After customer created new order, the remanent inventory quantity of a product become a number less than 10</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Read the inventory quantity of each product that can be purchased by me</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">Fov</td>
+                                <td rowspan="2">manage-orders</td>
+                                <td>Read the orders created by customers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who is responsible for the delivery work of a customer order, by assigning customer orders to deliverymen</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">Lyn</td>
+                                <td rowspan="2">manage-orders</td>
+                                <td>Read the orders created by customers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who is responsible for the delivery work of a customer order, by assigning customer orders to deliverymen</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">Hot</td>
+                                <td rowspan="2">manage-orders</td>
+                                <td>Read the orders created by customers</td>
+                            </tr>
+                            <tr>
+                                <td>Determine who is responsible for the delivery work of a customer order, by assigning customer orders to deliverymen</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">Insomnia</td>
+                                <td rowspan="2">delivery-orders</td>
+                                <td>Delivery the orders that were assigned to me to the customers</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete the order alarms. 
+                                    <div>
+                                        <ul>
+                                            <li>The address of order can be changed by customer before the it is deliveried</li>
+                                            <li>If address of order is changed, the deliveryman who's responsible for this order will receive an alarm</li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">Lucifer</td>
+                                <td rowspan="2">delivery-orders</td>
+                                <td>Delivery the orders that were assigned to me to the customers</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete the order alarms. 
+                                    <div>
+                                        <ul>
+                                            <li>The address of order can be changed by customer before the it is deliveried</li>
+                                            <li>If address of order is changed, the deliveryman who's responsible for this order will receive an alarm</li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">Remind</td>
+                                <td rowspan="2">delivery-orders</td>
+                                <td>Delivery the orders that were assigned to me to the customers</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete the order alarms. 
+                                    <div>
+                                        <ul>
+                                            <li>The address of order can be changed by customer before the it is deliveried</li>
+                                            <li>If address of order is changed, the deliveryman who's responsible for this order will receive an alarm</li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">Tod</td>
+                                <td rowspan="2">delivery-orders</td>
+                                <td>Delivery the orders that were assigned to me to the customers</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete the order alarms. 
+                                    <div>
+                                        <ul>
+                                            <li>The address of order can be changed by customer before the it is deliveried</li>
+                                            <li>If address of order is changed, the deliveryman who's responsible for this order will receive an alarm</li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">MadFrog</td>
+                                <td rowspan="2">delivery-orders</td>
+                                <td>Delivery the orders that were assigned to me to the customers</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete the order alarms. 
+                                    <div>
+                                        <ul>
+                                            <li>The address of order can be changed by customer before the it is deliveried</li>
+                                            <li>If address of order is changed, the deliveryman who's responsible for this order will receive an alarm</li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">MagicYang</td>
+                                <td rowspan="2">delivery-orders</td>
+                                <td>Delivery the orders that were assigned to me to the customers</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete the order alarms. 
+                                    <div>
+                                        <ul>
+                                            <li>The address of order can be changed by customer before the it is deliveried</li>
+                                            <li>If address of order is changed, the deliveryman who's responsible for this order will receive an alarm</li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" class="account">Sweet</td>
+                                <td rowspan="2">delivery-orders</td>
+                                <td>Delivery the orders that were assigned to me to the customers</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Read/Acknowlege/Unacknowlege/Delete the order alarms. 
+                                    <div>
+                                        <ul>
+                                            <li>The address of order can be changed by customer before the it is deliveried</li>
+                                            <li>If address of order is changed, the deliveryman who's responsible for this order will receive an alarm</li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tr class="head">
+                            <td colspan="3">Customers</td>
+                        </tr>
+                        <tr class="sub-head">
+                            <td>User Name</td>
+                            <td colspan="2">Description</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Mu</td>
+                            <td rowspan="14" colspan="2">
+                                <ul>
+                                    <li>Everybody can register the customer account by himself/herself.</li>
+                                    <li>
+                                        Login is unnecessary to view the products of war3shop,
+                                        but, inder order to 
+                                        <ul>
+                                            <li>add product into cart and create new order</li>
+                                            <li>view the created orders</li>
+                                        </ul>
+                                        login is necessary.
+                                    </li>
+                                    <li>
+                                        In the product page, at the left bottom corner, 
+                                        the customer can click the button "View detail information..." 
+                                        of the panel "My Cart" to open the detail window of cart.
+                                        The window can let the user sumit the cart and create an order.
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="account">Sion</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Aldebaran</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Saga</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Kanon</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Deathmask</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Aiolia</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Shaka</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Dohko</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Milo</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Aiolos</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Shura</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Camus</td>
+                        </tr>
+                        <tr>
+                            <td class="account">Aphrodite</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <h1>Other links</h1>
+            <ul class="links">
+                <li><a href="demo/demo-guide.html" target="_blank">Demo Learning Guide</a></li>
+                <li><a href="doc/index.xhtml" target="_blank">Document</a></li>
+                <li><a href="doc/appendix.xhtml" target="_blank">Appendix</a></li>
+                <li><a href="./to-dotnet-developers.html" target="_blank">To .NET developers</a></li>
+            </ul>
+
+            <div class="author">
+    	        <p>
+    		        Tao Chen(&#38472;&#28059;)
+    		        <a href="mailto:babyfish-ct@163.com">babyfish-ct@163.com</a>
+    	        </p>
+    	        <p>
+    		        2015-10-11, ChengDu, China
+    	        </p>
+            </div>
+        </div>
+    </body>
+</html>

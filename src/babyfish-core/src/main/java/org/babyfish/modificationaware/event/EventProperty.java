@@ -1,0 +1,36 @@
+/*
+ * BabyFish, Object Model Framework for Java and JPA.
+ *
+ * Copyright (c) 2008-2015, Tao Chen
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * Please visit "http://opensource.org/licenses/LGPL-3.0" to know more.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ */
+package org.babyfish.modificationaware.event;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * @author Tao Chen(&#38472;&#28059;)
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({})
+public @interface EventProperty {
+    
+    String name();
+    
+    boolean shared() default false;
+    
+    boolean serializable() default true;
+    
+}

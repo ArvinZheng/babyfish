@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>BabyFish: To .NET developers</title>
+        <style type="text/css">
+            body {
+                margin: 0px;
+                font-size: 14px;
+                font-family: Arial;
+            }
+            p {
+                font-size: 20px;
+            }
+            div.title {
+                text-align: center;
+                font-weight: bold;
+                font-size: 40px;
+                padding: 10px;
+                background-color: rgb(0, 0, 100);
+                color: white;
+            }
+            div.content {
+                padding: 10px;
+            }
+            div.info {
+                padding: 10px;
+                font-size: 18px;
+                background-color: rgb(240, 255, 200);
+                margin: 10px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+            }
+            thead, tr.head {
+                background-color: rgb(200, 200, 255);
+                font-size: 18px;
+                font-weight: bold;
+            }
+            th, td {
+                border: solid 1px gray;
+                padding: 5px;
+            }
+            tr.item1 {
+                background-color: rgb(255, 245, 245);
+            }
+            tr.item2 {
+                background-color: rgb(245, 245, 255);
+            }
+            td.internal {
+                font-style: italic;
+                color: rgb(94, 94, 94);
+            }
+            td a {
+                color: rgb(0, 0, 255);
+                font-weight: bold;
+            }
+            td a:hover {
+                border: solid 1px rgb(127, 127, 140);
+                color: rgb(0, 127, 0) !important;
+                text-decoration: none;
+            }
+            td a:visited {
+                color: rgb(127, 0, 127);
+            }
+            div.author {
+                font-size: 16px;
+                font-weight: bold;
+                text-align: right;
+            }
+            div.tab {
+                margin: 20px;
+                border-bottom: solid 1px rgb(0, 0, 127);
+                font-size: 18px;
+                font-weight: bold;
+            }
+            div.tab > a, div.tab > span {
+                display: inline-block;
+                border: solid 1px rgb(0, 0, 127);
+                border-bottom: none;
+                padding: 5px;
+                border-radius: 5px 5px 0px 0px;
+                cursor: default;
+                text-decoration: none;
+            }
+            div.tab > a:hover {
+                background-color: rgb(230, 230,255);
+            }
+            div.tab > a:visited {
+                color: black;
+            }
+            div.tab > span {
+                background-color: rgb(0, 0, 127) ! important;
+                color: white ! important;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="title">BabyFish: To .NET Developers</div>
+        <div class="tab">
+            <a href="./babyfish.html">Introduction</a>
+            <a href="./get-started.html">Get Started</a>
+            <a href="./demo/demo-guide.html">Demo Guide</a>
+            <span>To .NET Developers</span>
+        </div>
+        <div class="content">
+            <p>
+                Thank .NET framework for providing the inspiration for babyfish, 
+                This document is written for the devlopers who have experience of .NET framework,
+                it lists some analogies between the types of babyfish and the types of .NET framework.
+            </p>
+            <div class="info">
+                <div>Note:</div>
+                In this table, the text regions of some class names are gray and italic, 
+                that means those classes are internal so that they should not be used by the user directly.
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type(or Method) Of BabyFish</th>
+                        <th>Type(or Method) Of .NET framework</th>
+                        <th>Remark</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="item1">
+                        <td>org.babyfish.lang.EmptyAction</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/system.action(v=vs.110).aspx" target="_blank">
+                                System.Action
+                            </a>
+                        </td>
+                        <td>
+                            May be deleted when babyfish give up supporting Java7 in the future.
+                        </td>
+                    </tr>
+                    <tr class="item2">
+                        <td>org.babyfish.lang.Action&lt;X&gt;</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/018hxwa8(v=vs.110).aspx" target="_blank">
+                                System.Action&lt;T&gt;
+                            </a>
+                        </td>
+                        <td>
+                            May be deleted when babyfish give up supporting Java7 in the future.
+                        </td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.lang.BinaryAction&lt;X, Y&gt;</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/bb549311(v=vs.110).aspx" target="_blank">
+                                System.Action&lt;T1, T2&gt;
+                            </a>
+                        </td>
+                        <td>
+                            May be deleted when babyfish give up supporting Java7 in the future.
+                        </td>
+                    </tr>
+                    <tr class="item2">
+                        <td>org.babyfish.lang.TernaryAction&lt;X, Y, Z&gt;</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/bb549392(v=vs.110).aspx" target="_blank">
+                                System.Action&lt;T1, T2, T3&gt;
+                            </a>
+                        </td>
+                        <td>
+                            May be deleted when babyfish give up supporting Java7 in the future.
+                        </td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.lang.EmptyFunc&lt;R&gt;</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/bb534960(v=vs.110).aspx" target="_blank">
+                                System.Func&lt;TResult&gt;
+                            </a>
+                        </td>
+                        <td>
+                            May be deleted when babyfish give up supporting Java7 in the future.
+                        </td>
+                    </tr>
+                    <tr class="item2">
+                        <td>org.babyfish.lang.Func&lt;X, R&gt;</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/bb549151(v=vs.110).aspx" target="_blank">
+                                System.Func&lt;T, TResult&gt;
+                            </a>
+                        </td>
+                        <td>
+                            May be deleted when babyfish give up supporting Java7 in the future.
+                        </td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.lang.BinaryFunc&lt;X, Y, R&gt;</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/bb534647(v=vs.110).aspx" target="_blank">
+                                System.Func&lt;T1, T2, TResult&gt;
+                            </a>
+                        </td>
+                        <td>
+                            May be deleted when babyfish give up supporting Java7 in the future.
+                        </td>
+                    </tr>
+                    <tr class="item2">
+                        <td>org.babyfish.lang.TernaryFunc&lt;X, Y, Z, R&gt;</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/bb549430(v=vs.110).aspx" target="_blank">
+                                System.Func&lt;T1, T2, T3, TResult&gt;
+                            </a>
+                        </td>
+                        <td>
+                            May be deleted when babyfish give up supporting Java7 in the future.
+                        </td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.lang.Combinder&lt;I&gt;</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/system.delegate(v=vs.110).aspx" target="_blank">
+                                System.Delegate
+                            </a>
+                        </td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr class="item2">
+                        <td>org.babyfish.collection.EqualityComparator&lt;T&gt;</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/ms132123(v=vs.110).aspx" target="_blank">
+                                System.Collections.Generic.IEqualityComparer&lt;T&gt;
+                            </a>
+                        </td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr class="item1">
+                        <td rowspan="2">org.babyfish.model.metadata.ObjectModelDeclaration</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/system.data.objects.dataclasses.edmentitytypeattribute(v=vs.110).aspx" target="_blank">
+                                System.Data.Objects.DataClasses.EdmEntityTypeAttribute
+                            </a>
+                        </td>
+                        <td rowspan="2">
+                            <ul>
+                                <li>
+                                    [EdmEntityTypeAttribute] or [EdmComplexTypeAttribute] is used by the model class;
+                                    but @ObjectModelDeclaration is used by the nested object model interface of model class.
+                                </li>
+                                <li>
+                                    [EdmEntityTypeAttribute] or [EdmComplexTypeAttribute] can only be used by ORM model class;
+                                    but @ObjectModelDeclaration can be used by both simple model class and ORM model class.
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr class="item1">
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/system.data.objects.dataclasses.edmcomplextypeattribute(v=vs.110).aspx" target="_blank">
+                                System.Data.Objects.DataClasses.EdmComplexTypeAttribute
+                            </a>
+                        </td>
+                    </tr>
+                    <tr  class="item2">
+                        <td>org.babyfish.model.metadata.Scalar</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/system.data.objects.dataclasses.edmscalarpropertyattribute(v=vs.110).aspx" target="_blank">
+                                System.Data.Objects.DataClasses.EdmScalarPropertyAttribute
+                            </a>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>
+                                    [EdmScalarPropertyAttribute] is used by properties of the model class;
+                                    but @Scalar is used by properties of the nested object model interface of model class.
+                                </li>
+                                <li>
+                                    [EdmScalarPropertyAttribute] can only be used by ORM model class;
+                                    but @Scalar can be used by both simple model class and ORM model class.
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr  class="item1">
+                        <td>org.babyfish.model.metadata.Association</td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/system.data.objects.dataclasses.edmrelationshipattribute(v=vs.110).aspx" target="_blank">
+                                System.Data.Objects.DataClasses.EdmRelationshipAttribute
+                            </a>
+                        </td>
+                        <td>
+                            <ul>
+                                <li>
+                                    [EdmRelationshipAttribute] is used by properties of the model class;
+                                    but @Association is used by properties of the nested object model interface of model class.
+                                </li>
+                                <li>
+                                    [EdmRelationshipAttribute] can only be used by ORM model class;
+                                    but @Association can be used by both simple model class and ORM model class.
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">
+                            org.babyfish.association.AssociatedEndpoint&lt;O, T&gt;
+                        </td>
+                        <td>
+                            <a href="https://msdn.microsoft.com/en-us/library/system.data.objects.dataclasses.irelatedend(v=vs.110).aspx" target="_blank">
+                                System.Data.Objects.DataClasses.IRelatedEnd
+                            </a>
+                        </td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.reference.Reference&lt;T&gt;</td>
+                        <td rowspan="9">
+                            <a href="https://msdn.microsoft.com/en-us/library/bb297956(v=vs.110).aspx" target="_blank">
+                                System.Data.Objects.DataClasses.EntityReference&lt;TEntity&gt;
+                            </a>
+                        </td>
+                        <td rowspan="9">
+                            <ul>
+                                <li>
+                                    Not only Reference, but also IndexReference which is opposition of list 
+                                    and KeyedReference which is opposition of map is supported by BabyFish.
+                                </li>
+                                <li>
+                                    Reference association properites are supported by BabyFish
+                                    for both ORM model class and simple mode class.
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.reference.IndexedReference&lt;T&gt;</td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.reference.KeyedReference&lt;K, T&gt;</td>
+                    </tr>
+                    <tr class="item1">
+                        <td class="internal">org.babyfish.association.AssociatedReference&lt;O, T&gt;</td>
+                    </tr>
+                    <tr class="item1">
+                        <td class="internal">org.babyfish.association.AssociatedIndexedReference&lt;O, T&gt;</td>
+                    </tr>
+                    <tr class="item1">
+                        <td class="internal">org.babyfish.association.AssociatedKeyedReference&lt;O, K, T&gt;</td>
+                    </tr>
+                    <tr class="item1">
+                        <td class="internal">org.babyfish.hibernate.association.EntityReference&lt;O, T&gt;</td>
+                    </tr>
+                    <tr class="item1">
+                        <td class="internal">org.babyfish.hibernate.association.EntityIndexedReference&lt;O, T&gt;</td>
+                    </tr>
+                    <tr class="item1">
+                        <td class="internal">org.babyfish.hibernate.association.EntityKeyedReference&lt;O, K, T&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.association.AssociatedCollection&lt;O, E&gt;</td>
+                        <td rowspan="14">
+                            <a href="https://msdn.microsoft.com/en-us/library/bb354106(v=vs.110).aspx" target="_blank">
+                                System.Data.Objects.DataClasses.EntityCollection&lt;TEntity&gt;
+                            </a>
+                        </td >
+                        <td rowspan="14">
+                            <ul>
+                                <li>
+                                    Not only java.util.Collection&lt;E&gt;, but also
+                                    all the standard collection interfaces of Java Collection Framework was
+                                    supported by BabyFish
+                                </li>
+                                <li>
+                                    Collection association properites are supported by babyfish
+                                    for both ORM model class and simple mode class.
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.association.AssociatedList&lt;O, E&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.association.AssociatedSet&lt;O, E&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.association.AssociatedOrderedSet&lt;O, E&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.association.AssociatedNavigableSet&lt;O, E&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.association.AssociatedMap&lt;O, K, V&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.association.AssociatedOrderedMap&lt;O, K, V&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.association.AssociatedNavigableMap&lt;O, K, V&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.hibernate.association.EntityCollection&lt;O, E&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.hibernate.association.EntityList&lt;O, E&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.hibernate.association.EntityOrderedSet&lt;O, E&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.hibernate.association.EntityNavigableSet&lt;O, E&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.hibernate.association.EntityOrderedMap&lt;O, K, V&gt;</td>
+                    </tr>
+                    <tr class="item2">
+                        <td class="internal">org.babyfish.hibernate.association.EntityNavigableMap&lt;O, K, V&gt;</td>
+                    </tr>
+                    <tr class="item1">
+                        <td>
+                            org.babyfish.persistence.XQuery.setQueryPaths(org.babyfish.persistence.path.QueryPath ... queryPaths)
+                        </td>
+                        <td rowspan="8">
+                            <a href="https://msdn.microsoft.com/en-US/library/bb738708(v=vs.110).aspx" target="_blank">
+                                System.Data.Objects.ObjectQuery&lt;T&gt;.Include(String path)
+                            </a>
+                        </td>
+                        <td rowspan="8">
+                            <ul>
+                                <li>
+                                    "ObjectQuery&lt;T&gt;.Include(String path)" can only accept the string
+                                    which is untyped so that errors of path can only be reported at runtime;
+                                    "XQuery.setQueryPath(QueryPath ... queryPaths)" accepts QueryPath
+                                    which can be typed path so that the errors of path can be reported
+                                    at compilation-time.
+                                </li>
+                                <li>
+                                    "ObjectQuery&lt;T&gt;.Include(String path)" only supports IncludePath(FetchPath),
+                                    "XQuery.setQueryPath(QueryPath ... queryPaths)" supports
+                                    both FetchPath and SimpleOrderPath.
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.persistence.XQuery.setQueryPaths(String alias, org.babyfish.persistence.path.QueryPath ... queryPaths)</td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.persistence.XQuery.setQueryPaths(java.util.Collection&lt;? extends org.babyfish.persistence.path.QueryPath&gt; queryPaths)</td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.persistence.XQuery.setQueryPaths(String alias, java.util.Collection&lt;? extends org.babyfish.persistence.path.QueryPath&gt; queryPaths)</td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.hibernate.XQuery.setQueryPaths(org.babyfish.persistence.path.QueryPath ... queryPaths)</td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.hibernate.XQuery.setQueryPaths(String alias, org.babyfish.persistence.path.QueryPath ... queryPaths)</td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.hibernate.XQuery.setQueryPaths(java.util.Collection&lt;? extends org.babyfish.persistence.path.QueryPath&gt; queryPaths)</td>
+                    </tr>
+                    <tr class="item1">
+                        <td>org.babyfish.hibernate.XQuery.setQueryPaths(String alias, java.util.Collection&lt;? extends org.babyfish.persistence.path.QueryPath&gt; queryPaths)</td>
+                    </tr>
+                </tbody>
+            </table> 
+            <div class="author">
+    	        <p>
+    		        Tao Chen(&#38472;&#28059;)
+    		        <a href="mailto:babyfish-ct@163.com">babyfish-ct@163.com</a>
+    	        </p>
+    	        <p>
+    		        2015-10-11, ChengDu, China
+    	        </p>
+            </div>
+        </div>
+    </body>
+</html>

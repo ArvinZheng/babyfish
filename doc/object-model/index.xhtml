@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>ObjectModel</title>
+	
+	<script type="text/javascript" src="../common/jquery-1.10.2.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/babyfish-doc.css"/>
+	<script type="text/javascript" src="../common/babyfish-doc.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/google-code-prettify.css"/>
+	<script type="text/javascript" src="../common/google-code-prettify.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="../common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		$(function() {
+			initButtons();
+		});
+	</script>
+</head>
+<body id="no-margin-body">
+    <div id="head">
+        <div id="title">ObjectModel</div>
+        <div id="right-top-conner">
+            <a class="button" href="../index.xhtml">Back to the start page</a>
+        </div>
+    </div>
+    <div id="content">
+    	<div id="dictionary"></div>
+   		<p class="paragraphs">
+   			<span class="important">ObjectModel is the most important functionality of BabyFish, it is the root cause why I created BabyFish.</span>
+   		</p>
+   		<p class="paragraphs">
+   			This is helpful for your data model class design. 
+            Often, we design 2 model classes, each one use an association property to retain other one, that is called bidirectional association. 
+            If you do nothing anymore, When your program changes the association by one side, but the other side will not be changed correspondingly and automatically, 
+            ObjectModel can help you to resolve this problem by annotation declaration, not by code! 
+            BabyFish supports two kinds of ObjectModel
+   		</p>
+   		<p class="paragraphs">
+   			<a class="button no-paragraphs" href="objectmodel4java.xhtml">ObjectModel<span class="important" style="font-size:30px">4Java</span></a>
+   			&nbsp;&nbsp;&nbsp;&nbsp;
+   			<a class="button no-paragraphs" href="objectmodel4jpa.xhtml">ObjectModel<span class="important" style="font-size:30px">4JPA</span></a>
+   		</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,4033 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>ObjectModel4Java</title>
+	
+	<script type="text/javascript" src="../common/jquery-1.10.2.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/babyfish-doc.css"/>
+	<script type="text/javascript" src="../common/babyfish-doc.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/google-code-prettify.css"/>
+	<script type="text/javascript" src="../common/google-code-prettify.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="../common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		$(function() {
+			initChapters();
+			initButtons();
+			initCodeBlocks();
+			initGrids();
+		});
+	</script>
+	
+	<style>
+		.explicit-modification {
+			font-weight: bold;
+			color: rgb(200, 100, 0);
+		}
+		.explicit-assert {
+			color: rgb(200, 100, 0);
+		}
+		.implicit-assert {
+			color: rgb(255, 0, 255);
+		}
+	</style>
+</head>
+<body id="no-margin-body">
+    <div id="head">
+        <div id="title">ObjectModel4Java</div>
+        <div id="right-top-conner">
+            <a class="button" href="../index.xhtml">Back to the start page</a>
+            <a class="button" href="index.xhtml">Back to ObjectModel</a>
+        </div>
+    </div>
+    <div id="content">
+    	<div id="dictionary"></div>
+    	<fieldset class="chapter">
+    		<legend>Outline</legend>
+    		<p class="paragraphs">
+    			ObjectModel4Java is the basic functionality of ObjectModel, it is the base of ObjectModel4JPA, Compared with ObjectModel4JPA, 
+    			this is simpler and more general. You can use ObjectModel4Java in any java data classes except the entity of the ORM entity classes.
+    		</p>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Basic knowledge</legend>
+    		<p class="paragraphs">
+    			ObjectModel4Java is designed for any java data classes. it can manage the bidirectional association between objects automatically and implicitly.
+    		</p>
+    		<fieldset class="chapter">
+    			<legend><a name="list-indexedreference">First STEP BY STEP demo, one-many: List-IndexReference</a></legend>
+    			<p class="paragraphs">
+    				It is not easy to describe what the ObjectModel4Java is very clear by a few statements, so let's we create a demo and test case step by step. this process can help us to understand it very clear.
+    			</p>
+    			<p class="paragraphs">
+    				We want to design two classes, Department and Employee. One object of department contains several objects of employee, this is called one-to-many association form parent to child; 
+    				each employee is belong to one department, this is called many-to-one association form child to parent. if you support them all, that is called bidirectional association.
+    			</p>
+    			<fieldset class="chapter">
+    				<legend>Main step-1: create nested object model interface</legend>
+    				First, use need to declare the data class, and you must declare a private interface with any name(our example uses "OM") in the class, this private interface is called ObjectModel interface,
+    				it must be marked by the annotation @org.babyfish.model.metadata.ObjectModelDeclaration
+    				<div class="important">Department.java</div> 
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+
+public class Department {
+
+	@ObjectModelDeclaration
+	private interface OM {
+	}
+}
+    					]]></pre>
+    				</div>
+    				<div class="important">Employee.java</div>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+
+public class Employee {
+
+	@ObjectModelDeclaration
+	private interface OM {
+	}
+}
+    					]]></pre>
+    				</div>    				
+    			</fieldset>
+    			<fieldset class="chapter">
+    				<legend>Main step-2: Add properties into object model interface</legend>
+    				ObjectModel interface supports two kinds of property
+    				<ul>
+    					<li>
+    						Scalar property: this the simple property of the object. It must support both getter and setter methods, 
+    						the getter method must be marked by annotation @org.babyfish.model.metadata.Scalar  
+    					</li>
+    					<li>
+    						Association property: it is a reference(one) or collection(many) of other data class. it can only support one getter method,
+    						the getter method must be marked by annotation @org.babyfish.model.metadata.Association that requires a property named "opposite". 
+    						This property is very important, in bidirectional association, an association refers other class from this class, 
+    						conversely and symmetrically, the other class uses the another association to refer this class, 
+    						both the two associations are marked by @Association with the value of parameter "opposite" to describe each other.
+    					</li>
+    				</ul>
+    				<div class="important">Department.java</div>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import java.util.List;
+
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+
+public class Department {
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = "departmentReference") // Refers Employee.OM.getDepartmentReference()
+		List<Employee> getEmployees();
+	}
+}
+    					]]></pre>
+    				</div>
+    				<div class="important">Employee.java</div>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.reference.IndexedReference;
+
+public class Employee {
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = "employees") // Refers Department.OM.getEmployees()
+		IndexedReference<Department> getDepartmentReference();
+	}
+}
+    					]]></pre>
+    				</div>
+    				org.babyfish.reference.IndexedReference&lt;T&gt; means a java reference an integer index.
+    				The java reference means the parent department object of this employee object;
+    				The index means the position of this object in the employees list of parent department object. 
+    			</fieldset>
+	    		<fieldset class="chapter">
+	    			<legend>Main step-3: Create&amp;manage the instance of object model interface</legend>
+	    			<p class="paragraphs">
+	    				You must do three actions to create and manage the instance of object model interface
+	    			</p>
+	    			<ol>
+	    				<li>Declare a <span class="important">STATIC&amp;FINAL</span> field with special initialization, its type is org.babyfish.model.ObjectModelFactory.</li>
+	    				<li>Use the method of the static field declared by previous step to create an instance of ObjectModel, retain this instance by a non-static field of your class</li>
+	    				<li>
+	    					Write a static method to let BabyFish know how to export the instance of ObjectModel from an object of your data class, this static method must be marked
+	    					by the annotation @org.babyfish.model.metadata.StaticMethodToGetObjectModel. 
+	    				</li>
+	    			</ol>
+	    			<div class="important">Department.java</div>
+    			    <div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import java.util.List;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+
+public class Department {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+		
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Department department) {
+		return department.om;
+	}
+		
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = "departmentReference") // Refers Employee.OM.getDepartmentReference()
+		List<Employee> getEmployees();
+	}
+}
+    					]]></pre>
+    				</div>
+    				<div class="important">Employee.java</div>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.IndexedReference;
+
+public class Employee {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+		
+	private OM om = OM_FACTORY.create(this);
+		
+	@StaticMethodToGetObjectModel
+	static OM om(Employee employee) {
+		return employee.om;
+	}
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = "employees") // Refers Department.OM.getEmployees()
+		IndexedReference<Department> getDepartmentReference();
+	}
+}
+    					]]></pre>
+    				</div>
+    				<ol>
+    					<li>
+	    					"OM_FACTORY" is a factory that can be used to create the instance of object model interface, the factory itself is created by
+	    					ObjectModelFactoryFactory.factoryOf(Class), the parameter is the runtime type of object model interface
+    					</li>
+    					<li>field "om" is your non-static field to retain the instance of ObjectModel interface, this should be the unique one non-static field of your data class</li>
+    					<li>
+    						static method "om" is a method that is used by BabyFish, this method tell BabyFish how to extract the ObjectModel from your data class, it must be marked
+    						by the annotation @org.babyfish.model.metadata.StaticMethodToGetObjectModel. The return type must be your ObjectModel interface type or "org.babyfish.model.ObjectModel" and
+    						it must have one parameter whose type is your data class. Its visibility must <span class="important">NOT</span> be private, protected or public, because 
+    						<ul>
+    							<li>This method is used by BabyFish, not by application. so it can not be protected or public, otherwise, BabyFish will throw exception.</li>
+    							<li>
+    								In order to get the best performance(Be same with the performance of hard-code), BabyFish does <span class="important">NOT</span> use 
+    								Java reflection to invoke this method,
+    								so BabyFish generates JVM byte code under the same java package to invoke it directly(NOT by reflection) at the first time of runtime.  
+    								if this method is private, BabyFish's generated byte code can not invoke it directly, so it must not be private; 
+    								otherwise, BabyFish will throw exception.
+    							</li>
+    						</ul>
+    					</li>
+    				</ol>
+    			</fieldset>
+    			<fieldset class="chapter">
+	    			<legend>Main step-4: Add delegate methods</legend>
+	    			<p class="paragraphs">
+	    				Finally, please add the delegate method in your data class to wrap your properties in the ObjectModel interface.
+	    			</p>
+	    			<div class="important">Department.java</div>
+    			    <div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import java.util.List;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+
+public class Department {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+		
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Department department) {
+		return department.om;
+	}
+
+	public String getName() {
+		return this.om.getName();
+	}
+	
+	public void setName(String name) {
+		this.om.setName(name);
+	}
+	
+	public List<Employee> getEmployees() {
+		return this.om.getEmployees();
+	}
+		
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = "departmentReference") // Refers Employee.OM.getDepartmentReference()
+		List<Employee> getEmployees();
+	}
+}
+    					]]></pre>
+    				</div>
+    				<div class="important">Employee.java</div>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.IndexedReference;
+
+public class Employee {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+		
+	private OM om = OM_FACTORY.create(this);
+		
+	@StaticMethodToGetObjectModel
+	static OM om(Employee employee) {
+		return employee.om;
+	}
+	
+	public String getName() {
+		return this.om.getName();
+	}
+	
+	public void setName(String name) {
+		this.om.setName(name);
+	}
+	
+	public int getIndex() { //The position in the employees list of parent department, -1 means belong to no department
+		return this.om.getDepartmentReference().getIndex();
+	}
+	
+	public void setIndex(int index) {
+		this.om.getDepartmentReference().setIndex(index);
+	}
+	
+	public Department getDepartment() {
+		return this.om.getDepartmentReference().get();
+	}
+	
+	public void setDepartment(Department department) {
+		this.om.getDepartmentReference().set(department);
+	}
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = "employees") // Refers Department.OM.getEmployees()
+		IndexedReference<Department> getDepartmentReference();
+	}
+}
+    					]]></pre>
+    				</div>
+	    		</fieldset>
+	    		<fieldset class="chapter">
+	    			<legend>Test step1: Prepare the empty test case</legend>
+	    			<p class="paragraphs">
+	    				Before we test the ObjectModel4Java, we need create an empty test class
+	    			</p>
+	    			<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ObjectModelOfListAndIndexedReferenceTest {
+
+	@Test
+	public void test() {
+		//TODO: The code of this test method will be finished later.
+	}
+	
+	//Validate the child employee objects of a department object
+	private static void assertDepartment(Department department, Employee ... employees) {
+		Assert.assertEquals(employees.length, department.getEmployees().size());
+		int index = 0;
+		for (Employee actualEmployee : department.getEmployees()) {
+			Assert.assertSame(employees[index++], actualEmployee);
+		}
+	}
+	
+	//Valiate the parent department object and the position in employee list of the parent department of a employee object
+	private static void assertEmployee(Employee employee, int index, Department department) {
+		Assert.assertEquals(index, employee.getIndex());
+		Assert.assertSame(department, employee.getDepartment());
+	}
+}
+						]]></pre>
+	    			</div>
+	    		</fieldset>
+	    		<fieldset class="chapter">
+	    			<legend>Test step2, final step to understand the ability of ObjectModel4Java</legend>
+	    			<p class="paragraphs">
+	    				Finally, let's finish the code test method "test" to understand the ability of ObjectModel4Java.
+	    			</p>
+	    			<p class="paragraphs">
+	    				There are 3 special code styles in the test code.
+	    			</p>
+	    			<ul>
+    					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+    					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+    					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+    				</ul>
+	    			<div class="source-code">
+	    				<pre class="lang-java"><![CDATA[
+/*
+ * Prepare two departments and 4 employees
+ */
+Department department1 = new Department();
+Department department2 = new Department();
+Employee employee1 = new Employee();
+Employee employee2 = new Employee();
+Employee employee3 = new Employee();
+Employee employee4 = new Employee();
+
+/*
+ * Validate the initialized state of these objects
+ */
+assertDepartment(department1);
+assertDepartment(department2);
+assertEmployee(employee1, -1, null);
+assertEmployee(employee2, -1, null);
+assertEmployee(employee3, -1, null);
+assertEmployee(employee4, -1, null);
+
+/*
+ * Add employee1 into department1.
+ * The property "index" and "department" of employee1 will be changed automatically and implicitly.
+ */
+/*{ <span class="explicit-modification">department1.getEmployees().add(employee1);</span> }*/
+/*{ <span class="explicit-assert">assertDepartment(department1, employee1);</span> }*/
+assertDepartment(department2);
+/*{ <span class="implicit-assert">assertEmployee(employee1, 0, department1);</span> }*/
+assertEmployee(employee2, -1, null);
+assertEmployee(employee3, -1, null);
+assertEmployee(employee4, -1, null);
+
+/*
+ * Set department1 to be the parent of employe2, and make sure employee2 to be the first child of department1,
+ * after both the property "index" and "department" are changed
+ * (1) The property "employees" of department1 will be changed automatically and implicitly.
+ * (2)  employe2 will be the first child of department1, employee1 already is the first child of department1,
+ * so the property "index" of employee1 will be increased automatically and implicitly.
+ */
+/*{ <span class="explicit-modification">employee2.setIndex(0);</span> }*/
+/*{ <span class="explicit-modification">employee2.setDepartment(department1);</span> }*/
+/*{ <span class="implicit-assert">assertDepartment(department1, employee2, employee1);</span> }*/
+assertDepartment(department2);
+/*{ <span class="implicit-assert">assertEmployee(employee1, 1, department1);</span> }*/
+/*{ <span class="explicit-assert">assertEmployee(employee2, 0, department1);</span> }*/
+assertEmployee(employee3, -1, null);
+assertEmployee(employee4, -1, null);
+
+/*
+ * Insert employee3 into department1 and make sure the employee3 is the first child of department1
+ * (1) The property "index" and "department" of employee3 will be changed automatically and implicitly.
+ * (2) employee3 will be the first child of department1, there are two existing children: employee2 and employee1,
+ * so the property "index" of both employee2 and employee1 will be increased automatically and implicitly.
+ */
+/*{ <span class="explicit-modification">department1.getEmployees().add(0, employee3);</span> }*/
+/*{ <span class="implicit-assert">assertDepartment(department1, employee3, employee2, employee1);</span> }*/
+assertDepartment(department2);
+/*{ <span class="implicit-assert">assertEmployee(employee1, 2, department1);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee2, 1, department1);</span> }*/
+/*{ <span class="explicit-assert">assertEmployee(employee3, 0, department1);</span> }*/
+assertEmployee(employee4, -1, null);
+
+/*
+ * Set department1 to be the parent of employe4, and make sure employee4 to be the first child of department1,
+ * after both the property "index" and "department" are changed
+ * (1) The property "employees" of department1 will be changed automatically and implicitly.
+ * (2) employe4 will be the first child of department1, the employee3, employee2 and employee1 are existing children,
+ * so the property "index" of employee3, employee2, employee1 will be increased automatically and implicitly.
+ */
+/*{ <span class="explicit-modification">employee4.setIndex(0);</span> }*/
+/*{ <span class="explicit-modification">employee4.setDepartment(department1);</span> }*/
+/*{ <span class="implicit-assert">assertDepartment(department1, employee4, employee3, employee2, employee1);</span> }*/
+assertDepartment(department2);
+/*{ <span class="implicit-assert">assertEmployee(employee1, 3, department1);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee2, 2, department1);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee3, 1, department1);</span> }*/
+/*{ <span class="explicit-assert">assertEmployee(employee4, 0, department1);</span> }*/
+
+/*
+ * Change the parent object of employee4 to be department2.
+ * (1) The property "employees" of the old parent object department1 will be changed automatically and implicitly.
+ * (2) The property "employees" of the new parent object department2 will be changed automatically and implicitly.
+ * (3) The property "index" of employee3, employee2 and employee1 will be descreased automatically and implicitly
+ * because they are after the employee4 before modification.
+ */
+/*{ <span class="explicit-modification">employee4.setDepartment(department2);</span> }*/
+/*{ <span class="implicit-assert">assertDepartment(department1, employee3, employee2, employee1);</span> }*/
+/*{ <span class="implicit-assert">assertDepartment(department2, employee4);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee1, 2, department1);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee2, 1, department1);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee3, 0, department1);</span> }*/
+/*{ <span class="explicit-assert">assertEmployee(employee4, 0, department2);</span> }*/
+
+/*
+ * Let department2 seize all the employees of department1
+ * (1) The property "index" and "department" of employee3, employee2 and employee1 
+ *	will be changed automatically and implicitly.
+ * (2) The original parent object department1 of employee3, employee2 and employee1 lost all the employees,
+ *  so its property "employees" will be clean automatically and implicitly.
+ */
+/*{ <span class="explicit-modification">department2.getEmployees().addAll(department1.getEmployees());</span> }*/
+/*{ <span class="implicit-assert">assertDepartment(department1);</span> }*/
+/*{ <span class="explicit-assert">assertDepartment(department2, employee4, employee3, employee2, employee1);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee1, 3, department2);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee2, 2, department2);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee3, 1, department2);</span> }*/
+assertEmployee(employee4, 0, department2);
+
+/*
+ * employee2 is already belong to department2, but insist on adding employee2 into department2 AGAIN 
+ * and make sure it will become the first child of department2,
+ * (1) The property "index" of employee2 will be changed automatically and implicitly.
+ * (2) The property "index" of employee4 and employee3 will be changed automatically and implicitly
+ * because they are before employee2 before modification.
+ */
+/*{ <span class="explicit-modification">department2.getEmployees().add(0, employee2);</span> }*/
+assertDepartment(department1);
+/*{ <span class="explicit-assert">assertDepartment(department2, employee2, employee4, employee3, employee1);</span> }*/
+assertEmployee(employee1, 3, department2);
+/*{ <span class="implicit-assert">assertEmployee(employee2, 0, department2);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee3, 2, department2);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee4, 1, department2);</span> }*/
+
+/*
+ * Change the the property "index" of employee4 to let it be the last child of department2,
+ * the property "index" of employee3 and employee1 will be changed automatically and implicitly
+ * because they are after employee4 before modification.
+ */
+/*{ <span class="explicit-modification">employee4.setIndex(3);</span> }*/
+assertDepartment(department1);
+/*{ <span class="implicit-assert">assertDepartment(department2, employee2, employee3, employee1, employee4);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee1, 2, department2);</span> }*/
+assertEmployee(employee2, 0, department2);
+/*{ <span class="implicit-assert">assertEmployee(employee3, 1, department2);</span> }*/
+/*{ <span class="explicit-assert">assertEmployee(employee4, 3, department2);</span> }*/
+
+/*
+ * Advance functionality:
+ * Remove employee3 and employee1 from department2 by modifying the subList VIEW of java.util.List
+ * (1) The property "index" and "department" of employee3 and employee1 
+ * will be changed automatically and implicitly.
+ * (2) The property "index" of employee4 will be changed automatically and implicitly
+ * because it is after employee3 and employee1 before modification.
+ */
+//subList(1, 3).clear() <=> remove(index 1 and 2) <=> remove(employee3 and employee1);
+/*{ <span class="explicit-modification">department2.getEmployees().subList(1, 3).clear();</span> }*/
+assertDepartment(department1);
+/*{ <span class="explicit-assert">assertDepartment(department2, employee2, employee4);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee1, -1, null);</span> }*/
+assertEmployee(employee2, 0, department2);
+/*{ <span class="implicit-assert">assertEmployee(employee3, -1, null);</span> }*/
+/*{ <span class="implicit-assert">assertEmployee(employee4, 1, department2);</span> }*/
+ 
+/*
+ * Advance functionality:
+ * Remove the first child "employee2" of department by ITERATOR.
+ * (1) The property "index" and "department" of employee will be changed automatically and implicitly.
+ * (2) The property "index" of employee4 will be changed automatically and implicitly
+ * because it is after employee2 before modification.
+ */
+/*{ <span class="explicit-modification">Iterator&lt;Employee&gt; itr = department2.getEmployees().iterator();</span> }*/ //Get Iterator
+/*{ <span class="explicit-modification">itr.next();</span> }*/ //Let iterator point to the firstChild
+/*{ <span class="explicit-modification">itr.remove();</span> }*/ //Remove the first child via the iterator
+assertDepartment(department1);
+/*{ <span class="explicit-assert">assertDepartment(department2, employee4);</span> }*/
+assertEmployee(employee1, -1, null);
+/*{ <span class="implicit-assert">assertEmployee(employee2, -1, null);</span> }*/
+assertEmployee(employee3, -1, null);
+/*{ <span class="implicit-assert">assertEmployee(employee4, 0, department2);</span> }*/
+
+/*
+ * Remove employee4 of department2 by set the index of employee4,
+ * The property "employees" of department2 will be changed automatically and implicitly.
+ */
+/*{ <span class="explicit-modification">employee4.setIndex(-1);</span> }*/ //Get Iterator
+assertDepartment(department1);
+/*{ <span class="implicit-assert">assertDepartment(department2);</span> }*/
+assertEmployee(employee1, -1, null);
+assertEmployee(employee2, -1, null);
+assertEmployee(employee3, -1, null);
+/*{ <span class="explicit-assert">assertEmployee(employee4, -1, null);</span> }*/
+	    				]]></pre>
+	    			</div>
+	    		</fieldset>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>All the bidirectional associations supported by ObjectModel</legend>
+    			<p class="paragraphs">
+    				This table lists all the bidirectional associations supported by ObjectModel(Both ObjectModel4Java and ObjectModel4JPA)
+    				<table class="grid" border="1" border-color="black">
+    					<thead class="grid-title">
+    						<tr>
+    							<td>Association Type</td>
+    							<td>Multiplicity</td>
+    							<td>Association endpoint1 interface</td>
+    							<td>Association endpoint2 interface</td>
+    						</tr>
+    					</thead>
+    					<tbody>
+	    					<tr>
+	    						<td>bag-ref</td>
+	    						<td>one-to-one</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td>con-ref</td>
+	    						<td>one-to-many</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td rowspan="2">list-ref</td>
+	    						<td rowspan="2">one-to-many</td>
+	    						<td>java.util.List&lt;E&gt;</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.List&lt;E&gt;</td>
+	    						<td>org.babyfish.reference.IndexedReference&lt;T&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td rowspan="3">set-ref</td>
+	    						<td rowspan="3">one-to-many</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td rowspan="6">map-ref</td>
+	    						<td rowspan="6">one-to-many</td>
+	    						<td>java.util.Map&lt;K, V&gt;</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedMap&lt;K, V&gt;</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableMap&lt;K, V&gt;</td>
+	    						<td>org.babyfish.reference.Reference&lt;T&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.Map&lt;K, V&gt;</td>
+	    						<td>org.babyfish.reference.KeyedReference&lt;T&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedMap&lt;K, V&gt;</td>
+	    						<td>org.babyfish.reference.KeyedReference&lt;T&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableMap&lt;K, V&gt;</td>
+	    						<td>org.babyfish.reference.KeyedReference&lt;T&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td>bag-bag</td>
+	    						<td>many-to-many</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td rowspan="3">set-bag</td>
+	    						<td rowspan="3">many-to-many</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td>list-bag</td>
+	    						<td>many-to-many</td>
+	    						<td>java.util.List&lt;E&gt;</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td rowspan="3">list-set</td>
+	    						<td rowspan="3">many-to-many</td>
+	    						<td>java.util.List&lt;E&gt;</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.List&lt;E&gt;</td>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.List&lt;E&gt;</td>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td rowspan="9">set-set</td>
+	    						<td rowspan="9">many-to-many</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td rowspan="3">map-bag</td>
+	    						<td rowspan="3">many-to-many</td>
+	    						<td>java.util.Map&lt;K, V&gt;</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedMap&lt;K, V&gt;</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableMap&lt;K, V&gt;</td>
+	    						<td>java.util.Collection&lt;E&gt;</td>
+	    					</tr>
+	    				</tbody>
+	    				<tbody>
+	    					<tr>
+	    						<td rowspan="9">map-set</td>
+	    						<td rowspan="9">many-to-many</td>
+	    						<td>java.util.Map&lt;K, V&gt;</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedMap&lt;K, V&gt;</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableMap&lt;K, V&gt;</td>
+	    						<td>java.util.Set&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.Map&lt;K, V&gt;</td>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedMap&lt;K, V&gt;</td>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableMap&lt;K, V&gt;</td>
+	    						<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.Map&lt;K, V&gt;</td>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>org.babyfish.collection.XOrderedMap&lt;K, V&gt;</td>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    					</tr>
+	    					<tr>
+	    						<td>java.util.NavigableMap&lt;K, V&gt;</td>
+	    						<td>java.util.NavigableSet&lt;E&gt;</td>
+	    					</tr>
+	    				</tbody>
+    				</table>
+    			</p>
+    			<p class="paragraphs">
+    				It is impossible to show the demos for all the association types list by the previous table,
+    				so I will <span class="important">ONLY</span> list the demos of ref-ref, set-ref, map-kref, 
+    				set-set and map-set in the next chapters(list-iref has beean shown)
+    			</p>
+    		</fieldset>
+    		<fieldset class="chapter">
+   				<legend>one-to-one: Reference-Reference</legend>
+   				<fieldset class="chapter">
+   					<legend>Main code</legend>
+   					<p class="paragraphs">
+   						This demo will show you how to create one-to-one association by ObjectModel4Java.
+   						Though we often create the bidirectional association between 2 different classes,
+   						but this demo will create the bidirectional one-to-one assocation between a class and itself,
+   						because I think the logic shown by this demo is vivid.
+   					</p>
+   					<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.Reference;
+
+public class Person {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+		
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Person person) {
+		return person.om;
+	}
+	
+	public Person(String name) {
+		this.setName(name);
+	}
+	
+	public String getName() {
+		return this.om.getName();
+	}
+	
+	public void setName(String name) {
+		this.om.setName(name);
+	}
+	
+	public Person getSpouse() {
+		return this.om.getSpouseReference().get();
+	}
+	
+	public void setSpouse(Person spouse) {
+		if (spouse == this) {
+			throw new IllegalArgumentException("A person can not be the spouse of itself");
+		}
+		this.om.getSpouseReference().set(spouse);
+	}
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = "spouseReference")
+		Reference<Person> getSpouseReference();
+	}
+}
+   						]]></pre>
+   					</div>
+   				</fieldset>
+   				<fieldset class="chapter">
+   					<legend>Test code</legend>
+   					<p class="paragraphs">
+	    				There are 3 special code styles in the test code.
+	    			</p>
+	    			<ul>
+    					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+    					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+    					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+    				</ul>
+   					<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ObjectModelOfReferenceAndReferenceTest {
+
+	@Test
+	public void test() {
+		Person jim = new Person("Jim");
+		Person kate = new Person("Kate");
+		Person tom = new Person("Tom");
+		Person linda = new Person("Linda");
+		
+		/*
+		 * Validate the initialized state of these objects
+		 */
+		Assert.assertNull(jim.getSpouse());
+		Assert.assertNull(kate.getSpouse());
+		Assert.assertNull(tom.getSpouse());
+		Assert.assertNull(linda.getSpouse());
+		
+		/*
+		 * Change the property "spouse" of jim to be kate.
+		 * The property "spouse" of kate will be changed to be jim automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">jim.setSpouse(kate);</span> }*/
+		/*{ <span class="explicit-assert">Assert.assertSame(kate, jim.getSpouse());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(jim, kate.getSpouse());</span> }*/
+		Assert.assertNull(tom.getSpouse());
+		Assert.assertNull(linda.getSpouse());
+		
+		/*
+		 * Change the property "spouse" of linda to be tom.
+		 * The property "spouse" of tom will be changed to be linda automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">linda.setSpouse(tom);</span> }*/
+        Assert.assertSame(kate, jim.getSpouse());
+        Assert.assertSame(jim, kate.getSpouse());
+        /*{ <span class="implicit-assert">Assert.assertSame(linda, tom.getSpouse());</span> }*/
+        /*{ <span class="explicit-assert">Assert.assertSame(tom, linda.getSpouse());</span> }*/
+        
+        /*
+		 * Change the property "spouse" of jim to be linda.
+		 * (1) The property "spouse" of linda will be changed to be jim automatically and implicitly.
+		 * (2) The property "spouse" of kate who is the original spouse of jim 
+		 * will be changed to be null automatically and implicitly.
+		 * (3) The property "spouse" of tom who is the original spouse of linda 
+		 * will be changed to be null automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">jim.setSpouse(linda);</span> }*/
+        /*{ <span class="explicit-assert">Assert.assertSame(linda, jim.getSpouse());</span> }*/
+        /*{ <span class="implicit-assert">Assert.assertNull(kate.getSpouse());</span> }*/
+        /*{ <span class="implicit-assert">Assert.assertNull(tom.getSpouse());</span> }*/
+        /*{ <span class="implicit-assert">Assert.assertSame(jim, linda.getSpouse());</span> }*/
+        
+        /*
+		 * Change the property "spouse" of linda to be null.
+		 * The property "spouse" of jim will be changed to be null automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">linda.setSpouse(null);</span> }*/
+        /*{ <span class="implicit-assert">Assert.assertNull(jim.getSpouse());</span> }*/
+        Assert.assertNull(kate.getSpouse());
+        Assert.assertNull(tom.getSpouse());
+        /*{ <span class="explicit-assert">Assert.assertNull(linda.getSpouse());</span> }*/
+	}
+}
+   						]]></pre>
+   					</div>
+   				</fieldset>
+   			</fieldset>
+			<fieldset class="chapter">
+				<legend>one-to-many: Set-Reference</legend>
+				<p class="paragraphs">
+					This demo look like the first step-by-step demo of ObjectModel4Java very much.
+					This one is more simple than that one, that demo shows the List-IndexedReference and
+					this demo shows Set-Reference.
+				</p>
+				<p class="paragraphs">
+					There are three kinds of association about set-ref
+					<ol>
+						<li>java.util.Set&lt;E&gt;-org.babyfish.reference.Reference&lt;T&gt;</li>
+						<li>org.babyfish.collection.XOrderedSet&lt;E&gt;-org.babyfish.reference.Reference&lt;T&gt;</li>
+						<li>java.util.NavigableSet&lt;E&gt;-org.babyfish.reference.Reference&lt;T&gt;</li>
+					</ol>
+					In order to keep the simplicity, this demo <span class="important">ONLY</span> shows how to use 
+					java.util.Set&lt;E&gt;-org.babyfish.reference.Reference&lt;T&gt;
+				</p>
+				<fieldset class="chapter">
+					<legend>Main Code</legend>
+					<div class="important">Department.java</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+ 
+import java.util.Set;
+ 
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+ 
+public class Department {
+ 
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+        return department.om;
+    }
+ 
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    public Set<Employee> getEmployees() {
+        return this.om.getEmployees();
+    }
+        
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        @Association(opposite = "departmentReference") // Refers Employee.OM.getDepartmentReference()
+        Set<Employee> getEmployees();
+    }
+}
+						]]></pre>
+					</div>
+					<div class="important">Employee.java</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+ 
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.Reference;
+ 
+public class Employee {
+ 
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+        
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+        return employee.om;
+    }
+    
+    public Employee(String name) {
+    	this.setName(name);
+    }
+    
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    public Department getDepartment() {
+        return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+        this.om.getDepartmentReference().set(department);
+    }
+ 
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        @Association(opposite = "employees") // Refers Department.OM.getEmployees()
+        Reference<Department> getDepartmentReference();
+    }
+}
+						]]></pre>
+					</div>
+				</fieldset>
+				<fieldset class="chapter">
+					<legend>Test Code</legend>
+					<p class="paragraphs">
+	    				There are 3 special code styles in the test code.
+	    			</p>
+	    			<ul>
+    					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+    					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+    					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+    				</ul>
+	    			<div class="source-code">
+	    				<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import java.util.Iterator;
+import java.util.Set;
+
+import org.babyfish.collection.HashSet;
+import org.babyfish.collection.MACollections;
+import org.junit.Assert;
+import org.junit.Test;
+ 
+public class ObjectModelOfSetAndReferenceTest {
+
+	@Test
+	public void test() {
+		/*
+		 * Prepare two departments and 4 employees
+		 */
+		Department department1 = new Department();
+		Department department2 = new Department();
+		Employee employee1 = new Employee("E-1");
+		Employee employee2 = new Employee("E-2");
+		Employee employee3 = new Employee("E-3");
+		Employee employee4 = new Employee("E-4");
+		
+		/*
+		 * Validate the initialized state of these objects
+		 */
+		assertDepartment(department1);
+		assertDepartment(department2);
+		assertEmployee(employee1, null);
+		assertEmployee(employee2, null);
+		assertEmployee(employee3, null);
+		assertEmployee(employee4, null);
+		
+		/*
+		 * Add employee1 into department1.
+		 * The property "department" of employee1 will be changed automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">department1.getEmployees().add(employee1);</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department1, employee1);</span> }*/
+		assertDepartment(department2);
+		/*{ <span class="implicit-assert">assertEmployee(employee1, department1);</span> }*/
+		assertEmployee(employee2, null);
+		assertEmployee(employee3, null);
+		assertEmployee(employee4, null);
+		
+		/*
+		 * Set department1 to be the parent of employe2.
+		 * The property "employees" of department1 will be changed automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">employee2.setDepartment(department1);</span> }*/
+		/*{ <span class="implicit-assert">assertDepartment(department1, employee1, employee2);</span> }*/
+		assertDepartment(department2);
+		assertEmployee(employee1, department1);
+		/*{ <span class="explicit-assert">assertEmployee(employee2, department1);</span> }*/
+		assertEmployee(employee3, null);
+		assertEmployee(employee4, null);
+		
+		/*
+		 * Add employee3 and employee4 into department1.
+		 * (1) The property "department" of employee3 or employee4 will be changed automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">department1.getEmployees().addAll(MACollections.wrap(employee3, employee4));</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department1, employee1, employee2, employee3, employee4);</span> }*/
+		assertDepartment(department2);
+		assertEmployee(employee1, department1);
+		assertEmployee(employee2, department1);
+		/*{ <span class="implicit-assert">assertEmployee(employee3, department1);</span> }*/
+		/*{ <span class="implicit-assert">assertEmployee(employee4, department1);</span> }*/
+		
+		/*
+		 * Change the parent object of employee4 to be department2.
+		 * (1) The property "employees" of the old parent object department1 will be changed automatically and implicitly.
+		 * (2) The property "employees" of the new parent object department2 will be changed automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">employee4.setDepartment(department2);</span> }*/
+		/*{ <span class="implicit-assert">assertDepartment(department1, employee1, employee2, employee3);</span> }*/
+		/*{ <span class="implicit-assert">assertDepartment(department2, employee4);</span> }*/
+		assertEmployee(employee1, department1);
+		assertEmployee(employee2, department1);
+		assertEmployee(employee3, department1);
+		/*{ <span class="explicit-assert">assertEmployee(employee4, department2);</span> }*/
+		
+		/*
+		 * Let department2 seize all the employees of department1
+		 * (1) The property "department" of employee1, employee2 and employee3 
+		 *	will be changed automatically and implicitly.
+		 * (2) The original parent object department1 of employee1, employee2 and employee3 lost all the employees,
+		 *  so its property "employees" will be clean automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">department2.getEmployees().addAll(department1.getEmployees());</span> }*/
+		/*{ <span class="implicit-assert">assertDepartment(department1);</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department2, employee1, employee2, employee3, employee4);</span> }*/
+		/*{ <span class="implicit-assert">assertEmployee(employee1, department2);</span> }*/
+		/*{ <span class="implicit-assert">assertEmployee(employee2, department2);</span> }*/
+		/*{ <span class="implicit-assert">assertEmployee(employee3, department2);</span> }*/
+		assertEmployee(employee4, department2);
+		
+		/*
+		 * Advance functionality:
+		 * Remove all the employees whose name ends with even number,
+		 * that means employee2 and employee4 will be removed.
+		 * The property "department" of employee2 and employee4 will be changed to be null automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">Iterator&lt;Employee&gt; itr = department2.getEmployees().iterator();</span> }*/
+		/*{ <span class="explicit-modification">while (itr.hasNext()) {</span> }*/
+		/*{ <span class="explicit-modification">	Employee employee = itr.next();</span> }*/
+		/*{ <span class="explicit-modification">	int number = Integer.parseInt(employee.getName().substring(employee.getName().indexOf('-') + 1));</span> }*/
+		/*{ <span class="explicit-modification">	if (number % 2 == 0) {</span> }*/
+		/*{ <span class="explicit-modification">		itr.remove(); <span class="com">//Can ONLY invoke remove of iterator, can NOT invoke remove of collection</span></span> }*/
+		/*{ <span class="explicit-modification">	}</span> }*/
+		/*{ <span class="explicit-modification">}</span> }*/
+		assertDepartment(department1);
+		/*{ <span class="explicit-assert">assertDepartment(department2, employee1, employee3);</span> }*/
+		assertEmployee(employee1, department2);
+		/*{ <span class="implicit-assert">assertEmployee(employee2, null);</span> }*/
+		assertEmployee(employee3, department2);
+		/*{ <span class="implicit-assert">assertEmployee(employee4, null);</span> }*/
+		
+		/*
+		 * Change the property "department" of employee1 to be null.
+		 * The property "employees" of the parent object department2 will be changed automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">employee1.setDepartment(null);</span> }*/
+		assertDepartment(department1);
+		/*{ <span class="implicit-assert">assertDepartment(department2, employee3);</span> }*/
+		/*{ <span class="implicit-assert">assertEmployee(employee1, null);</span> }*/
+		assertEmployee(employee2, null);
+		assertEmployee(employee3, department2);
+		assertEmployee(employee4, null);
+		
+		/*
+		 * Clean the property "employees" of department2.
+		 * The property "department" of employee3 that is the last child of department2 
+		 * will be changed automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">department2.getEmployees().clear();</span> }*/
+		assertDepartment(department1);
+		/*{ <span class="explicit-assert">assertDepartment(department2);</span> }*/
+		assertEmployee(employee1, null);
+		assertEmployee(employee2, null);
+		/*{ <span class="implicit-assert">assertEmployee(employee3, null);</span> }*/
+		assertEmployee(employee4, null);
+	}
+	
+	//Validate the child employee objects of a department object
+    private static void assertDepartment(Department department, Employee ... employees) {
+        Assert.assertEquals(employees.length, department.getEmployees().size());
+        if (employees.length != 0) {
+        	Set<Employee> set = new HashSet<>((employees.length * 4 + 2) / 3);
+        	for (Employee employee : employees) {
+        		set.add(employee);
+        	}
+        	Assert.assertEquals(department.getEmployees(), set);
+        }
+    }
+    
+    //Valiate the parent department object of a employee object
+    private static void assertEmployee(Employee employee, Department department) {
+        Assert.assertSame(department, employee.getDepartment());
+    }
+}
+	    				]]></pre>
+	    			</div>
+				</fieldset>
+			</fieldset>
+			<fieldset class="chapter">
+				<legend><a name="map-keyedreference">one-to-many: Map-KeyedReference</a></legend>
+				<p class="paragraphs">
+					This demo shows how to use Map-KeyedReference to describle the
+					association of XML element and XML attributes. a element retain
+					a map of attributes, the key of the map is the name of attribute,
+					the value of the map is the attribute object.
+				</p>
+				<p class="paragraphs">
+					In order to keep the simplicity of this demo
+				</p>
+				<ol>
+					<li>
+						Ignores the child element, child comment, child text, child cdata etc of an element,
+						this demo <span class="important">ONLY</span> shows the association between 
+						XML element and XML attribute.
+					</li>
+					<li>
+						Ignores the namespaceURI and prefix of XML attribute, 
+						this demo <span class="important">ONLY</span> shows the attributes without namespace and prefix
+					</li>
+				</ol>
+				<p class="paragraphs">
+					There are three kinds of association about map-kref
+				</p>
+				<ol>
+					<li>java.util.Map&lt;K, V&gt;-org.babyfish.reference.KeyedReference&lt;K, T&gt;</li>
+					<li>org.babyfish.collection.OrderedMap&lt;K, V&gt;-org.babyfish.reference.KeyedReference&lt;K, T&gt;</li>
+					<li>java.util.NavigableMap&lt;K, V&gt;-org.babyfish.reference.KeyedReference&lt;K, T&gt;</li>
+				</ol>
+				In XML, the order of the attributes of one element can not be ignored though it is not very important,
+				so this demo <span class="important">ONLY</span> shows how to create the bidirection association
+				base on org.babyfish.collection.OrderedMap&lt;K, V&gt;-org.babyfish.reference.KeyedReference&lt;K, T&gt;
+				(ObjectModel interface uses org.babyfish.collection.XOrderedMap, but the wrapper method of the data class
+				still uses java.util.Map)
+				<fieldset class="chapter">
+					<legend>Main Code</legend>
+					<div class="important">Element.java</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+ 
+import java.util.Map;
+
+import org.babyfish.collection.XOrderedMap;
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+
+public class Element {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Element element) {
+		return element.om;
+	}
+	
+	public Map<String, Attribute> getAttributes() {
+		//java.util.Map<K, V> is the super interface of org.babyfish.collection.XOrderedMap<K, V>
+		return this.om.getAttributes();
+	}
+	
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Association(opposite = "elementReference")
+		XOrderedMap<String, Attribute> getAttributes();
+	}
+}
+						]]></pre>
+					</div>
+					<div class="important">Attribute.java</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.KeyedReference;
+
+public class Attribute {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Attribute attribute) {
+		return attribute.om;
+	}
+	
+	public String getName() {
+		return this.om.getElementReference().getKey();
+	}
+	
+	public void setName(String name) {
+		this.om.getElementReference().setKey(name);
+	}
+	
+	public Element getElement() {
+		return this.om.getElementReference().get();
+	}
+	
+	public void setElement(Element element) {
+		this.om.getElementReference().set(element);
+	}
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getValue();
+		void setValue(String value);
+		
+		@Association(opposite = "attributes")
+		KeyedReference<String, Element> getElementReference();
+	}
+}
+						]]></pre>
+					</div>
+				</fieldset>
+				<fieldset class="chapter">
+					<legend>Test Code</legend>
+					<p class="paragraphs">
+	    				There are 3 special code styles in the test code.
+	    			</p>
+	    			<ul>
+    					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+    					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+    					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+    				</ul>
+	    			<div class="source-code">
+	    				<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.babyfish.collection.LinkedHashMap;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ObjectModelOfMapAndKeyedReferenceTest {
+
+	@Test
+	public void test() {
+		Element element1 = new Element();
+		Element element2 = new Element();
+		Attribute attribute1 = new Attribute();
+		Attribute attribute2 = new Attribute();
+		Attribute attribute3 = new Attribute();
+		Attribute attribute4 = new Attribute();
+		Attribute attribute5 = new Attribute();
+		
+		/*
+		 * Validate the initialized state of these objects
+		 */
+		assertElement(element1);
+		assertElement(element2);
+		assertAttribute(attribute1, null, null);
+		assertAttribute(attribute2, null, null);
+		assertAttribute(attribute3, null, null);
+		assertAttribute(attribute4, null, null);
+		assertAttribute(attribute5, null, null);
+		
+		/*
+		 * Add attribute1 into element1 with the key "attr-1".
+		 * (1) The property "element" of attribute1 will be changed to be element1 automatically and implicitly.
+		 * (2) The property "name" of attribute1 will be changed to be "attr-1" automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">element1.getAttributes().put("attr-1", attribute1);</span> }*/
+		/*{ <span class="explicit-assert">assertElement(element1, attribute1);</span> }*/
+		assertElement(element2);
+		/*{ <span class="implicit-assert">assertAttribute(attribute1, "attr-1", element1);</span> }*/
+		assertAttribute(attribute2, null, null);
+		assertAttribute(attribute3, null, null);
+		assertAttribute(attribute4, null, null);
+		assertAttribute(attribute5, null, null);
+		
+		/*
+		 * Set the property "element" of attribute2 to be element1 and 
+		 * set the property "name" of attribute2 to be "attr-2".
+		 * After both of them are changed, the property "attributes" of element1 will be changed, 
+		 * a new map entry { key: "attr2", value: attribute2 } will
+		 * be added automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">attribute2.setName("attr-2");</span> }*/
+		/*{ <span class="explicit-modification">attribute2.setElement(element1);</span> }*/
+		/*{ <span class="implicit-assert">assertElement(element1, attribute1, attribute2);</span> }*/
+		assertElement(element2);
+		assertAttribute(attribute1, "attr-1", element1);
+		/*{ <span class="explicit-assert">assertAttribute(attribute2, "attr-2", element1);</span> }*/
+		assertAttribute(attribute3, null, null);
+		assertAttribute(attribute4, null, null);
+		assertAttribute(attribute5, null, null);
+		
+		/*
+		 * Add attribute3, attribute4 and attribute5 into element1 into element1 with key "attr-3", "attr-4" and "attr-5".
+		 * (1) The property "name" of attribute3, attribute4 and attribute5 will be changed to be 
+		 * "attr-3", "attr-4" and "attr-5" automatically and implicitly.
+		 * (2) The property "element" of attribute3, attribute4 and attribute5 will be changed to be 
+		 * element1 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">Map&lt;String, Attribute&gt; m = new LinkedHashMap&lt;&gt;();</span> }*/
+		/*{ <span class="explicit-modification">m.put("attr-3", attribute3);</span> }*/
+		/*{ <span class="explicit-modification">m.put("attr-4", attribute4);</span> }*/
+		/*{ <span class="explicit-modification">m.put("attr-5", attribute5);</span> }*/
+		/*{ <span class="explicit-modification">element1.getAttributes().putAll(m);</span> }*/
+		/*{ <span class="explicit-assert">assertElement(element1, attribute1, attribute2, attribute3, attribute4, attribute5);</span> }*/
+		assertElement(element2);
+		assertAttribute(attribute1, "attr-1", element1);
+		assertAttribute(attribute2, "attr-2", element1);
+		/*{ <span class="implicit-assert">assertAttribute(attribute3, "attr-3", element1);</span> }*/
+		/*{ <span class="implicit-assert">assertAttribute(attribute4, "attr-4", element1);</span> }*/
+		/*{ <span class="implicit-assert">assertAttribute(attribute5, "attr-5", element1);</span> }*/
+		
+		/*
+		 * Change the property "element" of attribute5 from element1 to element2.
+		 * (1) The property "attributes" of old parent object element1 will be changed, 
+		 * the map entry { key: "attr-5", value attribute5 } will be removed automatically and implicitly..
+		 * (2) The property "attributes" of new parent object element2 will be changed,
+		 * the map entry { key: "attr-5", value attribute5 } will be added automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">attribute5.setElement(element2);</span> }*/
+		/*{ <span class="implicit-assert">assertElement(element1, attribute1, attribute2, attribute3, attribute4);</span> }*/
+		/*{ <span class="implicit-assert">assertElement(element2, attribute5);</span> }*/
+		assertAttribute(attribute1, "attr-1", element1);
+		assertAttribute(attribute2, "attr-2", element1);
+		assertAttribute(attribute3, "attr-3", element1);
+		assertAttribute(attribute4, "attr-4", element1);
+		/*{ <span class="explicit-assert">assertAttribute(attribute5, "attr-5", element2);</span> }*/
+		
+		/*
+		 * Let element2 seize all the attributes of element1
+		 * (1) The property "attributes" of the old parent object element1 will be changed, 
+		 * all the map entries will be removed automatically and implicitly.
+		 * (2) The property "element" of the attribute1, attribute2, attribute3 and attribute4 will be 
+		 * changed to be "element2" automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">element2.getAttributes().putAll(element1.getAttributes());</span> }*/
+		/*{ <span class="implicit-assert">assertElement(element1);</span> }*/
+		/*{ <span class="explicit-assert">assertElement(element2, attribute5, attribute1, attribute2, attribute3, attribute4);</span> }*/
+		/*{ <span class="implicit-assert">assertAttribute(attribute1, "attr-1", element2);</span> }*/
+		/*{ <span class="implicit-assert">assertAttribute(attribute2, "attr-2", element2);</span> }*/
+		/*{ <span class="implicit-assert">assertAttribute(attribute3, "attr-3", element2);</span> }*/
+		/*{ <span class="implicit-assert">assertAttribute(attribute4, "attr-4", element2);</span> }*/
+		assertAttribute(attribute5, "attr-5", element2);
+		
+		/*
+		 * Advance functionality:
+         * Remove all the attributes whose name ends with even number
+         * (That means remove attribute2 and attribute4).
+         * (1) The property "name" of attribute2 and attribute4 will be 
+         * changed to be null automatically and implicitly.
+         * (2) The property "element" of attribute2 and attribute4 will be
+         * changed to be null automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">Iterator&lt;String&gt; itr = element2.getAttributes().keySet().iterator();</span> }*/
+		/*{ <span class="explicit-modification">while(itr.hasNext()) {</span> }*/
+		/*{ <span class="explicit-modification">    String name = itr.next();</span> }*/
+		/*{ <span class="explicit-modification">    if (Integer.parseInt(name.substring(name.indexOf('-') + 1)) % 2 == 0) {</span> }*/
+		/*{ <span class="explicit-modification">        itr.remove(); <span class="com">//Can ONLY invoke remove of iterator, can NOT invoke remove of collection</span></span> }*/
+		/*{ <span class="explicit-modification">    }</span> }*/
+		/*{ <span class="explicit-modification">}</span> }*/
+		assertElement(element1);
+		/*{ <span class="explicit-assert">assertElement(element2, attribute5, attribute1, attribute3);</span> }*/
+		assertAttribute(attribute1, "attr-1", element2);
+		/*{ <span class="implicit-assert">assertAttribute(attribute2, null, null);</span> }*/
+		assertAttribute(attribute3, "attr-3", element2);
+		/*{ <span class="implicit-assert">assertAttribute(attribute4, null, null);</span> }*/
+		assertAttribute(attribute5, "attr-5", element2);
+		
+		/*
+		 * Set the property "element" of attribute1 to be null.
+		 * The property "employees" of element2 will be changed,
+		 * the map entry { key: "attr-1", value: attribute1 } will be removed automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">attribute1.setElement(null);</span> }*/
+		assertElement(element1);
+		/*{ <span class="implicit-assert">assertElement(element2, attribute5, attribute3);</span> }*/
+		/*{ <span class="explicit-assert">assertAttribute(attribute1, null, null);</span> }*/
+		assertAttribute(attribute2, null, null);
+		assertAttribute(attribute3, "attr-3", element2);
+		assertAttribute(attribute4, null, null);
+		assertAttribute(attribute5, "attr-5", element2);
+		
+		/*
+		 * Advance functionality:
+		 * change the property "name" of attribute5 from "attr-5" to "attr-X".
+		 *
+		 * The property "attributes" of the parent object element2 will be changed,
+		 * the old map entry { key: "attr-5", value: attribute5 } will be removed
+		 * and a new map entry { key: "attr-X", value: attribute5 } will be added
+		 * automatically and implicitly.
+		 * (This demo uses org.babyfish.collection.XOrderedMap, so the removed and re-added 
+		 * child object attribute5 will became this last child of the map) 
+		 */
+		/*{ <span class="explicit-modification">attribute5.setName("attr-X");</span> }*/
+		assertElement(element1);
+		/*{ <span class="implicit-assert">assertElement(element2, attribute3, attribute5);</span> }*/
+		/*{ <span class="explicit-assert">assertAttribute(attribute1, null, null);</span> }*/
+		assertAttribute(attribute2, null, null);
+		assertAttribute(attribute3, "attr-3", element2);
+		assertAttribute(attribute4, null, null);
+		assertAttribute(attribute5, "attr-X", element2);
+		
+		/*
+		 * Advance functionality:
+		 * change the property "name" of attribute3 from "attr-3" to "attr-X".
+		 *
+		 * The property "attributes" of the parent object element2 will be changed 
+		 * automatically and implicitly.
+		 * (1) The old map entry { key: "attr-3", value: attribute3 } will be removed
+		 * and a new map entry { key: "attr-X", value: attribute3 } will be added
+		 * automatically and implicitly.
+		 * (2) The old map entry { key: "attr-X", value: attribute5 } will be removed
+		 * automatically and implicitly because its key is conflict with the newest
+		 * name of attribute3. Both the existing name of attribute5 and the newest name of
+		 * attribute3 are "attr-X", attribute3 is the current modified object but attribute5
+		 * is NOT, so ObjectModel keeps attribute3 and removes attribute5 to resolve the 
+		 * name conflict to granteee the key unique constraint of java.util.Map<K, V>.
+		 * (3) The property "name" and "element" of attribute5 will be changed to be null
+		 * automatically and implicitly, because attribute3 will be removed, that has been
+		 * disuccssed in (2).
+		 */
+		/*{ <span class="explicit-modification">attribute3.setName("attr-X");</span> }*/
+		assertElement(element1);
+		/*{ <span class="implicit-assert">assertElement(element2, attribute3);</span> }*/
+		assertAttribute(attribute1, null, null);
+		assertAttribute(attribute2, null, null);
+		/*{ <span class="explicit-assert">assertAttribute(attribute3, "attr-X", element2);</span> }*/
+		assertAttribute(attribute4, null, null);
+		/*{ <span class="implicit-assert">assertAttribute(attribute5, null, null);</span> }*/
+		
+		/*
+		 * Set the property "name" of attribute3 to be null.
+		 * The property "employees" of element2 will be changed,
+		 * the map entry { key: "attr-X", value: attribute3 } will be removed automatically and implicitly.
+		 * (In ObjectModel, assocation map can not contain null keys, assgins the key to be null means 
+		 * you want to destroy the association)
+		 */
+		/*{ <span class="explicit-modification">attribute3.setName(null);</span> }*/
+		assertElement(element1);
+		/*{ <span class="implicit-assert">assertElement(element2);</span> }*/
+		assertAttribute(attribute1, null, null);
+		assertAttribute(attribute2, null, null);
+		/*{ <span class="explicit-assert">assertAttribute(attribute3, null, null);</span> }*/
+		assertAttribute(attribute4, null, null);
+		assertAttribute(attribute5, null, null);
+	}
+
+	//Parameter attributes can not contains duplicated attributes
+	//This is test code, not main code, so I does not validate the parameter.
+	private static void assertElement(Element element, Attribute ... attributes) {
+		Assert.assertEquals(attributes.length, element.getAttributes().size());
+		int index = 0;
+		//The element.getAttributes() is an instanceof org.babyfish.collection.MALinkedHashMap<K, V>
+		//that is a implementation of org.babyfish.collection.XOrderedMap<K, V>, 
+		//so we can assert its key/value pair by strict order. 
+		for (Entry<String, Attribute> entry : element.getAttributes().entrySet()) {
+			Assert.assertEquals(entry.getKey(), entry.getValue().getName());
+			Assert.assertSame(attributes[index++], entry.getValue());
+		}
+	}
+	
+	private static void assertAttribute(Attribute attribute, String name, Element element) {
+		Assert.assertEquals(name, attribute.getName());
+		Assert.assertSame(element, attribute.getElement());
+	}
+}
+	    				]]></pre>
+	    			</div>
+				</fieldset>
+			</fieldset>
+			<fieldset class="chapter">
+				<legend>one-to-many: Map-Reference</legend>
+				<p class="paragraphs">
+					We learned the <a href="#map-keyedreference">Map-KeyedReference Demo</a>, 
+					in that demo, we can change the name of attribute by both
+					'element.getAttributes().put(&lt;&lt;name&gt;&gt;, attribute)' and
+					'attribute.setName('&lt;&lt;name&gt;&gt;');'
+				</p>
+				<p class="paragaphs">
+					Map-Reference is more simple than Map-KeyedReference, in this model,
+					only the map association property declared in the parent object can
+					retain the key of each child object, child object does not retain the
+					key of itself so that you can not get or set the key of child object 
+					by itself.
+				</p>
+				<p class="paragraphs">
+					Please see the demo about Map-Reference association
+				</p>
+				<fieldset class="chapter">
+					<legend>Main Code</legend>
+					<p class="paragraphs">
+						Let's image the Airplane, an airplane has several engines, we allocate a code
+						for each engine so that it is easy to manage, but each engine does not
+						know the code of itself. we can <span class="important">ONLY</span> manage
+						the code of engine by the parent airplane object, but we can 
+						<span class="important">NOT</span> manage it by the engine itself.
+					</p>
+					<div class="important">Airplane.java</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import java.util.Map;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+
+public class Airplane {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Airplane airplane) {
+		return airplane.om;
+	}
+	
+	public Map<String, Engine> getEngines() {
+		return this.om.getEngines();
+	}
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Association(opposite = "airplaneReference")
+		Map<String, Engine> getEngines();
+	}
+}
+						]]></pre>
+					</div>
+					<div class="important">Engine.java</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+ 
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.Reference;
+
+public class Engine {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Engine engine) {
+		return engine.om;
+	}
+	
+	public Airplane getAirplane() {
+		return this.om.getAirplaneReference().get();
+	}
+	
+	public void setAirplane(Airplane airplane) {
+		this.om.getAirplaneReference().set(airplane);
+	}
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Association(opposite = "engines")
+		Reference<Airplane> getAirplaneReference();
+	}
+}
+						]]></pre>
+					</div>
+				</fieldset>
+				<fieldset class="chapter">
+					<legend>Test Code</legend>
+					<div class="important-section paragraphs">
+						Map-Reference association looks like the Map-KeyedReference association that has been already been shown,
+						so it is unnecessary to show too many functionalities of it here and I show 
+						<span class="important">ONLY</span> what the difference between Map-Reference and Map-KeyedReference is
+						in this test case
+					</div>
+					<p class="paragraphs">
+	    				There are 3 special code styles in the test code.
+	    			</p>
+	    			<ul>
+    					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+    					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+    					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+    				</ul>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+						
+package com.yourcompany.yourproject.om4j.learn;
+ 
+import java.util.Map;
+ 
+import org.babyfish.collection.HashMap;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ObjectModelOfMapAndReferenceTest {
+
+	/*{ <span class="com" style="font-weight:bold;">&#47;&#42;</span> }*/
+	/*{ <span class="com" style="font-weight:bold;"> * Map-Reference association looks like the Map-KeyedReference association</span> }*/ 
+	/*{ <span class="com" style="font-weight:bold;"> * that has been already been shown, so it is unnecessary to show too many </span> }*/
+	/*{ <span class="com" style="font-weight:bold;"> * functionalities of it here and I show <span class="important">ONLY</span> what the difference between </span> }*/
+	/*{ <span class="com" style="font-weight:bold;"> * Map-Reference and Map-KeyedReference is in this test case</span> }*/
+	/*{ <span class="com" style="font-weight:bold;"> &#42;&#47;</span> }*/
+
+	@Test
+	public void testSameWithMapAndKeyedReference() {
+	 
+	 	Airplane airplane = new Airplane();
+	 	Engine engine = new Engine();
+	 	
+	 	/*
+	 	 * Validate the initialized state of these two objects.
+	 	 */
+	 	assertAirplane(airplane);
+	 	Assert.assertNull(engine.getAirplane());
+	 	
+	 	/*
+	 	 * Add the engine into airplane with the code "A".
+	 	 * (For Map-Reference association, this UNIQUE method to create association betweeen
+	 	 * parent and child object is to change the Map of parent object)
+	 	 * 
+	 	 * The property "airplane" of the engine will be changed to be airplane
+	 	 * automatically and implicitly.
+	 	 */
+	 	/*{ <span class="explicit-modification">airplane.getEngines().put("A", engine);</span> }*/
+	 	/*{ <span class="explicit-assert">assertAirplane(airplane, "A", engine);</span> }*/
+	 	/*{ <span class="implicit-assert">Assert.assertSame(engine.getAirplane(), airplane);</span> }*/
+	 	
+	 	/*
+	 	 * Be same with the KeyedReferenace, you can set the value of Reference to be null
+	 	 * to destroy the association between a child object and its parent object.
+	 	 */
+	 	/*{ <span class="explicit-modification">engine.setAirplane(null);</span> }*/
+	 	/*{ <span class="implicit-assert">assertAirplane(airplane);</span> }*/
+	 	/*{ <span class="explicit-assert">Assert.assertNull(engine.getAirplane());</span> }*/ 
+	}
+	
+	@Test(expected = /*{ <span class="important">UnsupportedOperationException</span> }*/.class)
+	public void testDiffWithMapAndKeyedReference() {
+		
+		Airplane airplane = new Airplane();
+		Engine engine = new Engine();
+		
+		/*{ <span class="com">&#47;&#42;</span> }*/
+		/*{ <span class="com"> * Be <span class="important">DIFFERENT</span> with Map-KeyedReference, for Map-Reference association, </span> }*/ 
+		/*{ <span class="com"> * You can <span class="important">NOT</span> create the association by changing the Reference of child object</span> }*/
+		/*{ <span class="com"> * because Reference(<span class="important">NOT</span> KeyedReference) can not specify what the key in the Map of parent object is.</span> }*/
+		/*{ <span class="com"> * So babyfish throws exception when you want to assign the value the Reference to be non-null.</span> }*/
+		/*{ <span class="com"> &#42;&#47;</span> }*/
+		engine.setAirplane(airplane);
+	}
+		 
+	private static void assertAirplane(Airplane airplane, Object ... codeEnginePairs) {
+		if (codeEnginePairs.length % 2 != 0) {
+			throw new IllegalArgumentException("The length of codeEnginePairs must be even number");
+		}
+		Assert.assertEquals(codeEnginePairs.length / 2, airplane.getEngines().size());
+		Map<String, Engine> m = new HashMap<>((codeEnginePairs.length / 2 * 4 + 2) / 3);
+		for (int i = 0; i < codeEnginePairs.length; i += 2) {
+			m.put((String)codeEnginePairs[i], (Engine)codeEnginePairs[i + 1]);
+		}
+		Assert.assertEquals(m, airplane.getEngines());
+	}
+}
+						]]></pre>
+					</div>
+				</fieldset>
+			</fieldset>
+			<fieldset class="chapter">
+				<legend>one-many: List-Reference</legend>
+				<p class="paragraphs">
+					List-Reference association looks like the <a href="#list-indexedreference">List-IndexedReference</a>
+					that has already been shown in first step-by-step demo very much, but it is more simple than
+					<a href="#list-indexedreference">List-IndexedReference</a>.
+				</p>
+				<p class="paragraphs">
+					Be different with <a href="#list-indexedreference">List-IndexedReference</a>, List-Reference association
+					uses org.babyfish.reference.Reference&lt;T&gt;, <span class="important">NOT</span>
+					org.babyfish.reference.IndexedReference.
+				</p>
+				<fieldset class="chapter">
+					<legend>Main Code</legend>
+					<div class="important">Department.java</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+ 
+import java.util.List;
+ 
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+ 
+public class Department {
+ 
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+        return department.om;
+    }
+ 
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    public List<Employee> getEmployees() {
+        return this.om.getEmployees();
+    }
+        
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        @Association(opposite = "departmentReference") // Refers Employee.OM.getDepartmentReference()
+        List<Employee> getEmployees();
+    }
+}
+						]]></pre>
+					</div>
+					<div class="important">Employee.java</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+ 
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.Reference;
+ 
+public class Employee {
+ 
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+        
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+        return employee.om;
+    }
+    
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    public Department getDepartment() {
+        return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+        this.om.getDepartmentReference().set(department);
+    }
+ 
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        @Association(opposite = "employees") // Refers Department.OM.getEmployees()
+        Reference<Department> getDepartmentReference();
+    }
+}
+						]]></pre>
+					</div>
+				</fieldset>
+				<fieldset class="chapter">
+					<legend>Difference with List-IndexedReference</legend>
+					<div class="important-section paragraphs">
+						There is only a little difference between List-Reference and <a href="#list-indexedreference">List-IndexedReference</a>,
+						so it is unncessary to show the test code for List-Reference assocation and we need <span class="important">ONLY</span> 
+						to understand the tiny difference between them.
+					</div>
+					<p class="paragraphs">
+						When you want to change the association between Department object and Employee object, 
+						we have two choices: Modify parent object(Department) or modify child object(Employee). 
+						If we choose to modify the child object(Employee) to do it. we will feel the tiny difference:
+					</p>
+					<ol>
+						<li class="group">
+							<ol>
+								<li>
+									For <a href="#list-indexedreference">List-IndexedReference</a>, 
+									we need to do two steps to create association between two ojects: 
+									"employee.setIndex(&lt;&lt;not -1&gt;&gt;)" and "employee.setDepartment(&lt;&lt;non-null&gt;&gt;)".
+									ObjectModel creates the association and updates the new parent object and the old parent object
+									(if old parent object is existing)automatically and implicitly after 
+									<span class="important">BOTH</span> of these 2 steps are done.
+								</li>
+								<li>
+									For List-Reference, we need to do only one step to create association between two ojects: 
+									employee.setDepartment(&lt;&lt;non-null&gt;&gt;).
+								</li>
+							</ol>
+						</li>
+						<li class="group" style="margin-top: 10px;">
+							<ol>
+								<li>
+									For <a href="#list-indexedreference">List-IndexedReference</a>, 
+									we can do "employee.setIndex(...)" so that we can control the position
+									of the child object(Employee) in the list of parent object(Department).
+								</li>
+								<li>
+									For List-Reference, we can <span class="important">NOT</span> do "employee.setIndex(...)" so that
+									we can <span class="important">NOT</span> control the position of the added child object.
+									"employee.setDepartment(&lt;&lt;non-null&gt;&gt;)" <span class="important">ALWAYS</span> 
+									means add the employee to be the <span class="important">LAST</span> child of that department if 
+									the employee is not a existing child of that department.
+									<span style="color:rgb(0, 127, 0)">
+										[
+										If you want to control the position of the added child object, you must do it like this: 
+										"department.getEmployees.add(&lt;&lt;Your expected position&gt;&gt;, employee)"
+										]
+									</span>
+								</li>
+							</ol>
+						</li>
+					</ol>
+				</fieldset>
+			</fieldset>
+			<fieldset class="chapter">
+				<legend>many-to-many: Set-Set</legend>
+				<fieldset class="chapter">
+					<legend>Main Code</legend>
+					<p class="paragraphs">
+						There are 9 kinds of set-set associations
+					</p>
+					<table class="grid" border="1" border-color="black">
+						<tr class="grid-title">
+							<td>Endpoint1 type</td>
+							<td>Endpoint2 type</td>
+						</tr>
+						<tr class="grid-selected-item">
+							<td>java.util.Set&lt;E&gt;</td>
+							<td>java.util.Set&lt;E&gt;</td>
+						</tr>
+						<tr>
+							<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+							<td>java.util.Set&lt;E&gt;</td>
+						</tr>
+						<tr>
+							<td>java.util.NavigableSet&lt;E&gt;</td>
+							<td>java.util.Set&lt;E&gt;</td>
+						</tr>
+						<tr>
+							<td>java.util.Set&lt;E&gt;</td>
+							<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+						</tr>
+						<tr>
+							<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+							<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+						</tr>
+						<tr>
+							<td>java.util.NavigableSet&lt;E&gt;</td>
+							<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+						</tr>
+						<tr>
+							<td>java.util.Set&lt;E&gt;</td>
+							<td>java.util.NavigableSet&lt;E&gt;</td>
+						</tr>
+						<tr>
+							<td>org.babyfish.collection.XOrderedSet&lt;E&gt;</td>
+							<td>java.util.NavigableSet&lt;E&gt;</td>
+						</tr>
+						<tr>
+							<td>java.util.NavigableSet&lt;E&gt;</td>
+							<td>java.util.NavigableSet&lt;E&gt;</td>
+						</tr>
+					</table>
+					In order to keep the simplicity, this demo <span class="important">ONLY</span> shows how
+					to create the set-set bidirectional association by java.util.Set&lt;E&gt; and java.util.Set&lt;E&gt;
+					<div class="important">Company.class</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+ 
+import java.util.Set;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+
+public class Company {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Company company) {
+		return company.om;
+	}
+	
+	public String getName() {
+		return this.om.getName();
+	}
+	
+	public void setName(String name) {
+		this.om.setName(name);
+	}
+	
+	public Set<Investor> getInvestors() {
+		return this.om.getInvestors();
+	}
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = "companys")
+		Set<Investor> getInvestors();
+	}
+}
+						]]></pre>
+					</div>
+					<div class="important">Investor.class</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+ 
+import java.util.Set;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+
+public class Investor {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Investor investor) {
+		return investor.om;
+	}
+	
+	public String getName() {
+		return this.om.getName();
+	}
+	
+	public void setName(String name) {
+		this.om.setName(name);
+	}
+	
+	public Set<Company> getCompanys() {
+		return this.om.getCompanys();
+	}
+
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = "investors")
+		Set<Company> getCompanys();
+	}
+}
+						]]></pre>
+					</div>
+				</fieldset>
+				<fieldset class="chapter">
+					<legend>Test Code</legend>
+					<p class="paragraphs">
+	    				There are 3 special code styles in the test code.
+	    			</p>
+	    			<ul>
+    					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+    					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+    					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+    				</ul>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn;
+
+import java.util.Set;
+
+import org.babyfish.collection.HashSet;
+import org.babyfish.collection.MACollections;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ObjectModelOfSetAndSetTest {
+
+	@Test
+	public void test() {
+		Company company1 = new Company();
+		Company company2 = new Company();
+		Company company3 = new Company();
+		Investor investor1 = new Investor();
+		Investor investor2 = new Investor();
+		Investor investor3 = new Investor();
+		
+		/*
+		 * Validate the initialized state of these objects
+		 */
+		assertCompany(company1);
+		assertCompany(company2);
+		assertCompany(company3);
+		assertInvestor(investor1);
+		assertInvestor(investor2);
+		assertInvestor(investor3);
+		
+		/*
+		 * Add investor2 and investor3 into company1.
+		 * company1 will be added into the collection property "companys" of 
+		 * investor2 and investor3 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">company1.getInvestors().addAll(MACollections.wrap(investor2, investor3));</span> }*/
+		/*{ <span class="explicit-assert">assertCompany(company1, investor2, investor3);</span> }*/
+		assertCompany(company2);
+		assertCompany(company3);
+		assertInvestor(investor1);
+		/*{ <span class="implicit-assert">assertInvestor(investor2, company1);</span> }*/
+		/*{ <span class="implicit-assert">assertInvestor(investor3, company1);</span> }*/
+		
+		/*
+		 * Add all the investors of company1 into company2,
+		 * this is many-to-many association, so company2 will NOT seize these investors, 
+		 * just share them with company1.
+		 * company2 will be added into the collection property "companys" of 
+		 * investor2 and investor3 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">company2.getInvestors().addAll(company1.getInvestors());</span> }*/
+		assertCompany(company1, investor2, investor3);
+		/*{ <span class="explicit-assert">assertCompany(company2, investor2, investor3);</span> }*/
+		assertCompany(company3);
+		assertInvestor(investor1);
+		/*{ <span class="implicit-assert">assertInvestor(investor2, company1, company2);</span> }*/
+		/*{ <span class="implicit-assert">assertInvestor(investor3, company1, company2);</span> }*/
+		
+		/*
+		 * Remove company2 from investor2.
+		 * investor2 will be removed from company2 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">investor2.getCompanys().remove(company2);</span> }*/
+		assertCompany(company1, investor2, investor3);
+		/*{ <span class="implicit-assert">assertCompany(company2, investor3);</span> }*/
+		assertCompany(company3);
+		assertInvestor(investor1);
+		/*{ <span class="explicit-assert">assertInvestor(investor2, company1);</span> }*/
+		assertInvestor(investor3, company1, company2);
+		
+		/*
+		 * Add company2 into investor1.
+		 * investor1 will be added into company2 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">investor1.getCompanys().add(company2);</span> }*/
+		assertCompany(company1, investor2, investor3);
+		/*{ <span class="implicit-assert">assertCompany(company2, investor3, investor1);</span> }*/
+		assertCompany(company3);
+		/*{ <span class="explicit-assert">assertInvestor(investor1, company2);</span> }*/
+		assertInvestor(investor2, company1);
+		assertInvestor(investor3, company1, company2);
+		
+		/*
+		 * Add all the investors of company2 into company3,
+		 * this is many-to-many association, so company3 will NOT seize these investors, 
+		 * just share them with company2.
+		 * company3 will be added into the collection property "companys" of 
+		 * investor3 and investor1 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">company3.getInvestors().addAll(company2.getInvestors());</span> }*/
+		assertCompany(company1, investor2, investor3);
+		assertCompany(company2, investor3, investor1);
+		/*{ <span class="explicit-assert">assertCompany(company3, investor3, investor1);</span> }*/
+		/*{ <span class="implicit-assert">assertInvestor(investor1, company2, company3);</span> }*/
+		assertInvestor(investor2, company1);
+		/*{ <span class="implicit-assert">assertInvestor(investor3, company1, company2, company3);</span> }*/
+		
+		/*
+		 * Remove company3 from investor3.
+		 * investor3 will be removed from company3 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">investor3.getCompanys().remove(company3);</span> }*/
+		assertCompany(company1, investor2, investor3);
+		assertCompany(company2, investor3, investor1);
+		/*{ <span class="implicit-assert">assertCompany(company3, investor1);</span> }*/
+		assertInvestor(investor1, company2, company3);
+		assertInvestor(investor2, company1);
+		/*{ <span class="explicit-assert">assertInvestor(investor3, company1, company2);</span> }*/
+		
+		/*
+		 * Add company3 into investor2.
+		 * investor1 will be added into company2 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">investor2.getCompanys().add(company3);</span> }*/
+		assertCompany(company1, investor2, investor3);
+		assertCompany(company2, investor3, investor1);
+		/*{ <span class="implicit-assert">assertCompany(company3, investor1, investor2);</span> }*/
+		assertInvestor(investor1, company2, company3);
+		/*{ <span class="explicit-assert">assertInvestor(investor2, company3, company1);</span> }*/
+		assertInvestor(investor3, company1, company2);
+		
+		/*
+		 * Clear companys of investor1.
+		 * investor1 will be removed from company2 and company3 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">investor1.getCompanys().clear();</span> }*/
+		assertCompany(company1, investor2, investor3);
+		/*{ <span class="implicit-assert">assertCompany(company2, investor3);</span> }*/
+		/*{ <span class="implicit-assert">assertCompany(company3, investor2);</span> }*/
+		/*{ <span class="explicit-assert">assertInvestor(investor1);</span> }*/
+		assertInvestor(investor2, company3, company1);
+		assertInvestor(investor3, company1, company2);
+		
+		/*
+		 * Clear companys of investor2.
+		 * investor2 will be removed from company3 and company1 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">investor2.getCompanys().clear();</span> }*/
+		/*{ <span class="implicit-assert">assertCompany(company1, investor3);</span> }*/
+		assertCompany(company2, investor3);
+		/*{ <span class="implicit-assert">assertCompany(company3);</span> }*/
+		assertInvestor(investor1);
+		/*{ <span class="explicit-assert">assertInvestor(investor2);</span> }*/
+		assertInvestor(investor3, company1, company2);
+		
+		/*
+		 * Clear companys of investor3.
+		 * investor3 will be removed from company1 and company2 automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">investor3.getCompanys().clear();</span> }*/
+		/*{ <span class="implicit-assert">assertCompany(company1);</span> }*/
+		/*{ <span class="implicit-assert">assertCompany(company2);</span> }*/
+		assertCompany(company3);
+		assertInvestor(investor1);
+		assertInvestor(investor2);
+		/*{ <span class="explicit-assert">assertInvestor(investor3);</span> }*/
+	}
+
+	private static void assertCompany(Company company, Investor ... investors) {
+		Assert.assertEquals(investors.length, company.getInvestors().size());
+		Set<Investor> set = new HashSet<>((investors.length * 4 + 2) / 3);
+		for (Investor investor : investors) {
+			set.add(investor);
+		}
+		Assert.assertEquals(set, company.getInvestors());
+	}
+	
+	private static void assertInvestor(Investor investor, Company ... companys) {
+		Assert.assertEquals(companys.length, investor.getCompanys().size());
+		Set<Company> set = new HashSet<>((companys.length * 4 + 2) / 3);
+		for (Company company : companys) {
+			set.add(company);
+		}
+		Assert.assertEquals(set, investor.getCompanys());
+	}
+}
+    					]]></pre>
+    				</div>
+				</fieldset>
+			</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Contravariance</legend>
+    		<fieldset class="chapter">
+    			<legend>Main Code Part-I, Prepare</legend>
+	    		<p class="paragraphs">
+	    			Let's image a UI framework API. First, we create an abstract Component, it is the super class for all the UI components.
+	    			Then we create another class Container that is a derived class of Component, Container is a complex component that can
+	    			contains several child components.
+	    		</p>
+	    		<p>
+	    			Container uses property "components" to retain its child components and Componnet uses property "parent" to retains its 
+	    			parent Container. We use List-Reference to implement this bidirectional association.
+	    		</p>
+	    		<p>
+	    			To make this demo to be vivid, we also create class Button which is another derived class of abstract class Component.
+	    		</p>
+	    		<div class="important">Component.java</div>
+	    		<div class="source-code">
+	    			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.contravariance;
+ 
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.Reference;
+
+public abstract class /*{ <a name="ComponentDeclaration">Component</a> }*/ {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Component component) {
+		return component.om;
+	}
+	
+	public Container getParent() {
+		return this.om.getParentReference().get();
+	}
+	
+	public void setParent(Container parent) {
+		this.om.getParentReference().set(parent);
+	}
+	
+	@ObjectModelDeclaration
+	private interface OM {
+		
+		@Association(opposite = /*{ <a href="#componentsDeclaration"><span class="str">"components"</span></a> }*/)
+		Reference</*{ <a href="#ContainerDeclaration">Container</a> }*/> /*{ <a name="parentReferenceDeclaration"><span class="str">getParentReference</span></a> }*/();
+	}
+}
+	    			]]></pre>
+	    		</div>
+	    		<div class="important">Container.java</div>
+	    		<div class="source-code">
+	    			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.contravariance;
+ 
+import java.util.List;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+
+public class /*{ <a name="ContainerDeclaration">Container</a> }*/ extends /*{ <a href="#ComponentDeclaration">Component</a> }*/ {
+	
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Container container) {
+		return container.om;
+	}
+	
+	public List<Component> getComponents() {
+		return this.om.getComponents();
+	}
+	
+	@ObjectModelDeclaration
+	private interface OM {
+		
+		@Association(opposite = /*{ <a href="#parentReferenceDeclaration"><span class="str">"parentReference"</span></a> }*/)
+		List</*{ <a href="#ComponentDeclaration">Component</a> }*/> /*{ <a name="componentsDeclaration"><span class="str">getComponents</span></a> }*/();
+	}
+}
+	    			]]></pre>
+	    		</div>
+	    		<div class="important">Button.java</div>
+	    		<div class="source-code">
+	    			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.contravariance;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+
+public class /*{ <a name="ButtonDeclaration">Button</a> }*/ extends /*{ <a href="#ComponentDeclaration">Component</a> }*/ {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(Button button) {
+		return button.om;
+	}
+	
+	public String getText() {
+		return this.om.getText();
+	}
+	
+	public void setText(String text) {
+		this.om.setText(text);
+	}
+	
+	@ObjectModelDeclaration
+	private interface OM {
+		
+		@Scalar
+		String getText();
+		void setText(String text);
+	}
+}
+	    			]]></pre>
+	    		</div>
+	    	</fieldset>
+	    	<fieldset class="chapter">
+	    		<legend>Main Code Part-II, Covariance &amp; Contravariance</legend>
+	    		<p class="paragraphs">
+	    			TabControl and TabPage are popular UI components, they looks like:
+	    		</p>
+	    		<img src="tabcontrol.png"/>
+	    		<p>
+	    			TabControl and TabPage are very sepcial:
+	    		</p>
+	    		<ul>
+	    			<li>
+	    				<span class="important">TabControl</span> is very special, its child components can 
+	    				<span class="important">ONLY</span> be TabPage.
+	    			</li>
+	    			<li>
+	    				<span class="important">TabPage</span> is very special, its parent component can 
+	    				<span class="important">ONLY</span> be TabControl.
+	    			</li>
+	    		</ul>
+	    		ObjectModel supports a functionality named <span class="important">CONTRAVARIANCE</span> 
+	    		to implement this special requirement. please view the code:
+	    		<div class="important">TabControl.java</div>
+	    		<div class="source-code">
+	    			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.contravariance;
+ 
+import java.util.List;
+ 
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Contravariance;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+
+public class /*{ <a name="TabControlDeclaration">TabControl</a> }*/ extends /*{ <a href="#ContainerDeclaration">Container</a> }*/ {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(TabControl tabControl) {
+		return tabControl.om;
+	}
+	
+	public List<TabPage> getTabPages() {
+		return this.om.getTabPages();
+	}
+	
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Contravariance(/*{ <a href="#componentsDeclaration"><span class="str">"components"</span></a> }*/)
+		List</*{ <a href="#TabPageDeclaration">TabPage</a> }*/> /*{ <a name="tabPagesDeclaration"><span class="str">getTabPages</span></a> }*/();
+	}
+}
+	    			]]></pre>
+	    		</div>
+	    		<p class="paragraphs">
+	    			In the ObjectModel interface of the super class <a href="#ContainerDeclaration">"Container"</a>, 
+	    			an association property <a href="#componentsDeclaration"><span class="str">"components"</span></a> is declared as 
+	    			List&lt;<a href="#ComponentDeclaration">Component</a>&gt;;
+	    			In the ObjectModel interface of the derived class <a href="#TabControlDeclaration">"TabControl"</a>,
+	    			the association property "tabPages" is declarted as
+	    			List&lt;<a href="#TabPageDeclaration">TabPage</a>&gt;
+	    			and it is <span class="important">NOT</span> marked by @Association but it is marked by
+	    			<span class="important">@Contravariance</span> with parameter "components", that means "tabPages" 
+	    			is <span class="important">NOT</span> a new assocaition,
+	    			it is same with the the association property "components" in the super class, the association property
+	    			has been added a restriction: The element of this collection <span class="important">MUST</span> be 
+	    			<a href="#TabPageDeclaration">TabPage</a>, can <span class="important">NOT</span> be object of any derived class of 
+	    			<a href="#ComponentDeclaration">Component</a>.
+	    		</p>
+	    		<p class="pargraphs">
+	    			Let's see what the Contravariance &amp; Covariance are:
+	    		</p>
+	    		<div>
+	    			<pre>
+<span class="important2">Container.OM.<a href="#componentsDeclaration">components</a></span><span class="important">------Contravariance------&gt;</span><span class="important2">TabControl.OM.<a href="#tabPagesDeclaration">tabPages</a></span>
+<span class="important2">Container.OM.<a href="#componentsDeclaration">components</a></span><span class="important">&lt;------Covariance----------</span><span class="important2">TabControl.OM.<a href="#tabPagesDeclaration">tabPages</a></span>
+	    			</pre>
+	    			That also means
+	    			<pre>
+<span class="important2">List&lt;<a href="#ComponentDeclaration">Component</a>&gt;</span><span class="important">------Contravariance------&gt;</span><span class="important2">List&lt;<a href="#TabPageDeclaration">TabPage</a>&gt;</span>
+<span class="important2">List&lt;<a href="#ComponentDeclaration">Component</a>&gt;</span><span class="important">&lt;------Covariance----------</span><span class="important2">List&lt;<a href="#TabPageDeclaration">TabPage</a>&gt;</span>
+	    			</pre>
+	    		</div>
+	    		<ul>
+	    			<li>
+		    			The <span class="important">contravariance</span> proeprty "tabPages": restricts the each child component of 
+		    			<a href="#TabControlDeclaration">TabControl</a> <span class="important">MUST</span> be <a href="#TabPageDeclaration">TabPage</a>
+		    			in <span class="important">COMPILATION-TIME</span>.
+		    			<div class="source-code">
+		    				<pre class="lang-java"><![CDATA[
+TabControl tabControl = new TabControl();
+/*
+ * This statement can NOT be compiled successfully 
+ * because the type of "tabControl.getTabPages()" is List<TabPage>
+ */
+/*{ <span class="deprecated pln">tabControl.getTabPages().add(<span class="kwd">new</span> Button());</span> }*/
+		    				]]></pre>
+		    			</div>
+		    		</li>
+		    		<li>
+		    			The <span class="important">covariance</span> proeprty "components": restricts the each child component of 
+		    			<a href="#TabControlDeclaration">TabControl</a> <span class="important">MUST</span> be <a href="#TabPageDeclaration">TabPage</a>
+		    			in <span class="important">RUNTIME</span>.
+		    			<div class="source-code">
+		    				<pre class="lang-java"><![CDATA[
+Container container = new TabControl();
+/*
+ * Though this statement can be compiled successfully 
+ * because the type of "container.getComponents()" is List<Component>,
+ * BUT the java.lang.IllegalArgumentException will be thrown in runtime 
+ * so that you can NOT added the object that is NOT TabPage into this collection 
+ */
+/*{ <span class="text-decoration:line-through">container.getComponents().add(<span class="kwd">new</span> Button());</span> }*/
+		    				]]></pre>
+		    			</div>
+		    		</li>
+		    		<div class="important-section">
+		    			The <span class="important">covariance</span> association proeprty and <span class="important">contravariance</span> assocation property
+		    			are same association, they <span class="important">SHARE</span> the data instance. You can changed the association by any one 
+		    			and you can see the data change via the other one.
+		    		</div>
+	    		</ul>
+	    		<div class="important">TabPage.java</div>
+	    		<div class="source-code">
+	    			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.contravariance;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Contravariance;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.Reference;
+
+public class /*{ <a name="TabPageDeclaration">TabPage</a> }*/ extends /*{ <a href="#ContainerDeclaration">Container</a> }*/ {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+	
+	private OM om = OM_FACTORY.create(this);
+	
+	@StaticMethodToGetObjectModel
+	static OM om(TabPage tabPage) {
+		return tabPage.om;
+	}
+	
+	@Override
+	public TabControl getParent() {
+		return this.om.getParentReference().get();
+	}
+	
+	public void /*{ <a name="setParentWithTabControlDeclaration">setParent</a> }*/(TabControl parent) {
+		this.om.getParentReference().set(parent);
+	}
+	
+	@Deprecated
+	@Override
+	public final void /*{ <span class="deprecated pln">setParent</span> }*/(Container parent) {
+		this./*{ <a href="#setParentWithTabControlDeclaration">setParent</a> }*/((TabControl)parent);
+	}
+	
+	@ObjectModelDeclaration
+	private interface OM {
+	
+		@Contravariance
+		Reference<TabControl> /*{ <a name="contravarianceParentReferenceDeclaration">getParentReference</a> }*/();
+	}
+}
+	    			]]></pre>
+	    		</div>
+	    		<p class="paragraphs">
+	    			Because we have discussed what the covariance association proeprty and the contravariance property are, so it is unnecessary to discuss it again
+	    		</p>
+	    		<div>
+	    			<pre>
+<span class="important2">Component.OM.<a href="#parentReferenceDeclaration">parentReference</a></span><span class="important">------Contravariance------&gt;</span><span class="important2">TabPage.OM.<a href="#contravarianceParentReferenceDeclaration">parentReference</a></span>
+<span class="important2">Component.OM.<a href="#parentReferenceDeclaration">parentReference</a></span><span class="important">&lt;------Covariance----------</span><span class="important2">TabPage.OM.<a href="#contravarianceParentReferenceDeclaration">parentReference</a></span>
+	    			</pre>
+	    			That also means
+	    			<pre>
+<span class="important2">Reference&lt;<a href="#ContainerDeclaration">Container</a>&gt;</span><span class="important">------Contravariance------&gt;</span><span class="important2">Reference&lt;<a href="#TabControlDeclaration">TabControl</a>&gt;</span>
+<span class="important2">Reference&lt;<a href="#ContainerDeclaration">Container</a>&gt;</span><span class="important">&lt;------Covariance----------</span><span class="important2">Reference&lt;<a href="#TabControlDeclaration">TabControl</a>&gt;</span>
+	    			</pre>
+	    		</div>
+	    		<div class="important-section">
+	    			<ol>
+	    				<li>
+	    					Both 
+		    				the name of the <span class="important">covariance</span> association proeprty "Component.OM.parentReference" and 
+		    				the name of the <span class="important">contravariance</span> assocation property "TabPage.OM.parentReference"
+		    				are "parentReference", that means heir names are the same, so the parameter of the annotation 
+		    				<span class="important">@Contravariance</span> is <span class="important">unnecessary</span>.
+		    			</li>
+		    			<li>
+		    				In the derived class <a href="#TabPageDeclaration">TabPage</a>,
+		    				<ul>
+		    					<li>
+		    						We override the method "getParent" and change the return type to be <a href="#TabControlDeclaration">TabControl</a>, 
+		    						this is a basic ability of java langugage.
+		    					</li>
+		    					<li>
+									We override the "setParent" an make it to be deprecated, the deprecated "setParent" method forwards the invocation 
+									to another new "setParent" methodparemter type is <a href="#TabControlDeclaration">TabControl</a>.
+									We also make the deprecated "setParent" method to be final so that the programer of derived classes can only
+									override the new "setParent" method if he/she to do that.
+		    					</li>
+		    				</ul>
+		    				<div style="padding-top:20px">
+			    				Through this technique, we make the derived class <a href="#TabPageDeclaration">TabPage</a> and the super class
+			    				<a href="#ComponentDeclaration">Component</a> have the same behavior about getting/setting the parent component.
+			    				but this technique has 2 tiny disadvantages for our "<a href="#contravarianceReferenceTest">Test code Part-II</a>":
+		    				</div>
+		    				<div style="padding-left:50px;padding-top:10px;">
+		    					<ul>
+		    						<li>
+				    					The getParent/setParent has been overriden to use the behavior of contravariance association property 
+				    					"Tabpage.OM.<a href="#contravarianceParentReferenceDeclaration">parentReference</a>" so that we can <span class="important">NOT</span>
+				    					use the behavior of the covariance property "Component.OM.<a href="#parentReferenceDeclaration">parentReference</a>"
+				    					via the public methods. So it is hard to test the the covariance property "Component.OM.<a href="#parentReferenceDeclaration">parentReference</a>",
+				    					that make the "<a href="#contravarianceReferenceTest">Test code Part-II</a>" be complex because we need use babyfish API to get the covariance property.
+			    					</li>
+			    					<li>
+			    						This desgin style can <span class="important">ONLY</span> be used in ObjectModel4Java, it is forbidden in ObjectModel4JPA. 
+			    						The document of ObjectModel4JPA will discuss the problem, reason and solution.
+			    					</li>
+		    					</ul> 
+		    				</div>
+		    			</li>
+	    			</ol>
+	    		</div>
+	    	</fieldset>
+	    	<fieldset class="chapter">
+	    		<legend>Test Code part-I</legend>
+	    		<p class="paragraphs">
+	    			This test case is used to test the covariance property "Container.OM.<a href="#componentsDeclaration">components</a> 
+	    			and the contravariance property "TabControl.OM.<a href="#tabPagesDeclaration">tabPages</a>.
+	    		</p>
+	    		<p class="paragraphs">
+    				There are 3 special code styles in the test code.
+    			</p>
+	    		<ul>
+   					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+   					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+   					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+   				</ul>
+	    		<div class="source-code">
+					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.contravariance;
+
+import org.babyfish.collection.MACollections;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ContravarianceListTest {
+
+	@Test(expected = /*{ <span class="important">IllegalArgumentException</span> }*/.class)
+	public void testCovarianceListFailed() {
+		/*
+		 * The covariance property "components" requires the element must be instance of TabPage,
+		 * but here the argument is instance of Button, so the java.lang.IllegalArgumentException will be raised
+		 */
+		new TabControl().getComponents().add(new Button());
+	}
+	
+	@Test
+	public void testCovarianceListSucessed() {
+	
+		TabControl tabControl = new TabControl();
+		TabPage tabPage1 = new TabPage();
+		TabPage tabPage2 = new TabPage();
+		TabPage tabPage3 = new TabPage();
+		TabPage tabPage4 = new TabPage();
+		
+		assertContainer(tabControl);
+		assertTabControl(tabControl);
+		
+		/*
+		 * Modify the covariance property
+		 */
+		/*{ <span class="explicit-modification">tabControl.getComponents().addAll(MACollections.wrap(tabPage1, tabPage2, tabPage3, tabPage4));</span> }*/
+		
+		/*
+		 * The covariance property is modified
+		 */
+		/*{ <span class="explicit-assert">assertContainer(tabControl, tabPage1, tabPage2, tabPage3, tabPage4);</span> }*/
+		
+		/*
+		 * The contravariance property is modified too because it shares data with covariance property
+		 */
+		/*{ <span class="explicit-assert">assertTabControl(tabControl, tabPage1, tabPage2, tabPage3, tabPage4);</span> }*/
+		
+		/*
+		 * The opposite many-to-one assocation is modified automatically and impplicitly
+		 */
+		/*{ <span class="implicit-assert">Assert.assertSame(tabControl, tabPage1.getParent());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(tabControl, tabPage2.getParent());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(tabControl, tabPage3.getParent());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(tabControl, tabPage4.getParent());</span> }*/
+	}
+	
+	@Test
+	public void testContravarianceList() {
+	
+		TabControl tabControl = new TabControl();
+		TabPage tabPage1 = new TabPage();
+		TabPage tabPage2 = new TabPage();
+		TabPage tabPage3 = new TabPage();
+		TabPage tabPage4 = new TabPage();
+		
+		assertContainer(tabControl);
+		assertTabControl(tabControl);
+		
+		/*
+		 * Modify the contravariance property
+		 */
+		/*{ <span class="explicit-modification">tabControl.getTabPages().addAll(MACollections.wrap(tabPage1, tabPage2, tabPage3, tabPage4));</span> }*/
+		
+		/*
+		 * The contravariance property is modified
+		 */
+		/*{ <span class="explicit-assert">assertTabControl(tabControl, tabPage1, tabPage2, tabPage3, tabPage4);</span> }*/
+		
+		/*
+		 * The covariance property is modified too because it shares data with contravariance property
+		 */
+		/*{ <span class="explicit-assert">assertContainer(tabControl, tabPage1, tabPage2, tabPage3, tabPage4);</span> }*/
+		
+		/*
+		 * The opposite many-to-one assocation is modified automatically and impplicitly
+		 */
+		/*{ <span class="implicit-assert">Assert.assertSame(tabControl, tabPage1.getParent());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(tabControl, tabPage2.getParent());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(tabControl, tabPage3.getParent());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(tabControl, tabPage4.getParent());</span> }*/
+	}
+
+	private static void assertContainer(Container container, Component ... components) {
+		Assert.assertEquals(components.length, container.getComponents().size());
+		int index = 0;
+		for (Component component : container.getComponents()) {
+			Assert.assertSame(components[index++], component);
+		}
+	}
+	
+	private static void assertTabControl(TabControl tabControl, TabPage ... tabPages) {
+		Assert.assertEquals(tabPages.length, tabControl.getTabPages().size());
+		int index = 0;
+		for (TabPage tabPage : tabControl.getTabPages()) {
+			Assert.assertSame(tabPages[index++], tabPage);
+		}
+	}
+}
+					]]></pre>
+	    		</div>
+	    	</fieldset>
+	    	<fieldset class="chapter">
+	    		<legend><a name="contravarianceReferenceTest">Test code Part-II</a></legend>
+	    		<p class="paragraphs">
+	    			This test case is used to test the covariance property "Component.OM.<a href="#parentReferenceDeclaration">parentReference</a> 
+	    			and the contravariance property "TabPage.OM.<a href="#contravarianceParentReferenceDeclaration">parentReference</a>.
+	    		</p>
+	    		<p class="pargraphs">
+	    			The public method getParent and setParent have been overiden in derived class the <a href="#TabPageDeclaration">TabPage</a> 
+	    			so that it is impossible to get or set the covariance property "Component.OM.<a href="#parentReferenceDeclaration">parentReference</a>, 
+	    			so we call the babyfish's special API to get the Reference&lt;Container&gt; instance of the covariance property form the instance of TabPage.
+	    		</p>
+	    		<p class="paragraphs">
+    				There are 3 special code styles in the test code.
+    			</p>
+	    		<ul>
+   					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+   					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+   					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+   				</ul>
+	    		<div class="source-code">
+	    			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.contravariance;
+
+import org.babyfish.model.ObjectModel;
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.metadata.Metadatas;
+import org.babyfish.model.metadata.ObjectModelMetadata;
+import org.babyfish.reference.Reference;
+import org.junit.Assert;
+import org.junit.Test;
+ 
+public class ContravarianceReferenceTest {
+ 
+    private static final ObjectModelFactory<?> COVARIANCE_OBJECT_MODEL_FACTORY;
+    
+    private static final int COVARIANCE_PARENT_REFERENCE_ID;
+ 
+    @Test(expected = /*{ <span class="important">IllegalArgumentException</span> }*/.class)
+    public void testCovarianceReferenceFailed() {
+    	/*
+		 * The covariance property requires the element must be instance of TabControl,
+		 * but here the argument is instance of Container, so the java.lang.IllegalArgumentException will be raised
+		 */
+        Reference<Container> covarianceReference = covarianceReference(new TabPage());
+        covarianceReference.set(new Container());
+    }
+    
+    @Test
+    public void testCovarianceReferenceSucessed() {
+        TabPage tabPage = new TabPage();
+        TabControl tabControl = new TabControl();
+        Reference<Container> covarianceReference = covarianceReference(tabPage);
+        
+        /*
+         * Change the covariance property
+         */
+        covarianceReference.set(tabControl);
+        
+        /*
+         * The covariance property has been modified
+         */
+        /*{ <span class="explicit-assert">Assert.assertSame(tabControl, covarianceReference.get());</span> }*/
+        
+        /*
+         * The contravariance property has been modifed too because it shares data with covariance property
+         */
+        /*{ <span class="explicit-assert">Assert.assertSame(tabControl, tabPage.getParent());</span> }*/
+        
+        /*
+		 * The opposite one-to-many assocation is modified automatically and impplicitly
+		 */
+		/*{ <span class="implicit-assert">assertTabControl(tabControl, tabPage);</span> }*/
+    }
+    
+    @Test
+    public void testContravarianceReference() {
+        TabPage tabPage = new TabPage();
+        TabControl tabControl = new TabControl();
+        Reference<Container> covarianceReference = covarianceReference(tabPage);
+        
+        /*
+         * Change the covariance property
+         */
+        covarianceReference.set(tabControl);
+        
+        /*
+         * The contravariance property has been modifed
+         */
+        /*{ <span class="explicit-assert">Assert.assertSame(tabControl, tabPage.getParent());</span> }*/
+        
+        /*
+         * The covariance property has been modified too because it shares data with contravariance property
+         */
+        /*{ <span class="explicit-assert">Assert.assertSame(tabControl, covarianceReference.get());</span> }*/
+        
+        /*
+		 * The opposite one-to-many assocation is modified automatically and impplicitly
+		 */
+		/*{ <span class="implicit-assert">assertTabControl(tabControl, tabPage);</span> }*/
+    }
+    
+    @SuppressWarnings("unchecked")
+	private Reference<Container> covarianceReference(TabPage tabPage) {
+        ObjectModel om = (ObjectModel)COVARIANCE_OBJECT_MODEL_FACTORY.get(tabPage);
+        return (Reference<Container>)om.getAssociation(COVARIANCE_PARENT_REFERENCE_ID);
+    }
+    
+    private static void assertTabControl(TabControl tabControl, TabPage ... tabPages) {
+		Assert.assertEquals(tabPages.length, tabControl.getTabPages().size());
+		int index = 0;
+		for (TabPage tabPage : tabControl.getTabPages()) {
+			Assert.assertSame(tabPages[index++], tabPage);
+		}
+	}
+ 
+    static {
+        ObjectModelMetadata metadata = Metadatas.of(Component.class);
+        COVARIANCE_OBJECT_MODEL_FACTORY = 
+            metadata.getObjectModelFactoryProvider().getFactory(
+                metadata.getObjectModelClass());
+        COVARIANCE_PARENT_REFERENCE_ID = 
+            metadata.getDeclaredAssociationProperty("parentReference").getId();
+    }
+}
+	    			]]></pre>
+	    		</div>
+	    	</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Specify the comparators for collection assocication properties</legend>
+    		<p class="paragraphs">
+    			ObjectModel4Java(or ObjectModel4JPA) can declare the association propertytype is <span class="important">collection</span>,
+    			when the instance of the data class(or ORM entity) with ObjectModel is created, the <span class="important">collection</span> association properties
+    			are initialzed by the instances of babyfish collections. 
+    		</p>
+    		<p class="paragraphs">
+    			The collections declared by ObjectModel
+				<ul>
+					<li><span class="important">NEVER</span> use the methods "hashCode" and "equals" of the element object itself <span class="important2">except the <span class="important">key</span> of java.util.Map&lt;K, V&gt;</span>.</li>
+					<li><span class="important">NEVER</span> use the methods "compareTo" of the emlement object itself <span class="important2">except the <span class="important">key</span> of java.util.Map&lt;K, V&gt;</span> even if the element class implements the java.util.Comparable.</li>
+				</ul>
+    		</p>
+    		<p>
+    			Babyfish collection extends the comprators, 4 kinds of comparators can be used in babyfish collections
+    		</p>
+    		<ol>
+   				<li>java.util.Comparator&lt;T&gt;</li>
+   				<li>org.babyfish.collection.EqualityComparator&lt;T&gt;</li>
+   				<li>org.babyfish.collection.FrozenComparator&lt;T&gt;</li>
+   				<li>org.babyfish.collection.FrozenEqualityComparator&lt;T&gt;</li>
+   			</ol>
+   			org.babyfish.collection.FrozenComparator&lt;T&gt; and org.babyfish.collection.FrozenEqualityComparator&lt;T&gt; is used by the collections created by ObjectModel.
+   			<ul>
+   				<li>
+   					When the association property type is compatible with java.util.SortedSet&lt;E&gt; the collection requires an org.babyfish.collection.FrozenComparator&lt;T&gt;,
+   					this comparator supports 2 functionalities. 
+   					<ol>
+   						<li>Let the collection know how to compare two element objects, this functionality is inherited from java.util.Compartor&lt;T&gt;.</li>
+   						<li>
+   							When the element object is changed, the collection will be adjusted automatically, 
+   							so you can change the element object even if you've added it into the set/map.
+   							don't worry it can not work normally after you do it like the JDK implementation of set/map. 
+   							This functionality is called <span class="important2">"mutable collection elements"</span>.
+   						</li>
+   					</ol>
+   				</li>
+   				<li>
+   					Otherwise, the collection requires an org.babyfish.collection.FrozenEqualityComparator&lt;T&gt;, this comparator supports 2 functionalities
+   					<ol>
+   						<li>
+   							Let the collection know how to calculate the hashCode of element object and check whether two element objects are equal, 
+   							this functionality is inherited from org.babyfish.collection.EqualityComparator&lt;T&gt;. 
+   							Be different with the collection implementation of JDK, for BabyFish collection, 
+   							the methods "hashCode" and "equals" of the element object itself is <span class="important">NOT</span> mandatory. BabyFish collection can choose 
+   							to use the <span class="important">third-party</span> methods "hashCode" and "equals" supported by "org.babyfish.collection.EqualityComparator&lt;T&gt;"
+   						</li>
+   						<li>
+   							When the element object is changed, the collection will be adjusted automatically, 
+   							so you can change the element object even if you've added it into the set/map.
+   							don't worry it can not work normally after you do it like the JDK implementation of set/map.
+   							This functionality is called <span class="important2">"mutable collection elements"</span>.
+   						</li>
+   					</ol>
+   				</li>
+   			</ul>
+   			Please view <a href="../babyfish-collection-framework/x-collection.xhtml#comparators">BabyFish X Collection's comparators</a> to know more, 
+   			this is document of ObjectModel so that we need <span class="important">NOT</span> to learn the collection comparators detailed here.
+   			<fieldset class="chapter">
+   				<legend>Declare the FrozenEqualityComparator&lt;T&gt; for java.util.Set&lt;E&gt;</legend>
+   				<fieldset class="chapter">
+   					<legend>Prepare code</legend>
+   					<p class="paragraphs">
+   						Let's create a simple demo about one-to-many association base on <span class="important">Set-Reference</span>.
+   						the next chapters will show how to specify the ForzenEqualityComparator for the java.util.Set&lt;E&gt; association collection.
+   					</p>
+					<div class="important">Department.class</div>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.fec;
+
+import java.util.Set;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+ 
+public class Department {
+ 
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+        return department.om;
+    }
+ 
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    public Set<Employee> getEmployees() {
+        return this.om.getEmployees();
+    }
+        
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        @Association(opposite = "departmentReference")
+        Set<Employee> getEmployees();
+    }
+}
+					]]></pre>
+				</div>
+				<div class="important">Employee.java</div>
+				<div class="source-code">
+					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.fec;
+ 
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.Reference;
+ 
+public class Employee {
+ 
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+        
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+        return employee.om;
+    }
+    
+    public String getFirstName() {
+        return this.om.getFirstName();
+    }
+    
+    public void setFirstName(String firstName) {
+        this.om.setFirstName(firstName);
+    }
+    
+    public String getLastName() {
+        return this.om.getLastName();
+    }
+    
+    public void setLastName(String lastName) {
+        this.om.setLastName(lastName);
+    }
+    
+    public Department getDepartment() {
+        return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+        this.om.getDepartmentReference().set(department);
+    }
+ 
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getFirstName();
+        void setFirstName(String firstName);
+        
+        @Scalar
+        String getLastName();
+        void setLastName(String lastName);
+        
+        @Association(opposite = "employees")
+        Reference<Department> getDepartmentReference();
+    }
+}
+						]]></pre>
+					</div>
+   				</fieldset>
+   				<fieldset class="chapter">
+					<legend>Use annotation @ComparatorProperties on ObjectModel level</legend>
+					<p class="paragraphs">
+						We can use @org.babyfish.model.metadata.ComparatorProperpties on the ObjectModel interface of the element class.
+					</p>
+					<div class="important">Department.class</div>
+					<p class="paragraphs">
+						Deparatment need not to be changed, I list some code of it again
+					</p>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package ... ...;
+
+import ... ...;
+
+
+public class Department {
+ 
+    ... Other code is omitted ...
+        
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        @Association(opposite = "departmentReference")
+        Set<Employee> getEmployees();
+    }
+}
+						]]></pre>
+					</div>
+					<div class="important">Employee.class</div>
+					<p class="paragraphs">
+						Employee has only a subtle change, @org.babyfish.model.metadata.ComparatorProperpties is applied on its ObjectModel interface
+					</p>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package ... ...;
+
+import /*{ <span class="important">org.babyfish.model.metadata.ComparatorProperties</span> }*/;
+import ... Other importing statement are ignored ...;
+
+public class Employee {
+ 
+    ... Other code is omitted ...
+    
+    /*{ <span class="important">@ComparatorProperties</span> }*/({ "firstName", "lastName" })
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getFirstName();
+        void setFirstName(String firstName);
+        
+        @Scalar
+        String getLastName();
+        void setLastName(String lastName);
+        
+        @Association(opposite = "employees")
+        Reference<Department> getDepartmentReference();
+    }
+}
+						]]></pre>
+					</div>
+					<p class="paragraphs">
+						In this example, "Department.getEmployees()" uses the property "firstName" and "lastName" to 
+						calculate the hashCode the Employee objects or check whether two Employee ojects are equal.
+					</p>
+					<p class="paragraphs">
+						@org.babyfish.model.metadata.ComparatorProperties has a parametertype is string array, 
+						this parameter allows you to specify several property names
+						<ul class="no-paragraphs">
+							<li>If you specify an empty array, that equals that you does <span class="important">NOT</span> use @ComparatorProperties.</li>
+							<li>Otherwise, each property name must be the name of a <span class="important">scalar</span> property that is declared or inherited by the ObjectModel interface of the element class.</li>
+						</ul>
+					</p>
+					<p class="paragraphs">
+						BabyFish collection has another advantage ability: <span class="important">mutable collection elements</span>. 
+						In JDK collection framework, if a field can affect the behavior of hashCode and equals of the object, 
+						you can not change the field after the object is added into a collection to be the element of java.util.Set&lt;E&gt; 
+						or the key of java.util.Map&lt;K, V&gt;. 
+						BabyFish collection supports mutable collection elements, so you can change an object that is already been added into some collections 
+						if the hashCode of this object and equality with other object are changed because of your changing, all the collections that contain 
+						this object will be adjusted automatically and implicitly in order to adapt to this change. 
+						In this demo, if you've already added an object of Employee to the collection "Department.getEmployees()", 
+						you can still change the firstName or lastName of the object of Employee because 
+						"Department.getEmployees()" will be adjusted automatically and implicitly, 
+						don't worry it will not work normally after you do that like the JDK implmentation of set/map.
+					</p>
+					<div class="important-section">
+						<p class="paragraphs">
+							In this demo, the ObjectModel interface Employee.OM is marked by the annotation @org.babyfish.model.metadata.ComparatorProperties,
+							that means all the collections that used Employee to element type will be affected(of course include the collection "Department.getEmployees()").
+							Please think carefully before you do this.
+						</p>
+						<p class="paragraphs">
+							Maybe the effect of this is too wide, perhaps more common scenario is that we only want to <span class="important">ONLY</span> affect the comparator behavior 
+							of "Department.getEmployees()", <span class="important">NOT</span> any collections that use Employee to be its element.
+						</p>
+					</div>
+				</fieldset>
+				<fieldset class="chapter">
+					<legend>Use annotation @ComparatorProperties on AssociationProperty level</legend>
+					<p class="paragraphs">
+						We can also use @org.babyfish.model.metadata.ComparatorProperpties on the collection association level.
+					</p>
+					<div class="important">Department.class</div>
+					<p class="paragraphs">
+						Department has only a subtle change, @org.babyfish.model.metadata.ComparatorProperpties is applied on the collection association "employees" of its ObjectModel interface. 
+					</p>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package ... ...;
+
+import /*{ <span class="important">org.babyfish.model.metadata.ComparatorProperties</span> }*/;
+import ... Other importing statement are ignored ...;
+
+public class Department {
+ 
+    ... Other code is omitted ...
+        
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        /*{ <span class="important">@ComparatorProperties</span> }*/({ "firstName", "lastName" })
+        @Association(opposite = "departmentReference")
+        Set<Employee> getEmployees();
+    }
+}
+						]]></pre>
+					</div>
+					<div class="important">Employee.class</div>
+					<p class="paragraphs">
+						Employee need not to be changed, I list some code of it again.
+					</p>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package ... ...;
+
+import ... ...;
+
+public class Employee {
+ 
+    ... Other code is omitted ...
+    
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getFirstName();
+        void setFirstName(String firstName);
+        
+        @Scalar
+        String getLastName();
+        void setLastName(String lastName);
+        
+        @Association(opposite = "employees")
+        Reference<Department> getDepartmentReference();
+    }
+}
+						]]></pre>
+					</div>
+					<p class="paragraphs">
+						Similarly as above, in this example, "Department.getEmployees()" uses the property "firstName" and "lastName" to 
+						calculate the hashCode the Employee objects or check whether two Employee ojects are equal.
+					</p>
+					<p class="paragraphs">
+						This demo shows the other way to use @org.babyfish.model.metadata.ComparatorProperties, be different with the previous demo, 
+						in this demo, <span class="important">ONLY</span> the collection "Department.getEmployees()" will be affected. 
+						<span class="important">NOT</span> any collections that use Employee to be its elements.
+					</p>
+					<p class="paragraphs">
+						@org.babyfish.model.metadata.ComparatorProperties has a parametertype is string array, 
+						this parameter allows you to specify several property names
+						<ul class="no-paragraphs">
+							<li>If you specify an empty array, that equals that you does <span class="important">NOT</span> use @ComparatorProperties.</li>
+							<li>Otherwise, each property name must be the name of a <span class="important">scalar</span> property that is declared or inherited by the ObjectModel interface of the element class.</li>
+						</ul>
+					</p>
+					<p class="paragraphs">
+						BabyFish collection has another advantage ability: <span class="important">mutable collection elements</span>. 
+						In JDK collection framework, if a field can affect the behavior of hashCode and equals of the object, 
+						you can not change the field after the object is added into a collection to be the element of java.util.Set&lt;E&gt; 
+						or the key of java.util.Map&lt;K, V&gt;. 
+						BabyFish collection supports mutable collection elements, so you can change an object that is already been added into some collections 
+						if the hashCode of this object and equality with other object are changed because of your changing, all the collections that contain 
+						this object will be adjusted automatically and implicitly in order to adapt to this change. 
+						In this demo, if you've already added an object of Employee to the collection "Department.getEmployees()", 
+						you can still change the firstName or lastName of the object of Employee because 
+						"Department.getEmployees()" will be adjusted automatically and implicitly, 
+						don't worry it will not work normally after you do that like the JDK implmentation of set/map.
+					</p>
+					<div class="important-section">
+						When both the ObjectModel-level @ComparatorProperties and Association-Level @ComparatorProperties are used, the Assocation-Level annotation has a higher priority.
+					</div>
+				</fieldset>
+				<fieldset class="chapter">
+					<legend>Test Code</legend>
+					<div class="important-section">
+						Before we show the test code, we must explain these points, especially when you have <span class="important">NOT</span> completed the study of BabyFish collection framework.
+						<ol>
+							<span class="important">ReplacementRule: </span>
+							Suppose there is a java.util.Set Set&lt;E&gt; and it contains an object, let's call this element object as "a", "b" is another object, the set thinks "a" and "b" are equal because of
+							the methods "hashCode" and "equals" of <span class="important2">the element itself <span class="important">or</span> third-paty comparator</span>,
+							If we want to add "b" into the set, the method "add" will return false because set must contain <span class="important">NO</span> duplicate elements, this is a popular functionality
+							of Java collection framework. The same method of BabyFish collection's also returns false in this case, but BabyFish supports a more detailed rule: ReplacementRule
+							<ul>
+								<li>
+									<span class="important2">ORIGINAL_REFERENCE_WIN: </span> This is behavior of Java collection framework, the collection will not be changed.
+								</li>
+								<li>
+									<span class="important2"><a name="NEW_REFERENCE_WIN_Declaration">NEW_REFERENCE_WIN</a>: </span> In this mode, "b" will replace "a", "b" will be added and "a" will be removed(The add method still returns false).
+								</li>
+							</ul>
+							Babyfish collection supports these 2 modes, <span class="important2">but the collections managed by ObjectModel are forced to use NEW_REFERENCE_WIN</span>.
+						</ol>
+					</div>
+					<p class="paragraphs">
+						Though "Department.getEmployees()" uses the "firstName" and "lastName" to calculate the hashCode of Employee and check whether two Employee objects are equal,
+						but in order to keep the simplicity of our document, the test code will <span class="important">NOT</span> change the property "lastName" of Employee so that it always is null, 
+						<span class="important">ONLY</span> the property "firstName" of Employee will be used in the test code.
+					</p>
+					<p class="paragraphs">
+	    				There are 3 special code styles in the test code.
+	    				<ul class="no-paragraphs">
+	    					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+	    					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+	    					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+	    				</ul>
+	    			</p>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.fec;
+
+import java.util.Set;
+
+import org.babyfish.collection.HashSet;
+import org.babyfish.collection.MACollections;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ComparatorPropertiesTest {
+
+	/*
+	 * Though "Department.getEmployees()" uses the "firstName" and "lastName" to calculate the hashCode 
+	 * of Employee and check whether two Employee objects are equal, but in order to keep the simplicity 
+	 * of our document, the test code will NOT change the property "lastName" of Employee so that it always 
+	 * is null, ONLY the property "firstName" of Employee will be used in the test code.
+	 */
+	@Test
+	public void test() {
+		Department department = new Department();
+		Employee employee1 = new Employee();
+		Employee employee2 = new Employee();
+		Employee employee3 = new Employee();
+		employee1.setFirstName("E-1");
+		employee2.setFirstName("E-2");
+		employee3.setFirstName("E-3");
+		
+		/*
+		 * Validate the initailized state of those objects.
+		 */
+		assertDepartment(department);
+		Assert.assertNull(employee1.getDepartment());
+		Assert.assertNull(employee2.getDepartment());
+		Assert.assertNull(employee3.getDepartment());
+		
+		/*
+		 * Add all the employees into the department,
+		 * the property "department" of all employees will be changed automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">department.getEmployees().addAll(MACollections.wrap(employee1, employee2, employee3));</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee1, employee2, employee3);</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(department, employee1.getDepartment());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(department, employee2.getDepartment());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(department, employee3.getDepartment());</span> }*/
+		
+		/*
+		 * Change the firstName of employee1 from "E-1" to "Boss",
+		 * "department.getEmployees()" retains a third-party comparator that uses "firstName" and "lastName" of 
+		 * Employee to calculate the hashCode of Employee so that the hashCode of employee1 will be changed too.
+		 *
+		 * In order to adapt to the change of hashCode, the "department.getEmployees()" must be adjusted 
+		 * automatically, that means employee1 will be removed, changed, and added AGAIN.
+		 *
+		 * Unfortunately, it is not easy to test the change of the collection by simple code, 
+		 * I give up to test the change of the collection by complex code in order to keep the simplicity of this demo. 
+		 * but you must know that the collection is changed actually.
+		 */
+		/*{ <span class="explicit-modification">employee1.setFirstName("Boss");</span> }*/
+		assertDepartment(department, employee1, employee2, employee3);
+		Assert.assertSame(department, employee1.getDepartment());
+		Assert.assertSame(department, employee2.getDepartment());
+		Assert.assertSame(department, employee3.getDepartment());
+		
+		/*{ <span class="com">&#47;&#42;</span> }*/
+		/*{ <span class="com"> * Change the name of employee2 from "E-2" to "Boss"</span> }*/
+		/*{ <span class="com"> *</span> }*/
+		/*{ <span class="com"> * "department.getEmployees()" retains a third-party comparator that uses "firstName" and "lastName" of</span> }*/ 
+		/*{ <span class="com"> * Employee to calculate the hashCode of Employee so that the hashCode of employee1 will be changed too.</span> }*/
+		/*{ <span class="com"> *</span> }*/
+		/*{ <span class="com"> * In order to adapt to the change of hashCode, the "department.getEmployees()" must be adjusted</span> }*/ 
+		/*{ <span class="com"> * automatically, that means employee1 will be removed, changed, and added AGAIN.</span> }*/
+		/*{ <span class="com"> *</span> }*/
+		/*{ <span class="com"> *</span> }*/ /*{ <span class="important2">When the employee2 is being added into the collection again, its "firstNamename" has already be </span> }*/
+		/*{ <span class="com"> *</span> }*/ /*{ <span class="important2">changed to be "Boss", but employee1 is already existing in the collection and its "firstName" is </span> }*/
+		/*{ <span class="com"> *</span> }*/ /*{ <span class="important2">"Boss" too, so the collection replaces replace employee1 with employee2 because of the</span> }*/
+		/*{ <span class="com"> *</span> }*/ /*{ <a href="#NEW_REFERENCE_WIN_Declaration"><span class="important">ReplacementRule.NEW_REFERENCE_WIN</span></a> }*/
+		/*{ <span class="com"> *</span> }*/
+		/*{ <span class="com"> * Finally, employee1 will be removed from the collection and its property</span> }*/
+		/*{ <span class="com"> * "department" will be set to be null automatically and implicitly.</span> }*/
+		/*{ <span class="com"> &#42;&#47;</span> }*/
+		/*{ <span class="explicit-modification">employee2.setFirstName("Boss");</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee3, employee2);</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertNull(employee1.getDepartment()); </span> }*/
+		Assert.assertSame(department, employee2.getDepartment());
+		Assert.assertSame(department, employee3.getDepartment());
+		
+		/*
+         * Change the firstName of employee3 from "E-III" to "Boss", similarly as above, 
+         * (1) employee2 will be removed from the collection and
+         *     its property "department" will be set to be null automatically and implicitly.
+         * (2) employee3 will become the last child(only one) of this collection.
+         */
+        /*{ <span class="explicit-modification">employee3.setFirstName("Boss");</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee3);</span> }*/
+		Assert.assertNull(employee1.getDepartment());
+		/*{ <span class="implicit-assert">Assert.assertNull(employee2.getDepartment()); </span> }*/
+		Assert.assertSame(department, employee3.getDepartment());
+	}
+	
+	private static void assertDepartment(Department department, Employee ... employees) {
+		Assert.assertEquals(employees.length, department.getEmployees().size());
+		Set<Employee> set = new HashSet<>((employees.length * 4 + 2) / 3);
+		for (Employee employee : employees) {
+			set.add(employee);
+		}
+		Assert.assertEquals(set, department.getEmployees());
+	}
+}
+						]]></pre>
+					</div>
+					<p class="paragraphs">
+						After reading this test case, I think you know why the scalar properties(not only association properties) must be managed by the ObjectModel interface too. :)
+					</p>
+				</fieldset>
+   			</fieldset>
+   			<fieldset class="chapter">
+   				<legend>Declare the FrozenComparator&lt;T&gt; for java.util.SortedSet&lt;E&gt;</legend>
+   				<fieldset class="chapter">
+   					<legend>Main Code</legend>
+   					<p class="paragraphs">
+   						The previous chapter has shown how to specify FrozenEqualityComparator&lt;T&gt; for the association propertyreturn type is "java.util.Set&lt;E&gt;",
+   						the EqualityComparator allows the set to calculate the hashCode of element and check whether two element objects are equal, without dependencies of 
+   						the methods "hashCode" and "equals" of the element object itself.
+   					</p>
+   					<p>
+   						In this chapter, we will show how to specify FrozenComparator&lt;T&gt; for the association propertyreturn type is compatible with "java.util.SortedSet&lt;E&gt;",
+   						the FrozenContext allows the sorted set to compare two element objects. The element class does <span class="important">NOT</span> to implements the 
+   						interface "java.lang.Comparable", and the behavior of "java.lang.Comparable" <span class="important">NEVER</span> be used by the sorted set even if 
+   						this interface has been implemented by the element class. 
+   					</p>
+   					<p>
+   						The previous chapter has discussed enough knowledges about @ComparatorProeprties, so we can view the code immediately in this chapter.
+   					</p>
+   					<div class="important">Department.java</div>
+   					<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.fc;
+   					
+import java.util.NavigableSet;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ComparatorProperties;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+ 
+public class Department {
+ 
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+        return department.om;
+    }
+ 
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    public NavigableSet<Employee> getEmployees() {
+        return this.om.getEmployees();
+    }
+        
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        /*
+         * Use @ComparatorProperties({ "firstName", "lastName" }) to specify the
+         * "org.babyfish.collection.ForzenComparator" to this SortedSet
+         * so that it uses the property "firstName" and "lastName" to 
+         * compare two Employee objects.
+         * 
+         * we only show how to use @ComparatorProperties on the Assocation-level,
+         * the document of other chapter has discussed how to use it on the ObjectModel-level. 
+         */
+        /*{ <span class="important">@ComparatorProperties</span> }*/({ "firstName", "lastName" })
+        @Association(opposite = "departmentReference")
+        NavigableSet<Employee> getEmployees();
+    }
+}
+   						]]></pre>
+   					</div>
+   					<div>Employee.java</div>
+   					<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.fc; 						
+   						
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.reference.Reference;
+ 
+public class Employee {
+ 
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+        
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+        return employee.om;
+    }
+    
+    public String getFirstName() {
+        return this.om.getFirstName();
+    }
+    
+    public void setFirstName(String firstName) {
+        this.om.setFirstName(firstName);
+    }
+    
+    public String getLastName() {
+        return this.om.getLastName();
+    }
+    
+    public void setLastName(String lastName) {
+        this.om.setLastName(lastName);
+    }
+    
+    public Department getDepartment() {
+        return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+        this.om.getDepartmentReference().set(department);
+    }
+ 
+    @ObjectModelDeclaration
+    private interface OM {
+    
+        @Scalar
+        String getFirstName();
+        void setFirstName(String firstName);
+        
+        @Scalar
+        String getLastName();
+        void setLastName(String lastName);
+        
+        @Association(opposite = "employees")
+        Reference<Department> getDepartmentReference();
+    }
+}
+   						]]></pre>
+   					</div>
+   				</fieldset>
+   				<fieldset class="chapter">
+   					<legend>Test Code</legend>
+   					<p class="paragraphs">
+						Though "Department.getEmployees()" uses the "firstName" and "lastName" to calculate the hashCode of Employee and check whether two Employee objects are equal,
+						but in order to keep the simplicity of our document, the test code will <span class="important">NOT</span> change the property "lastName" of Employee so that it always is null, 
+						<span class="important">ONLY</span> the property "firstName" of Employee will be used in the test code.
+					</p>
+					<p class="paragraphs">
+	    				There are 3 special code styles in the test code.
+	    				<ul class="no-paragraphs">
+	    					<li><span class="explicit-modification">Orange&amp;Bold:</span> The code write by programmer to change the association.</li>
+	    					<li><span class="explicit-assert">Orange:</span> Test the changed result caused by the modification of programmer directly(Test explicit modifications).</li>
+	    					<li><span class="implicit-assert">Pink:</span> Test the changed result caused by the automatic bidirectional association synchronization mechanism of ObjectModel(Test implicit modifications).</li>
+	    				</ul>
+	    			</p>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4j.learn.fc;
+
+import org.babyfish.collection.MACollections;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class ComparatorPropertiesTest {
+
+	/*
+	 * Though "Department.getEmployees()" uses the "firstName" and "lastName" to calculate the hashCode 
+	 * of Employee and check whether two Employee objects are equal, but in order to keep the simplicity 
+	 * of our document, the test code will NOT change the property "lastName" of Employee so that it always 
+	 * is null, ONLY the property "firstName" of Employee will be used in the test code.
+	 */
+	@Test
+	public void test() {
+		Department department = new Department();
+		Employee employee1 = new Employee();
+		Employee employee2 = new Employee();
+		Employee employee3 = new Employee();
+		employee1.setFirstName("E-1");
+		employee2.setFirstName("E-2");
+		employee3.setFirstName("E-3");
+		
+		/*
+		 * Validate the initailized state of those objects.
+		 */
+		assertDepartment(department);
+		Assert.assertNull(employee1.getDepartment());
+		Assert.assertNull(employee2.getDepartment());
+		Assert.assertNull(employee3.getDepartment());
+		
+		/*
+		 * Add all the employees into the department,
+		 * the property "department" of all employees will be changed automatically and implicitly.
+		 */
+		/*{ <span class="explicit-modification">department.getEmployees().addAll(MACollections.wrap(employee1, employee2, employee3));</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee1, employee2, employee3);</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(department, employee1.getDepartment());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(department, employee2.getDepartment());</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertSame(department, employee3.getDepartment());</span> }*/
+		
+		/*
+		 * Change the firstName of employee1 from "E-1" to "E-I",
+		 * "department.getEmployees()" retains a third-party comparator that uses "firstName" and "lastName" of 
+		 * Employee to calculate the hashCode of Employee so that the hashCode of employee1 will be changed too.
+		 *
+		 * In order to adapt to the change of hashCode, the "department.getEmployees()" must be adjusted 
+		 * automatically, that means employee1 will be removed, changed, and added AGAIN, finally, it will 
+		 * become the last child of "department.getEmployees()" because "E-2" &lt; "E-3" &lt; "E-I"
+		 */
+		/*{ <span class="explicit-modification">employee1.setFirstName("E-I");</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee2, employee3, employee1);</span> }*/
+		Assert.assertSame(department, employee1.getDepartment());
+		Assert.assertSame(department, employee2.getDepartment());
+		Assert.assertSame(department, employee3.getDepartment());
+		
+		/*
+		 * Change the firstName of employee2 from "E-2" to "E-II", similarly as above, 
+		 * employee2 will become the last child of department.getEmployees()
+		 */
+		/*{ <span class="explicit-modification">employee2.setFirstName("E-II");</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee3, employee1, employee2);</span> }*/
+		Assert.assertSame(department, employee1.getDepartment());
+		Assert.assertSame(department, employee2.getDepartment());
+		Assert.assertSame(department, employee3.getDepartment());
+		
+		/*
+		 * Change the firstName of employee3 from "E-3" to "E-III", similarly as above, 
+		 * employee3 will become the last child of department.getEmployees()
+		 */
+		/*{ <span class="explicit-modification">employee3.setFirstName("E-III");</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee1, employee2, employee3);</span> }*/
+		Assert.assertSame(department, employee1.getDepartment());
+		Assert.assertSame(department, employee2.getDepartment());
+		Assert.assertSame(department, employee3.getDepartment());
+		
+		/*
+		 * Change the firstName of employee1 from "E-I" to "E-X", similarly as above, 
+		 * employee1 will become the last child of department.getEmployees()
+		 */
+		/*{ <span class="explicit-modification">employee1.setFirstName("E-X");</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee2, employee3, employee1);</span> }*/
+		Assert.assertSame(department, employee1.getDepartment());
+		Assert.assertSame(department, employee2.getDepartment());
+		Assert.assertSame(department, employee3.getDepartment());
+		
+		/*{ <span class="com">&#47;&#42;</span> }*/
+		/*{ <span class="com"> * Change the name of employee2 from "E-II" to "E-X"</span> }*/
+		/*{ <span class="com"> *</span> }*/
+		/*{ <span class="com"> * "department.getEmployees()" retains a third-party comparator that uses "firstName" and "lastName" of</span> }*/ 
+		/*{ <span class="com"> * Employee to calculate the hashCode of Employee so that the hashCode of employee1 will be changed too.</span> }*/
+		/*{ <span class="com"> *</span> }*/
+		/*{ <span class="com"> * In order to adapt to the change of hashCode, the "department.getEmployees()" must be adjusted</span> }*/ 
+		/*{ <span class="com"> * automatically, that means employee1 will be removed, changed, and added AGAIN.</span> }*/
+		/*{ <span class="com"> *</span> }*/
+		/*{ <span class="com"> *</span> }*/ /*{ <span class="important2">When the employee2 is being added into the collection again, its "firstNamename" has already be </span> }*/
+		/*{ <span class="com"> *</span> }*/ /*{ <span class="important2">changed to be "E-X", but employee1 is already existing in the collection and its "firstName" is </span> }*/
+		/*{ <span class="com"> *</span> }*/ /*{ <span class="important2">"E-X" too, so the collection replaces replace employee1 with employee2 because of the</span> }*/
+		/*{ <span class="com"> *</span> }*/ /*{ <a href="#NEW_REFERENCE_WIN_Declaration"><span class="important">ReplacementRule.NEW_REFERENCE_WIN</span></a> }*/
+		/*{ <span class="com"> *</span> }*/
+		/*{ <span class="com"> * Finally:</span> }*/
+		/*{ <span class="com"> * (1) employee1 will be removed from the collection and</span> }*/
+		/*{ <span class="com"> *     its property "department" will be set to be null automatically and implicitly.</span> }*/
+		/*{ <span class="com"> * (2) employee2 will become the last child of this collection because "E-III" &lt; "EX".</span> }*/
+		/*{ <span class="com"> &#42;&#47;</span> }*/
+		/*{ <span class="explicit-modification">employee2.setFirstName("E-X");</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee3, employee2);</span> }*/
+		/*{ <span class="implicit-assert">Assert.assertNull(employee1.getDepartment()); </span> }*/
+		Assert.assertSame(department, employee2.getDepartment());
+		Assert.assertSame(department, employee3.getDepartment());
+		
+		/*
+         * Change the firstName of employee3 from "E-III" to "E-X", similarly as above, 
+         * (1) employee2 will be removed from the collection and
+         *     its property "department" will be set to be null automatically and implicitly.
+         * (2) employee3 will become the last child(only one) of this collection.
+         */
+        /*{ <span class="explicit-modification">employee3.setFirstName("E-X");</span> }*/
+		/*{ <span class="explicit-assert">assertDepartment(department, employee3);</span> }*/
+		Assert.assertNull(employee1.getDepartment());
+		/*{ <span class="implicit-assert">Assert.assertNull(employee2.getDepartment()); </span> }*/
+		Assert.assertSame(department, employee3.getDepartment());
+	}
+	
+	private static void assertDepartment(Department department, Employee ... employees) {
+		Assert.assertEquals(employees.length, department.getEmployees().size());
+		int index = 0;
+		for (Employee employee : department.getEmployees()) {
+			Assert.assertSame(employees[index++], employee);
+		}
+	}
+}
+						]]></pre>
+					</div>
+   				</fieldset>
+   			</fieldset>
+   			<fieldset class="chapter">
+   				<legend>About other collections</legend>
+   				The comparator behavior of java.util.Set&lt;E&gt; of ObjectModel has been discussed, but what is the comparator behavior of java.util.List&lt;E&gt;?
+   				<ul>
+   					<li>
+   						<span class="important">java.util.List&lt;E&gt;:</span>
+   						Default ReferenceEqualityComparator&lt;T&gt; or specified ForzenEqualityComparator&lt;T&gt; is used by the map,
+   						but the the list only use the method equals of the it because it does not need to use the method hashCode  
+   					</li>
+   					<li>
+   						<span class="important">java.util.Map&lt;K, V&gt;:</span>
+   						<ul>
+   							<li>
+   								<span class="important">KEY:</span>
+   								In OjbectModel, you can <span class="important2">NOT</span> use annotation to specify the comparator for the <span class="important2">key</span> of the map, 
+   								so the method(s) "hashCode &amp; equals" or "compareTo" of the key object <span class="important2">itself</span> will be used. 
+   							</li>
+   							<li>
+   								<span class="important">VALUE:</span>
+   								Default ReferenceEqualityComparator&lt;T&gt; or specified ForzenEqualityComparator&lt;T&gt; is used by the map,
+   								but the the map only use the method "equals" of the it because the map does not need to use the method hashCode to manage the <span class="important2">value</span>.
+   							</li>
+   						</ul>
+   					</li>
+   				</ul>
+   			</fieldset>
+   			<fieldset class="chapter">
+   				<legend>Default comparator</legend>
+   				<p class="paragraphs">
+   					When there is no either Association-Level or ObjectModel-level annotation "@ComparatorProperties" on a collection association property
+   					or the parameter of that annotation specify no scalar properties.
+   					<ul class="no-paragraphs">
+   						<li>
+   							When the association property type is compatible with java.util.SortedSet&lt;E&gt;, 
+   							<span class="important2">org.babyfish.lang.IllegalProgramException</span> will be raised 
+   							because no default behavior is supported for it.
+   						</li>
+   						<li>
+   							Otherwise, the collection uses the default EqualityComparator: <span class="important2">org.babyfish.collection.ReferenceEqualityComparator&lt;T&gt;</span>. 
+   							the comparator let the collection use "java.lang.System.identityHashCode(Object)" to calculate the hash code of element object
+   							and use java reference equality to check whether two element objects are equal. 
+   							The collections with the default comparator works like "java.util.IdentityHashMap&lt;K, V&gt;" very much.
+   						</li>
+   					</ul>
+   				</p>
+				<div class="important-section">
+					This is <span class="important">ONLY</span> the default behavior of ObjectModel4Java, <span class="important">NOT</span> the default behavior of ObjectModel4JPA.
+					In ObjectModel4JPA, it supports another default behavior, that will be disccuessed in the document of ObjectModel4JPA. 
+				</div>
+   			</fieldset>
+   			<fieldset class="chapter">
+				<legend>Scalar Properties</legend>
+		    	<fieldset class="chapter">
+	    			<legend>Allowed data type of scalar properties</legend>
+	    			<ol>
+	    				<li>
+		    				<span class="important2">Primitive types:</span> 
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">boolean</span>,
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">char</span>, 
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">byte</span>, 
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">short</span>, 
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">int</span>, 
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">long</span>, 
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">float</span>,
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">double</span>
+		    			</li>
+		    			<li>
+		    				<span class="important2">Box types of primitive types:</span>
+		    				java.lang.Boolean,
+		    				java.lang.Character,
+		    				java.lang.Byte,
+		    				java.lang.Short,
+		    				java.lang.Integer,
+		    				java.lang.Long,
+		    				java.lang.Float,
+		    				java.lang.Double
+		    			</li>
+		    			<li>
+		    				<span class="important2">Big Number types in java.math:</span>
+		    				java.math.BigInteger, java.math.BigDecimal
+		    			</li>
+		    			<li>
+		    				<span class="important2">String:</span>
+		    				java.lang.String
+		    			</li>
+						<li>
+		    				<span class="important2">The classic data types(If you use java8, don't use them):</span>
+		    				java.util.Date, java.util.Calendar, java.util.GregorianCalendar, java.sql.Date, java.sql.Time, java.sql.Timestamp
+							(The getter and setter are generated with data cloning so that they work like immutable objects in ObjectModel)
+		    			</li>
+						<li>
+							<span class="important2">All the types in "java.time"(Requires Java8)</span>
+							java.time.Clock, java.time.Duration, java.time.Instant, java.time.LocalDate, java.time.LocalDateTime, java.time.LocalTime, 
+							java.time.MonthDay, java.time.OffsetDateTime, java.time.OffsetTime, java.time.Period, java.time.Year, 
+							java.time.YearMonth, java.time.ZonedDateTime, java.time.ZoneId, java.time.ZoneOffset
+						</li>
+						<li>
+							<span class="important2">Unstable big data</span>
+							<span style="color: rgb(127, 0, 85); font-weight: bold;">char[]</span>, 
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">byte[]</span>,
+							java.io.Serializable
+						</li>
+		    			<li>
+		    				<span class="important2">Any java Enum.</span>
+		    			</li>
+						<li>
+							<span class="important2">
+								Any custom class with the ObjectModel whose mode is
+								ObjectModelMode.<span class="important">EMBEDDABLE</span>
+							</span>
+						</li>
+		    		</ol>
+					<div class="important-section">
+						Notes: 
+						The scalar property whose type is unstable big data
+						(
+							<span style="color: rgb(127, 0, 85); font-weight: bold;">char[]</span>, 
+		    				<span style="color: rgb(127, 0, 85); font-weight: bold;">byte[]</span>,
+							java.io.Serializable
+						)
+						<ul>
+							<li>
+								Can <span class="important">ONLY</span> be declared in the ObjectModel interface
+								whose mode is ObjectModelMode.<span class="important">REFERENCE</span>
+							</li>
+							<li>
+								can <span class="important">NOT</span>
+								be referenced by the annotation @org.babyfish.model.metadata.ReferenceComparisonRule
+							</li>
+						</ul>
+					</div>
+	    		</fieldset>
+    		</fieldset>
+    	</fieldset>
+    </div>
+</body>
+</html>

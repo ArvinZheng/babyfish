@@ -1,0 +1,54 @@
+/*
+ * BabyFish, Object Model Framework for Java and JPA.
+ *
+ * Copyright (c) 2008-2015, Tao Chen
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * Please visit "http://opensource.org/licenses/LGPL-3.0" to know more.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * for more details.
+ */
+package org.babyfish.persistence.path;
+
+/**
+ * @author Tao Chen(&#38472;&#28059;)
+ */
+public interface FetchPath extends QueryPath {
+    
+    /**
+     * Get the first fetch node of the path.
+     * @return The first fetch node of the path, it may be null and
+     * it always be same with {@link #getRootNode()}.{@link Node#getNextNode() getNextNode()}
+     */
+    Node getFirstNode();
+
+    public interface Node {
+        
+        String getName();
+        
+        GetterType getGetterType();
+        
+        CollectionFetchType getCollectionFetchType();
+        
+        Node getNextNode();
+    }
+    
+    public interface Builder {
+        
+        Builder get(String nodeName);
+        
+        Builder get(String nodeName, GetterType getterType);
+
+        Builder get(String nodeName, CollectionFetchType collectionFetchType);
+        
+        Builder get(String nodeName, GetterType getterType, CollectionFetchType collectionFetchType);
+        
+        FetchPath end();
+    }
+}

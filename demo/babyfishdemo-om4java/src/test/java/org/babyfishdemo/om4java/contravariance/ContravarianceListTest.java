@@ -1,0 +1,108 @@
+package org.babyfishdemo.om4java.contravariance;
+
+import org.babyfish.collection.MACollections;
+import org.junit.Assert;
+import org.junit.Test;
+ 
+/**
+ * @author Tao Chen(&#38472;&#28059;)
+ */
+public class ContravarianceListTest {
+ 
+    @Test(expected = IllegalArgumentException.class)
+    public void testCovarianceListFailed() {
+        /*
+         * The covariance property "components" requires the element must be instance of TabPage,
+         * but here the argument is instance of Button, so the java.lang.IllegalArgumentException will be raised
+         */
+        new TabControl().getComponents().add(new Button());
+    }
+    
+    @Test
+    public void testCovarianceListSucessed() {
+    
+        TabControl tabControl = new TabControl();
+        TabPage tabPage1 = new TabPage();
+        TabPage tabPage2 = new TabPage();
+        TabPage tabPage3 = new TabPage();
+        TabPage tabPage4 = new TabPage();
+        
+        assertContainer(tabControl);
+        assertTabControl(tabControl);
+        
+        /*
+         * Modify the covariance property
+         */
+        tabControl.getComponents().addAll(MACollections.wrap(tabPage1, tabPage2, tabPage3, tabPage4));
+        
+        /*
+         * The covariance property is modified
+         */
+        assertContainer(tabControl, tabPage1, tabPage2, tabPage3, tabPage4);
+        
+        /*
+         * The contravariance property is modified too because it shares data with covariance property
+         */
+        assertTabControl(tabControl, tabPage1, tabPage2, tabPage3, tabPage4);
+        
+        /*
+         * The opposite many-to-one assocation is modified automatically and impplicitly
+         */
+        Assert.assertSame(tabControl, tabPage1.getParent());
+        Assert.assertSame(tabControl, tabPage2.getParent());
+        Assert.assertSame(tabControl, tabPage3.getParent());
+        Assert.assertSame(tabControl, tabPage4.getParent());
+    }
+    
+    @Test
+    public void testContravarianceList() {
+    
+        TabControl tabControl = new TabControl();
+        TabPage tabPage1 = new TabPage();
+        TabPage tabPage2 = new TabPage();
+        TabPage tabPage3 = new TabPage();
+        TabPage tabPage4 = new TabPage();
+        
+        assertContainer(tabControl);
+        assertTabControl(tabControl);
+        
+        /*
+         * Modify the contravariance property
+         */
+        tabControl.getTabPages().addAll(MACollections.wrap(tabPage1, tabPage2, tabPage3, tabPage4));
+        
+        /*
+         * The contravariance property is modified
+         */
+        assertTabControl(tabControl, tabPage1, tabPage2, tabPage3, tabPage4);
+        
+        /*
+         * The covariance property is modified too because it shares data with contravariance property
+         */
+        assertContainer(tabControl, tabPage1, tabPage2, tabPage3, tabPage4);
+        
+        /*
+         * The opposite many-to-one assocation is modified automatically and impplicitly
+         */
+        Assert.assertSame(tabControl, tabPage1.getParent());
+        Assert.assertSame(tabControl, tabPage2.getParent());
+        Assert.assertSame(tabControl, tabPage3.getParent());
+        Assert.assertSame(tabControl, tabPage4.getParent());
+    }
+ 
+    private static void assertContainer(Container container, Component ... components) {
+        Assert.assertEquals(components.length, container.getComponents().size());
+        int index = 0;
+        for (Component component : container.getComponents()) {
+            Assert.assertSame(components[index++], component);
+        }
+    }
+    
+    private static void assertTabControl(TabControl tabControl, TabPage ... tabPages) {
+        Assert.assertEquals(tabPages.length, tabControl.getTabPages().size());
+        int index = 0;
+        for (TabPage tabPage : tabControl.getTabPages()) {
+            Assert.assertSame(tabPages[index++], tabPage);
+        }
+    }
+}

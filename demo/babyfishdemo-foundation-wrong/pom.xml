@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.babyfishdemo</groupId>
+    <artifactId>babyfishdemo-parent</artifactId>
+    <version>1.0.0.Alpha</version>
+  </parent>
+  <artifactId>babyfishdemo-foundation-wrong</artifactId>
+  <name>babyfishdemo-foundation-wrong</name>
+  <url>http://maven.apache.org</url>
+  
+  <dependencies>
+  
+  	<dependency>
+  	  <groupId>org.babyfish</groupId>
+  	  <artifactId>babyfish-core</artifactId>
+  	  <version>${babyfish.version}</version>
+  	</dependency>
+  	
+  </dependencies>
+  
+  <build>
+  	<plugins>
+  	  <plugin>
+  	    <artifactId>maven-surefire-plugin</artifactId> 
+        <configuration>
+          <!-- 
+          	Use maven-surefire-plugin to specify the JVM arguments for unit test cases.
+          	
+          	(1) -Dorg.babyfish.util.LazyResource.LOAD_LAZY_RESOURCE_IMMEDIATELY
+          	
+          		For product mode, "LazyResource.of(...)" will NOT load the real resource
+		 		until LazyResource.get() is used at the first time. 
+		 		
+		 		But for unit test mode, you can use JVM parameter 
+		 		'-Dorg.babyfish.util.LazyResource.LOAD_LAZY_RESOURCE_IMMEDIATELY=true'
+		 		to let babyfish ignore the laziness of LazyResource so that
+		 		the resource can be loaded and VALIDATED as soon as possible.
+		 
+          	(2) -Dorg.babyfish.util.Resources.LOAD_RESOURCE_LOCALE
+          	
+          		For product mode, "Resources.of(...)" or "LazyResource.of(...).get()"
+		 		ONLY load and validate the resource whose locale is same with the locale
+		 		of the current JVM.
+		 		
+			 	But for unit test mode, you can use JVM parameter
+		 		'-Dorg.babyfish.util.Resources.LOAD_RESOURCE_LOCALE=<<locale-assignment-list>>'
+		 		to specify all the locale so that the unit test can load all the resources
+		 		and validate each one as soon as possible.
+			
+				<<locale-assignment-list>> = <<locale-assignment>> ('; ' <<locale-assignment>>)* ';'?
+		 		<<locale-assignment>>      = ::package-name:: '=' <<locale-list>>;
+		 		<<locale-list>>            = <<locale>> (',' <<locale>>)*
+		 		<<locale>>                 = 'null' | ::locale-name::
+		 
+		 		For example:
+		 		-Dorg.babyfish.util.Resources.LOAD_RESOURCE_LOCALE="com.yourcompany.product1 = null, zh_CN; com.yourcompany.product2 = null, de_DE, fr_FR;"
+          -->
+          <systemPropertyVariables>
+          	<org.babyfish.util.LazyResource.LOAD_LAZY_RESOURCE_IMMEDIATELY>true</org.babyfish.util.LazyResource.LOAD_LAZY_RESOURCE_IMMEDIATELY>
+          	<org.babyfish.util.Resources.LOAD_RESOURCE_LOCALE>org.babyfishdemo.foundation.typedi18n.wrong = null, xx_YY</org.babyfish.util.Resources.LOAD_RESOURCE_LOCALE>
+          </systemPropertyVariables>
+          <!-- 
+          		You can also do it like this
+          		<argLine>-Dorg.babyfish.util.LazyResource.LOAD_LAZY_RESOURCE_IMMEDIATELY=true -Dorg.babyfish.util.Resources.LOAD_RESOURCE_LOCALE="org.babyfishdemo.foundation.typedi18n.wrong = null, xx_YY"</argLine> 
+          -->
+        </configuration> 
+	  </plugin> 
+  	</plugins>
+  </build>
+  
+</project>

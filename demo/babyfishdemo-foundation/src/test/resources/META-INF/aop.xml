@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<aspectj>
+	<aspects>
+		<aspect name="org.babyfishdemo.foundation.typedi18n.generic.ComplexDemoAspect"/>
+	</aspects>
+	<weaver options="-verbose">
+		<include within="org.babyfishdemo.foundation.typedi18n.generic.*"/>
+	</weaver>
+</aspectj>

@@ -1,0 +1,2809 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>BabyFish X Collection Framework</title>
+	
+	<style type="text/css">
+		.problem {
+			font-weight: bold;
+			font-size: 20px;
+			padding: 20px;
+			color: #006600;
+			border: 3px double #006600;
+			border-radius: 10px;
+			background-color: #aaaaff;
+		}
+		.explicit {
+			font-weight: bold;
+			color: rgb(200, 100, 0);
+		}
+		.implicit-yes {
+			color: rgb(255, 0, 255);
+		}
+		.implicit-no {
+			color: rgb(100, 0, 100);
+		}
+	</style>
+	
+	<script type="text/javascript" src="../common/jquery-1.10.2.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/babyfish-doc.css"/>
+	<script type="text/javascript" src="../common/babyfish-doc.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/google-code-prettify.css"/>
+	<script type="text/javascript" src="../common/google-code-prettify.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="../common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		var openNullsSourceCodeDialog = function() {
+			$('#nullsSourceCodeDialog').dialog({
+				title: 'Some methods of org.babyfish.lang.Nulls',
+				width: $(document.body).width() * 0.75,
+				resizable : false
+			});
+		};
+		$(function() {
+			initChapters();
+			initCodeBlocks();
+			initButtons();
+		});
+	</script>
+</head>
+<body id="no-margin-body">
+    <div id="head">
+        <div id="title">BabyFish X Collection Framework</div>
+        <div id="right-top-conner">
+            <a class="button" href="../index.xhtml">Back to the start page</a>
+	    	<a class="button" href="index.xhtml">Back to BabyFish Collection Framework</a>
+        </div>
+    </div>
+    <div id="content">
+    	<div id="dictionary"></div>
+    	<fieldset class="chapter">
+    		<legend>Outline</legend>
+    		BabyFish <span class="important">X</span> Collection Framework is an extension of Java Collection Framework,
+    		it is the base of BabyFish <span class="important">MA</span> Collection Framework.
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Class Diagram</legend>
+    		<p class="paragraphs">
+    			Before we learn the X Collection Framework, let's look the class diagram of X Collection Framework.
+    			In order to keep the simplicity of this document, this diagram does <span class="important">NOT</span>
+    			list all types and relationships.
+    		</p>
+    		<p class="paragraphs">
+    			The types of this diagram have 4 different colors:
+    			<ul class="no-paragraphs">
+    				<li>
+    					<span style="font-weight:bold;color:rgb(128, 128, 128);">Gray: </span>
+    					They are interfaces supported by Java Collection Framework.
+    				</li>
+    				<li>
+    					<span style="font-weight:bold;color:rgb(45, 255, 45);">Green: </span>
+    					They are main collection interfaces supported by BabyFish X Collection Framework.
+    				</li>
+    				<li>
+    					<span style="font-weight:bold;color:rgb(255, 127, 127);">Red: </span>
+    					These types are used by BabyFish X Collection Framework.
+    				</li>
+    				<li>
+    					<span style="font-weight:bold;color:rgb(255, 128, 0);">Orange: </span>
+    					The implementation classes of BabyFish X Collection Framework.
+    				</li>
+    			</ul>
+    		</p>
+    		<img src="x-collection.jpg"/>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend><a name="replacementRuleChapater">Replacement Rule</a></legend>
+    		<p class="paragraphs">
+    			As we know, java.util.Set&lt;E&gt; contains <span class="important">NO</span> duplicated elements,
+    			and java.util.Map&lt;E&gt; contains <span class="important">NO</span> duplicated keys.
+    			When we add a new element/key into the set/map, if the element/key is already existing in the set/map,
+    			Java Collection Framework will ignore this adding operation and the the method "add/put" returns false/null.
+    		</p>
+    		<p class="paragraphs">
+    			Let's see this code
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+String a = "abcdefg";
+String b = new String(a);
+Assert.assertNotSame(a, b);
+Assert.assertEquals(a, b);
+
+Set<String> set = new java.util.HashSet<>();
+Assert.assertTrue(set.add(a));
+Assert.assertFalse(set.add(b));
+//The set still retains the orignal referfance "a"
+Assert.assertSame(/*{ <span class="important">a</span> }*/, set.iterator().next());
+    				]]></pre>
+    			</div>
+    			In this example, "a" is not "b", but "a" is equal to "b", when we add "b" into the set after we added
+    			"a" into the set, Java Collection Framework ignore this operation and the set still retains the refereance
+    			of "a".
+    		</p>
+    		<p class="paragraphs">
+    			X Collection Framework supports ReplacmentRule.
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+public enum /*{ <a name="ReplacementRuleDeclaration" class="pln">ReplacementRule</a> }*/ {
+
+	/*{ <a name="ReplacementRule_NEW_REFERENCE_WIN" class="pln">NEW_REFERENCE_WIN</a> }*/, //Default value
+	
+	/*{ <a name="ReplacementRule_OLD_REFERENCE_WIN" class="pln">OLD_REFERENCE_WIN</a> }*/,
+}
+    				]]></pre>
+    			</div>
+    			The BabyFish collection implementation of set/map can choose one mode of ReplacementRule,
+    			When we try to add an element/key into set/map that is already existing in this set/map.
+    			Be same with Java collection the method "add/put" will return false/null, and when the
+    			ReplacementRule of the set/map is
+    			<ul class="no-paragraphs">
+    				<li>
+    					<span class="important2">OLD_REFERENCE_WIN: </span> the set/map still retains the reference
+    					of original element/key that is existing in the set/map after the modification, 
+    					this is mode is compatible with Java Collection Framework.
+    				</li>
+    				<li>
+    					<span class="important2">NEW_REFERENCE_WIN: </span> the set/map retains the reference of new element/key 
+    					after the modification.
+    				</li>
+    			</ul>
+    			Please look this code to understand it
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+String a = "abcdefg";
+String b = new String(a);
+Assert.assertNotSame(a, b);
+Assert.assertEquals(a, b);
+
+Set<String> set1 = new org.babyfish.collection.HashSet<>(ReplacementRule./*{ <a href="#ReplacementRule_OLD_REFERENCE_WIN">OLD_REFERENCE_WIN</a> }*/);
+Assert.assertTrue(set1.add(a));
+Assert.assertFalse(set1.add(b));
+//The set still retains the orignal referfance "a"
+Assert.assertSame(/*{ <span class="important">a</span> }*/, set1.iterator().next());
+
+Set<String> set2 = new org.babyfish.collection.HashSet<>(ReplacementRule./*{ <a href="#ReplacementRule_NEW_REFERENCE_WIN">NEW_REFERENCE_WIN</a> }*/);
+Assert.assertTrue(set2.add(a));
+Assert.assertFalse(set2.add(b));
+//The set retains the new referfance "a"
+Assert.assertSame(/*{ <span class="important">b</span> }*/, set2.iterator().next());
+    				]]></pre>
+    			</div>
+    		</p>
+    		<div class="important-section">
+    			<ol>
+    				<li>
+    					In BabyFish Collection Framework(both "X" and "MA"), 
+    					<span class="important">NOT</span> all the constructors of the implementation class of set/map
+    					support a parameter whose type is org.babyfish.collection.ReplacementRule, some constructor uses
+    					the default value, <span class="important2">The default value is ReplacementRule.NEW_REFERENCE_WIN</span>.
+    				</li>
+    				<li>
+    					In <a href="../object-model/index.xhtml">ObjectModel</a>(both "4java" and "4jpa"), the collection
+    					association properties <span class="important">ONLY</span> support the set/map of the mode 
+    					<span class="important2">ReplacementRule.NEW_REFERENCE_WIN</span>.
+    				</li>
+    			</ol>
+    		</div>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Comparators</legend>
+    		<p class="paragraphs">
+    			X Collection Framework extends the comparator functionality of Java Collection Framework.
+    		</p>
+    		<fieldset class="chapter">
+    			<legend>java.util.Comparator&lt;T&gt;</legend>
+    			<p class="paragraphs">
+    				In Java Collection Framework, when we want to use java.util.TreeSet&lt;E&gt; or java.util.TreeMap&lt;K, V&gt;, we can specify an instance of
+	    			java.util.Comparator&lt;T&gt; to the set/map so that the set/map can compare two elements/keys by third-party comparison rule, 
+	    			<span class="important">NOT</span> by the rule of the the element/key itself if the class of element/key has implemented 
+	    			java.lang.Comparable&lt;T&gt;.
+    			</p>
+    			<p class="paragraphs">
+    				Be same with Java Collection Framework, the java.util.Comparator can be used in BabyFish Collection Framework too, this functionality is same
+    				with JDK so that we need <span class="important">NOT</span> to discuss it too much this document. I <span class="important">ONLY</span>
+    				emphasize two things here. 
+    			</p>
+    			<div class="important-section">
+    				<ol>
+    					<li>
+		    				<span class="important">Be careful!</span> When you want to reverse comparator, 
+		    				please do <span class="important">NOT</span> use the method "java.util.Collections.reverseOrder(java.util.Comparator)",
+		    				you'd better to use the method "<a href="collection-helper.xhtml">org.babyfish.collection.MACollections</a>.reverseOrder(java.util.Comparator)".
+		    				We will discuss the reason later.
+    					</li>
+    					<li>
+    						In BabyFish X Collection Framework, java.util.Comparator&lt;T&gt; can be used by
+    						<ol style="color:#444444">
+	    						<li>The element of java.util.SortedSet&lt;E&gt; and java.util.NavigableSet&lt;E&gt;(Be same with Java Collection Framework)</li>
+	    						<li>The key of java.util.SortedMap&lt;K, V&gt; and java.util.NavigableMap&lt;K, V&gt;(Be same with Java Collection Framework)</li>
+	    						<li>The element of list</li>
+	    						<li>The value of map</li>
+    						</ol>
+    					</li>
+    				</ol>
+    			</div>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.EqualityComparator&lt;T&gt;</legend>
+    			<p class="paragraphs">
+    				In Java Collection Framework, Let's think about 2 cases:
+    				<ol class="no-paragraphs">
+    					<li>
+    						java.util.HashMap&lt;K, V&gt; uses the method "hashCode" and "equals" of the key and value to manage the key-value pairs,
+    						but sometimes we want to use reference-equality, not object-equality. That means we want to use the behaviors of 
+    						"<span class="important2">java.lang.Object</span>.hashCode" and "<span class="important2">java.lang.Object</span>.equals" even
+    						if these method have already been overridden in the classes of key and value. 
+    						In this case, <span class="important">java.util.IdentityHashMap&lt;K, V&gt;</span> is our right choice.
+    					</li>
+    					<li>
+    						java.util.HashMap&lt;K, V&gt; manages the key-value pairs <span class="important">WITHOUT</span> particular order,
+    						but sometimes we hope the map can manage key-value pairs with insertion-order.
+    						In this case, <span class="important">java.util.LinkedHashMap&lt;K, V&gt;</span> is our right choice.
+    					</li>
+    				</ol>
+    				If we want to create map that supports <span class="important">BOTH</span> these two functionalities, we can find a problem:
+    			</p>
+    			<div class="problem">
+    				java.util.IdentityHashMap <span class="important2">+</span> java.util.LinkedHashMap <span class="important2">=</span> <span class="important" style="font-size:30px;font-family:Arial Black">?</span>
+    			</div>
+    			<p class="pargraphs">
+    				In BabyFish X Collection Framework, this question is very easy to answer
+    			</p>
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+/*
+ * This map supports the functionality like "java.util.IdentityHashMap + java.util.LinkedHashMap"
+ */
+Map<K, V> map = new org.babyfish.collection./*{ <span class="important">LinkedHashMap</span> }*/<>(
+	org.babyfish.collection./*{ <span class="important">ReferenceEqualityComparator</span> }*/.<K>getInstance(),
+	org.babyfish.collection./*{ <span class="important">ReferenceEqualityComparator</span> }*/.<V>getInstance()
+);
+    				]]></pre>
+    			</div>
+    			<p class="paragraphs">
+    				BabyFish X Collection supports <span class="important2">org.babyfish.collection.EqualityComparator&lt;T&gt;</span> to let the collection can use the <span class="important">third-party</span> rules of hashCode and equals, 
+    				<span class="important">NOT</span> the hashCode and equals of the element/key/value <span class="important">itself</span>. This is the declaration of this interfaces.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+public interface /*{ <a name="EqualityComparatorDeclaration" class="pln">EqualityComparator</a> }*/<T> extends /*{ <a href="#HashCalculatorDeclaration">HashCalculator</a> }*/<T> {
+
+	boolean equals(T o1, T o2);
+}
+    					]]></pre>
+    				</div>
+					Its super interface org.babyfish.collection.HashCalculator&lt;T&gt; is declared as
+					<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+public interface /*{ <a name="HashCalculatorDeclaration">HashCalculator</a> }*/<T> {
+
+	int hashCode(T o);
+}
+    					]]></pre>
+    				</div>
+    				<span class="important2">org.babyfish.collection.ReferenceEqualityComparator&lt;T&gt;</span> is a classic implementation of this interface, it implements the rules of hashCode and equals like java.util.IdentityHashMap.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import java.io.Serializable;
+
+import org.babyfish.lang.Singleton;
+
+public final class ReferenceEqualityComparator<T> extends Singleton implements /*{ <a href="#EqualityComparatorDeclaration">EqualityComparator</a> }*/<T>, Serializable {
+	
+	private static final long serialVersionUID = 3222566523907802576L;
+	
+	private static final ReferenceEqualityComparator<?> INSTANCE = 
+		getInstance(ReferenceEqualityComparator.class);
+	
+	private ReferenceEqualityComparator() {
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> ReferenceEqualityComparator<T> getInstance() {
+		return (ReferenceEqualityComparator<T>)INSTANCE;
+	}
+
+	@Override
+	public int /*{ <span class="important">hashCode</span> }*/(T o) {
+		return System.identityHashCode(o);
+	}
+
+	@Override
+	public boolean /*{ <span class="important">equals</span> }*/(T o1, T o2) {
+		return o1 == o2;
+	}
+}
+    					]]></pre>
+    				</div>
+    				Though ReferenceEqualityComparator is a classic implementation of EqualityComparator, but it is <span class="important">NOT</span> the unique implementation.
+		    		Do <span class="important">NOT</span> forget you can create any implementations of this interface with any algorithms. 
+    			</p>
+    			<div class="important-section">
+    				In BabyFish X Collection Framework, java.util.Comparator&lt;T&gt; can be used by
+					<ol>
+						<li>The element of any sets <span class="important">except</span> java.util.SortedSet&lt;E&gt; and java.util.NavigableSet&lt;E&gt;(Be same with Java Collection Framework)</li>
+						<li>The key of any maps <span class="important">except</span> java.util.SortedMap&lt;K, V&gt; and java.util.NavigableMap&lt;K, V&gt;(Be same with Java Collection Framework)</li>
+						<li>The element of list</li>
+						<li>The value of map</li>
+					</ol>
+    			</div>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>Unstable Collection Elements &amp; Frozen Comparators</legend>
+    			<p class="paragrahis">
+    				Java Collection Framework support 2 classic algorithms: hash-table and red-black-tree, that can manage the key-value pair very fast.
+    				But these two algorithms have a disadvantage, both of them <span class="important">requires</span> the programmer do <span class="important">NOT</span> 
+    				change data of the key itself after it has been inserted into hash-table and red-black-tree.
+    			</p>
+    			<p class="paragraphs">
+    				BabyFish X Collection Framework supports "<span class="important2">Unstable Collection Elements</span>". The set/map of BabyFish X Collection Framework
+    				allows the programmer to change the data of each element/key even if it has been inserted into the set/map, the set/map can be adjusted automatically
+    				after the programmer changes the data of element/key. 
+    			</p>
+    			<fieldset class="chapter">
+    				<legend>org.babyfish.collection.FrozenContext&lt;T&gt;</legend>
+	    			<p class="paragraphs">
+	    				In order to support "<span class="important2">Unstable Collection Elements</span>", BabyFish supports two Frozen Comparators
+	    				<ol class="no-paragraphs"> 
+	    					<li><span class="important2">org.babyfish.collection.FrozenComparator&lt;T&gt;</span></li>
+	    					<li><span class="important2">org.babyfish.collection.FrozenEqualityComparator&lt;T&gt;</span></li>
+	    				</ol>
+	    				These two comparators will be discussed later, <span class="important">NOT</span> here, but both of them depend on 
+	    				the class <span class="important">org.babyfish.collection.FrozenContext&lt;T&gt;</span>
+	    				<div class="source-code">
+	    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import ... ...;
+... ...
+
+public abstract class /*{ <a name="FrozenContextDeclaration" class="pln">FrozenContext</a> }*/<T> {
+	
+	private FrozenContext() {
+		
+	}
+	
+	public static <T> void /*{ <a name="FrozenContext_suspendFreezing" class="pln">suspendFreezing</a> }*/(FrozenContext<T> ctx, T obj) { ... ... }
+	
+	public static <T> void /*{ <a name="FrozenContext_resumeFreezing" class="pln">resumeFreezing</a> }*/(FrozenContext<T> ctx) { ... ... }
+	
+	public static <T> FrozenContext<T> /*{ <a name="FrozenContext_combine" class="pln">combine</a> }*/(FrozenContext<T> ctx1, FrozenContext<T> ctx2) { ... ... }
+	
+	public static <T> FrozenContext<T> /*{ <a name="FrozenContext_remove" class="pln">remove</a> }*/(FrozenContext<T> ctx1, FrozenContext<T> ctx2) { ... ... }
+	
+	... ...
+}
+	    					]]></pre>
+	    				</div>
+	    			</p>
+    				<p class="paragraphs">
+	    				The constructor of FrozenContext is private so that you can <span class="important">NOT</span> create the instances of FrozenContext,
+    					BabyFish X Collection Framework is responsible to create the instances and your responsibility is to invoke these four public methods.
+    				</p>
+    				<p class="paragraphs">
+    					Set/map can retain many elements/keys, in order to support "<span class="important2">Unstable Collection Elements</span>", 
+    					the elements/keys need to retain the sets/maps conversely. FrozenContext should be member of the element/key class, 
+    					it uses <span class="important2">java.lang.WeakReference</span> to retain all the sets/maps that use the current object to be their 
+    					element/key. Please use FronzenContext to be the field member of your element/key classes.
+    					<ul class="no-paragraphs">
+	    					<li>
+		    					When the element/key object with the FrozenContext member is added into a set/map, BabyFish X Collection Framework uses a callback via 
+		    					the Frozen Comparators to let you invoke "FrozenContext.<a href="#FrozenContext_combine">combine</a>" and use the return value to replace the 
+		    					FrozenContext instance in your element/key object.
+	    					</li>
+	    					<li>
+	    						When the element/key object with the FrozenContext member is remove from a set/map, BabyFish X Collection Framework uses a callback via 
+		    					the Frozen Comparators to let you invoke "FrozenContext.<a href="#FrozenContext_remove">remove</a>" and use the return value to replace the 
+		    					FrozenContext instance in your element/key object.
+	    					</li>
+	    					<li>
+	    						When a set/map uses an element/key to be its element/key is deleted by the JVM garbage collection, the FrozenContext will lost
+	    						the set/map automatically because it uses <span class="important2">java.lang.WeakReference</span> to retain the set/maps.
+	    					</li>
+    					</ul>
+    				</p>
+    				<p class="paragraphs">
+    					Your element/key class can supports setter method to change its private data. you must implement the setter logic by the 3 steps
+    					<ol class="no-paragraphs">
+    						<li>
+    							Before change the private data, you must invoke "FrozenContext.<a href="#FrozenContext_suspendFreezing">suspendFreezing</a>"
+    							to remove the current element/key from all the sets/maps retained by the FrozenContext.
+    						</li>
+    						<li>Use the parameter of this setter method to change your private data.</li>
+    						<li>
+    							After change the private data, you must invoke "FrozenContext.<a href="#FrozenContext_resumeFreezing">resumeFreezing</a>"
+    							to re-add the current element/key into all the sets/maps retained by the FrozenContext.
+    						</li>
+    					</ol>
+    					If step-1 has beean executed, you must guarantee the step-3 will be executed absolutely, please use try-finally structure, use try-block
+    					to execute step-2 and use finally-block to execute the step3.
+    				</p>
+    			</fieldset>
+   				<fieldset class="chapter">
+   					<legend><a name="unfinishedExampleChapter">Unfinished example</a></legend>
+    				<p class="paragraphs">
+	    				Let's look this <span class="important">unfinished</span> data class.
+    				</p>
+    				<div class="important-section">
+   						In this chapter, the code is <span class="important">NOT</span> finished so that two private fields <span class="important">NEVER</span> be assigned 
+   						and the IDE will report the warnings about them.
+   						Do <span class="important">NOT</span> worry, the code will be finished in "<a href="#finshedExampleChapter">Finished Example Chapter</a>" and those two private fields will be assigned in "<a href="#finshedExampleChapter">Finished Example Chapter</a>".
+					</div>
+   					<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.xcollection.learn.mce;
+
+import org.babyfish.collection./*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/;
+
+public class FullName {
+
+	private String /*{ <a name="Unfinished_FullName_firstName" class="pln">firstName</a> }*/;
+	
+	/*{ <span class="com">&#47;&#42;</span> }*/
+	/*{ <span class="com"> * Use java.lang.WeakReference&lt;T&gt; to retain</span> }*/
+	/*{ <span class="com"> * all the hash-tables and red-black-trees whose keys use the</span> }*/
+	/*{ <span class="com"> * org.babyfish.collection.<a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a>&lt;T&gt;</span> }*/
+	/*{ <span class="com"> * org.babyfish.collection.<a href="#FrozenComparatorDeclaration">FrozenComparator</a>&lt;T&gt;</span> }*/
+	/*{ <span class="com"> * whose comparison algorithm depends on <span class="kwd">this</span>.<a href="#Unfinished_FullName_firstName">firstName</a>.</span> }*/
+	/*{ <span class="com">&#42;&#47;</span> }*/
+	/*{ <img src="../common/code-warning.png"/> }*/private /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> /*{ <a name="Unfinished_FullName_firstNameFrozenContext" class="pln">firstNameFrozenContext</a> }*/;
+	/*{ <span style="color:rgb(198,133,16);font-weight:bold;">&#47;&#42; </span> }*/
+	/*{ <span style="color:rgb(198,133,16);font-weight:bold;"> * Temporarily, it's a never-assigned field with warning of IDE and</span> }*/ 
+	/*{ <span style="color:rgb(198,133,16);font-weight:bold;"> * it will be assigned in "<a href="#finshedExampleChapter">Finished Example Chapter</a>".</span> }*/ 
+	/*{ <span style="color:rgb(198,133,16);font-weight:bold;"> &#42;&#47;</span> }*/
+	
+	private String /*{ <a name="Unfinished_FullName_lastName" class="pln">lastName</a> }*/;
+	
+	/*{ <span class="com">&#47;&#42;</span> }*/
+	/*{ <span class="com"> * Use java.lang.WeakReference&lt;T&gt; to retain</span> }*/
+	/*{ <span class="com"> * all the hash-tables and red-black-trees whose keys use the</span> }*/
+	/*{ <span class="com"> * org.babyfish.collection.<a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a>&lt;T&gt;</span> }*/
+	/*{ <span class="com"> * org.babyfish.collection.<a href="#FrozenComparatorDeclaration">FrozenComparator</a>&lt;T&gt;</span> }*/
+	/*{ <span class="com"> * whose comparison algorithm depends on <span class="kwd">this</span>.<a href="#Unfinished_FullName_lastName">lastName</a>.</span> }*/
+	/*{ <span class="com">&#42;&#47;</span> }*/
+	/*{ <img src="../common/code-warning.png"/> }*/private /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> /*{ <a name="Unfinished_FullName_lastNameFrozenContext" class="pln">lastNameFrozenContext</a> }*/;
+	/*{ <span style="color:rgb(198,133,16);font-weight:bold;">&#47;&#42; </span> }*/
+	/*{ <span style="color:rgb(198,133,16);font-weight:bold;"> * Temporarily, it's a never-assigned field with warning of IDE and</span> }*/ 
+	/*{ <span style="color:rgb(198,133,16);font-weight:bold;"> * it will be assigned in "<a href="#finshedExampleChapter">Finished Example Chapter</a>".</span> }*/ 
+	/*{ <span style="color:rgb(198,133,16);font-weight:bold;"> &#42;&#47;</span> }*/
+	
+	public FullName() {
+	}
+	
+	public FullName(String firstName, String lastName) {
+		this.setFirstName(firstName);
+		this.setLastName(lastName);
+	}
+	
+	public String getFirstName() {
+		return this.firstName;
+	}
+	
+	public void /*{ <a name="setFirstName" class="pln">setFirstName</a> }*/(String firstName) {
+		
+		/*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx = /*{ <span class="kwd">this</span>.<a href="#Unfinished_FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/;
+		
+		/*{ <span class="com">&#47;&#42;</span> }*/
+		/*{ <span class="com"> * Before modification, remove the current object from the all the</span> }*/
+		/*{ <span class="com"> * hash-tables and red-black-trees retained by <span class="kwd">this</span>.<a href="#Unfinished_FullName_firstNameFrozenContext">firstNameFrozenContext</a></span> }*/
+		/*{ <span class="com">&#42;&#47;</span> }*/
+		FrozenContext./*{ <a href="#FrozenContext_suspendFreezing">suspendFreezing</a> }*/(ctx, this);
+		try {
+			this./*{ <a href="#Unfinished_FullName_firstName">firstName</a> }*/ = firstName;
+		} finally {
+			/*{ <span class="com">&#47;&#42;</span> }*/
+			/*{ <span class="com"> * After modification, add the current object into the all the</span> }*/
+			/*{ <span class="com"> * hash-tables and red-black-trees retained by <span class="kwd">this</span>.<a href="#Unfinished_FullName_firstNameFrozenContext">firstNameFrozenContext</a></span> }*/
+			/*{ <span class="com"> * AGAIN!</span> }*/
+			/*{ <span class="com">&#42;&#47;</span> }*/
+			FrozenContext./*{ <a href="#FrozenContext_resumeFreezing">resumeFreezing</a> }*/(ctx);
+		}
+	}
+	
+	public String getLastName() {
+		return this.lastName;
+	}
+	
+	public void /*{ <a name="setLastName" class="pln">setLastName</a> }*/(String lastName) {
+		
+		/*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx = /*{ <span class="kwd">this</span>.<a href="#Unfinished_FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/;
+		
+		/*{ <span class="com">&#47;&#42;</span> }*/
+		/*{ <span class="com"> * Before modification, remove the current object from the all the</span> }*/
+		/*{ <span class="com"> * hash-tables and red-black-trees retained by <span class="kwd">this</span>.<a href="#Unfinished_FullName_lastNameFrozenContext">lastNameFrozenContext</a></span> }*/
+		/*{ <span class="com">&#42;&#47;</span> }*/
+		FrozenContext./*{ <a href="#FrozenContext_suspendFreezing">suspendFreezing</a> }*/(ctx, this);
+		try {
+			this./*{ <a href="#Unfinished_FullName_lastName">lastName</a> }*/ = lastName;
+		} finally {
+			/*{ <span class="com">&#47;&#42;</span> }*/
+			/*{ <span class="com"> * After modification, add the current object into the all the</span> }*/
+			/*{ <span class="com"> * hash-tables and red-black-trees retained by <span class="kwd">this</span>.<a href="#Unfinished_FullName_lastNameFrozenContext">lastNameFrozenContext</a></span> }*/
+			/*{ <span class="com"> * AGAIN!</span> }*/
+			/*{ <span class="com">&#42;&#47;</span> }*/
+			FrozenContext./*{ <a href="#FrozenContext_resumeFreezing">resumeFreezing</a> }*/(ctx);
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return "{ firstName: '" + this.firstName + "', lastName: '" + this.lastName + "' }";
+	}
+}
+   						]]></pre>
+   					</div>
+   					<ol class="no-paragraphs">
+    					<li>
+    						The private field <a href="#Unfinished_FullName_firstNameFrozenContext">"firstNameFrozenContext"</a> uses <span class="important2">"java.lang.WeakReference&lt;T&gt;"</span>
+    						to reference 
+    						<ul>
+    							<li>
+    								All the hash-tables that use the instances of this class to be its keys and use the <a href="#FrozenEqualityComparatorDeclaration">"FrozenEqualityComparator"</a>
+    								that use the private field <a href="#Unfinished_FullName_firstName">"firstName"</a> to calculate the hashCode of objects or check whether two ojects are equal.
+    							</li>
+    							<li>
+    								All the red-black-trees that use the instances of this class to be its keys and use the <a href="#FrozenComparatorDeclaration">"FrozenComparator"</a>
+    								that use the private field <a href="#Unfinished_FullName_firstName">"firstName"</a> to compare two objects.
+    							</li>
+    						</ul> 
+    					</li>
+    					<li>
+    						The private field <a href="#Unfinished_FullName_lastNameFrozenContext">"lastNameFrozenContext"</a> uses <span class="important2">java.lang.WeakReference&lt;T&gt;</span>
+    						to reference 
+    						<ul>
+    							<li>
+    								All the hash-tables that use the instances of this class to be its keys and use the <a href="#FrozenEqualityComparatorDeclaration">"FrozenEqualityComparator"</a>
+    								that use the private field <a href="#Unfinished_FullName_lastName">"lastName"</a> to calculate the hashCode of objects or check whether two ojects are equal.
+    							</li>
+    							<li>
+    								All the red-black-trees that use the instances of this class to be its keys and use the <a href="#FrozenComparatorDeclaration">"FrozenComparator"</a>
+    								that use the private field <a href="#Unfinished_FullName_lastName">"lastName"</a> to compare two objects.
+    							</li>
+    						</ul> 
+    					</li>
+    					<li>
+    						The public method <a href="#setFirstName">"setFirstName"</a> is used to change the value of the private field <a href="#Unfinished_FullName_firstName">"firstName"</a>
+    						<ul>
+    							<li>
+	    							Before the modification, this current object will be removed from all the hash-tables and red-black-trees 
+	    							retained by the private field <a href="#Unfinished_FullName_firstNameFrozenContext">"firstNameFrozenContext"</a>
+    							</li>
+    							<li>
+	    							After the modification, this current object will be re-added into all the hash-tables and red-black-trees 
+	    							retained by the private field <a href="#Unfinished_FullName_firstNameFrozenContext">"firstNameFrozenContext"</a>
+    							</li>
+    						</ul>
+    					</li>
+    					<li>
+    						The public method <a href="#setLastName">"setLastName"</a> is used to change the value of the private field <a href="#Unfinished_FullName_lastName">"lastName"</a>
+    						<ul>
+    							<li>
+	    							Before the modification, this current object will be removed from all the hash-tables and red-black-trees 
+	    							retained by the private field <a href="#Unfinished_FullName_lastNameFrozenContext">"lastNameFrozenContext"</a>
+    							</li>
+    							<li>
+	    							After the modification, this current object will be re-added into all the hash-tables and red-black-trees 
+	    							retained by the private field <a href="#Unfinished_FullName_lastNameFrozenContext">"lastNameFrozenContext"</a>
+    							</li>
+    						</ul>
+    					</li>
+   					</ol>
+   				</fieldset>
+    			<fieldset class="chapter">
+    				<legend>org.babyfish.collection.FrozenComparator&lt;T&gt;</legend>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import java.util.Comparator;
+
+public interface /*{ <a name="FrozenComparatorDeclaration" class="pln">FrozenComparator</a> }*/<T> extends Comparator<T> {
+
+	void /*{ <a name="FrozenComparator_freeze" class="pln">freeze</a> }*/(T obj, FrozenContext<T> ctx);
+	
+	void /*{ <a name="FrozenComparator_unfreeze" class="pln">unfreeze</a> }*/(T obj, FrozenContext<T> ctx);
+}
+    					]]></pre>
+    				</div>
+    				<ul>
+    					<li>
+	    					When the element/key object with the FrozenContext member is added into a SortedSet/SortedMap, the "FrozenComparator.<a href="#FrozenComparator_freeze">freeze</a>" will be invoked automatically.
+	    					please inovke invoke "FrozenContext.<a href="#FrozenContext_combine">comine</a>" and use the return value to replace the FrozenContext instance in your element/key object during this callback.
+    					</li>
+    					<li>
+	    					When the element/key object with the FrozenContext member is removed from SortedSet/SortedMap, the "FrozenComparator.<a href="#FrozenComparator_unfreeze">unfreeze</a>" will be invoked automatically.
+	    					please inovke invoke "FrozenContext.<a href="#FrozenContext_combine">remove</a>" and use the return value to replace the FrozenContext instance in your element/key object during this callback.
+    					</li>
+					</ul>
+					<div class="important-section">
+						These two methods should <span class="important">ONLY</span> be invoked by BabyFish X Collection Framework, 
+						it must <span class="important">NOT</span> be invoked by you, your responsibility is <span class="important">ONLY</span> to implement them.
+					</div>
+    			</fieldset>
+    			<fieldset class="chapter">
+    				<legend>org.babyfish.collection.FrozenEqualityComparator&lt;T&gt;</legend>
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+public interface /*{ <a name="FrozenEqualityComparatorDeclaration" class="pln">FrozenEqualityComparator</a> }*/<T> extends /*{ <a href="#EqualityComparatorDeclaration">EqualityComparator</a> }*/<T> {
+
+	void /*{ <a name="FrozenEqualityComparator_freeze" class="pln">freeze</a> }*/(T obj, FrozenContext<T> ctx);
+	
+	void /*{ <a name="FrozenEqualityComparator_unfreeze" class="pln">unfreeze</a> }*/(T obj, FrozenContext<T> ctx);
+}
+						]]></pre>
+					</div>
+					<ul>
+    					<li>
+	    					When the element/key object with the FrozenContext member is added into a set/map <span class="important">EXCEPT</span> SortedSet/SortedMap, 
+							the "FrozenEqualityComparator.<a href="#FrozenEqualityComparator_freeze">freeze</a>" will be invoked automatically.
+	    					please inovke invoke "FrozenContext.<a href="#FrozenContext_combine">comine</a>" and use the return value to replace the FrozenContext instance in your element/key object during this callback.
+    					</li>
+    					<li>
+	    					When the element/key object with the FrozenContext member is removed from a set/map <span class="important">EXCEPT</span> SortedSet/SortedMap, 
+							the "FrozenEqualityComparator.<a href="#FrozenEqualityComparator_unfreeze">unfreeze</a>" will be invoked automatically.
+	    					please inovke invoke "FrozenContext.<a href="#FrozenContext_combine">remove</a>" and use the return value to replace the FrozenContext instance in your element/key object during this callback.
+    					</li>
+					</ul>
+					<div class="important-section">
+						These two methods should <span class="important">ONLY</span> be invoked by BabyFish X Collection Framework, 
+						it must <span class="important">NOT</span> be invoked by you, your responsibility is <span class="important">ONLY</span> to implement them.
+					</div>
+    			</fieldset>
+    			<fieldset class="chapter">
+    				<legend><a name="finshedExampleChapter">Finshed example(With 6 Frozen Comparators)</a></legend>
+    				<p class="paragraphs">
+    					Let's finshed the example of <a href="#unfinishedExampleChapter">Unfinished Example Chapter</a>
+    				</p>
+    				<p class="paragraphs">
+    					In this example, we will create 6 static nested classes to implement 6 FrozenComparators
+    					<ul class="no-paragraphs">
+    						<li>
+    							<span class="important2">FirstNameComparator: </span>
+    							An implementation of "org.babyfish.collection.<a href="#FrozenComparatorDeclaration">FrozenComparator</a>&lt;T&gt;" 
+    							whose algorithm depends on the private field <a href="#Unfinished_FullName_firstName">firstName</a>.
+    						</li>
+    						<li>
+    							<span class="important2">FirstNameEqualityComparator: </span>
+    							An implementation of "org.babyfish.collection.<a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a>&lt;T&gt;" 
+    							whose algorithm depends on the private field <a href="#Unfinished_FullName_firstName">firstName</a>.
+    						</li>
+    						<li>
+    							<span class="important2">LastNameComparator: </span>
+    							An implementation of "org.babyfish.collection.<a href="#FrozenComparatorDeclaration">FrozenComparator</a>&lt;T&gt;" 
+    							whose algorithm depends on the private field <a href="#Unfinished_FullName_lastName">lastName</a>.
+    						</li>
+    						<li>
+    							<span class="important2">LastNameEqualityComparator: </span>
+    							An implementation of "org.babyfish.collection.<a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a>&lt;T&gt;" 
+    							whose algorithm depends on the private field <a href="#Unfinished_FullName_lastName">lastName</a>.
+    						</li>
+    						<li>
+    							<span class="important2">FullNameComparator: </span>
+    							An implementation of "org.babyfish.collection.<a href="#FrozenComparatorDeclaration">FrozenComparator</a>&lt;T&gt;" 
+    							whose algorithm depends on both the private field <a href="#Unfinished_FullName_firstName">firstName</a> and <a href="#Unfinished_FullName_lastName">lastName</a>.
+    						</li>
+    						<li>
+    							<span class="important2">FullNameEqualityComparator: </span>
+    							An implementation of "org.babyfish.collection.<a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a>&lt;T&gt;" 
+    							whose algorithm depends on both the private field <a href="#Unfinished_FullName_firstName">firstName</a> and <a href="#Unfinished_FullName_lastName">lastName</a>.
+    						</li>
+    					</ul>
+    					All the nested class inherites <span class="important2">org.babyfish.lang.Singleton</span> to support the <span class="important">serializable</span> singleton desgin pattern, 
+    					please view <a href="#unifiedComparatorChapter">Unfied Comparator Chapter</a> to know why they are implemented by singleton pattern.
+    				</p>
+    				unifiedComparator
+    				<div id="nullsSourceCodeDialog" style="display:none">
+    					<div class="ui-embed-source-code">
+    						<pre class="lang-java"><![CDATA[
+package org.babyfish.lang;
+
+import ... ...;
+
+public class Nulls {
+
+	public static int hashCode(Object o) {
+		return o == null ? 0 : o.hashCode();
+	}
+	
+	public static boolean equals(Object o1, Object o2) {
+		return o1 == null ? o2 == null : o1.equals(o2);
+	}
+	
+	public static <T extends Comparable<T>> int compare(T o1, T o2) {
+		Integer preCmp = preCompare(o1, o2);
+		if (preCmp != null) {
+			return preCmp;
+		}
+		return o1.compareTo(o2);
+	}
+	
+	public static <T extends Comparable<T>> int compare(T o1, T o2, boolean nullsLast) {
+		Integer preCmp = preCompare(o1, o2, nullsLast);
+		if (preCmp != null) {
+			return preCmp;
+		}
+		return o1.compareTo(o2);
+	}
+	
+	public static Integer preCompare(Object o1, Object o2) {
+		if (o1 == o2) {
+			return 0;
+		}
+		if (o1 == null) {
+			return -1;
+		}
+		if (o2 == null) {
+			return +1;
+		}
+		return null;
+	}
+	
+	public static Integer preCompare(Object o1, Object o2, boolean nullsLast) {
+		if (o1 == o2) {
+			return 0;
+		}
+		if (o1 == null) {
+			return nullsLast ? +1 : -1;
+		}
+		if (o2 == null) {
+			return nullsLast ? -1 : +1;
+		}
+		return null;
+	}
+	
+	public static String toString(Object o) {
+		if (o == null) {
+			return "null";
+		}
+		return o.toString();
+	}
+	
+	public static String toString(Object o, boolean nullsEmpty) {
+		if (o == null) {
+			return nullsEmpty ? "" : "null";
+		}
+		return o.toString();
+	}
+	
+	... ...
+}
+    						]]></pre>
+    					</div>
+    				</div>
+    				<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.xcollection.learn.mce;
+
+import java.io.Serializable;
+import java.util.Comparator;
+
+import org.babyfish.collection./*{ <a href="#EqualityComparatorDeclaration">EqualityComparator</a> }*/;
+import org.babyfish.collection./*{ <a href="#FrozenComparatorDeclaration">FrozenComparator</a> }*/;
+import org.babyfish.collection./*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/;
+import org.babyfish.collection./*{ <a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a> }*/;
+import org.babyfish.lang.Nulls;
+import org.babyfish.lang.Singleton;
+
+public class FullName {
+
+	public static final Comparator<FullName> /*{ <a name="FullName_FIRST_NAME_COMPARATOR" class="pln">FIRST_NAME_COMPARATOR</a> }*/ = 
+			Singleton.getInstance(/*{ <a href="#FullName_FirstNameComparator">FirstNameComparator</a> }*/.class);
+	
+	public static final /*{ <a href="#EqualityComparatorDeclaration">EqualityComparator</a> }*/<FullName> /*{ <a name="FullName_FIRST_NAME_EQUALITY_COMPARATOR" class="pln">FIRST_NAME_EQUALITY_COMPARATOR</a> }*/ = 
+			Singleton.getInstance(/*{ <a href="#FullName_FirstNameEqualityComparator">FirstNameEqualityComparator</a> }*/.class);
+	
+	public static final Comparator<FullName> /*{ <a name="FullName_LAST_NAME_COMPARATOR" class="pln">LAST_NAME_COMPARATOR</a> }*/ = 
+			Singleton.getInstance(/*{ <a href="#FullName_LastNameComparator">LastNameComparator</a> }*/.class);
+	
+	public static final /*{ <a href="#EqualityComparatorDeclaration">EqualityComparator</a> }*/<FullName> /*{ <a name="FullName_LAST_NAME_EQUALITY_COMPARATOR" class="pln">LAST_NAME_EQUALITY_COMPARATOR</a> }*/ = 
+			Singleton.getInstance(/*{ <a href="#FullName_LastNameEqualityComparator">LastNameEqualityComparator</a> }*/.class);
+	
+	public static final Comparator<FullName> /*{ <a name="FullName_FULL_NAME_COMPARATOR" class="pln">FULL_NAME_COMPARATOR</a> }*/ = 
+			Singleton.getInstance(/*{ <a href="#FullName_FullNameComparator">FullNameComparator</a> }*/.class);
+	
+	public static final /*{ <a href="#EqualityComparatorDeclaration">EqualityComparator</a> }*/<FullName> /*{ <a name="FullName_FULL_NAME_EQUALITY_COMPARATOR" class="pln">FULL_NAME_EQUALITY_COMPARATOR</a> }*/ = 
+			Singleton.getInstance(/*{ <a href="#FullName_FullNameEqualityComparator">FullNameEqualityComparator</a> }*/.class);
+
+	private String /*{ <a name="FullName_firstName" class="pln">firstName</a> }*/;
+	
+	/*{ <span class="com">&#47;&#42;</span> }*/
+	/*{ <span class="com"> * Use java.lang.WeakReference&lt;T&gt; to retain</span> }*/
+	/*{ <span class="com"> * all the hash-tables and red-black-trees whose keys use the</span> }*/
+	/*{ <span class="com"> * org.babyfish.collection.<a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a>&lt;T&gt;</span> }*/
+	/*{ <span class="com"> * org.babyfish.collection.<a href="#FrozenComparatorDeclaration">FrozenComparator</a>&lt;T&gt;</span> }*/
+	/*{ <span class="com"> * whose comparison algorithm depends on <span class="kwd">this</span>.<a href="#FullName_firstName">firstName</a>.</span> }*/
+	/*{ <span class="com">&#42;&#47;</span> }*/
+	private /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> /*{ <a name="FullName_firstNameFrozenContext" class="pln">firstNameFrozenContext</a> }*/;
+	
+	private String /*{ <a name="FullName_lastName" class="pln">lastName</a> }*/;
+	
+	/*{ <span class="com">&#47;&#42;</span> }*/
+	/*{ <span class="com"> * Use java.lang.WeakReference&lt;T&gt; to retain</span> }*/
+	/*{ <span class="com"> * all the hash-tables and red-black-trees whose keys use the</span> }*/
+	/*{ <span class="com"> * org.babyfish.collection.<a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a>&lt;T&gt;</span> }*/
+	/*{ <span class="com"> * org.babyfish.collection.<a href="#FrozenComparatorDeclaration">FrozenComparator</a>&lt;T&gt;</span> }*/
+	/*{ <span class="com"> * whose comparison algorithm depends on <span class="kwd">this</span>.<a href="#FullName_lastName">lastName</a>.</span> }*/
+	/*{ <span class="com">&#42;&#47;</span> }*/
+	private /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> /*{ <a name="FullName_lastNameFrozenContext" class="pln">lastNameFrozenContext</a> }*/;
+	
+	public FullName() {
+	}
+	
+	public FullName(String firstName, String lastName) {
+		this.setFirstName(firstName);
+		this.setLastName(lastName);
+	}
+	
+	public String getFirstName() {
+		return this.firstName;
+	}
+	
+	public void /*{ <a name="setFirstName" class="pln">setFirstName</a> }*/(String firstName) {
+		
+		/*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx = /*{ <span class="kwd">this</span>.<a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/;
+		
+		/*{ <span class="com">&#47;&#42;</span> }*/
+		/*{ <span class="com"> * Before modification, remove the current object from the all the</span> }*/
+		/*{ <span class="com"> * hash-tables and red-black-trees retained by <span class="kwd">this</span>.<a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a></span> }*/
+		/*{ <span class="com">&#42;&#47;</span> }*/
+		FrozenContext./*{ <a href="#FrozenContext_suspendFreezing">suspendFreezing</a> }*/(ctx, this);
+		try {
+			this./*{ <a href="#FullName_firstName">firstName</a> }*/ = firstName;
+		} finally {
+			/*{ <span class="com">&#47;&#42;</span> }*/
+			/*{ <span class="com"> * After modification, add the current object into the all the</span> }*/
+			/*{ <span class="com"> * hash-tables and red-black-trees retained by <span class="kwd">this</span>.<a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a></span> }*/
+			/*{ <span class="com"> * AGAIN!</span> }*/
+			/*{ <span class="com">&#42;&#47;</span> }*/
+			FrozenContext./*{ <a href="#FrozenContext_resumeFreezing">resumeFreezing</a> }*/(ctx);
+		}
+	}
+	
+	public String getLastName() {
+		return this.lastName;
+	}
+	
+	public void /*{ <a name="setLastName" class="pln">setLastName</a> }*/(String lastName) {
+		
+		/*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx = /*{ <span class="kwd">this</span>.<a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/;
+		
+		/*{ <span class="com">&#47;&#42;</span> }*/
+		/*{ <span class="com"> * Before modification, remove the current object from the all the</span> }*/
+		/*{ <span class="com"> * hash-tables and red-black-trees retained by <span class="kwd">this</span>.<a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a></span> }*/
+		/*{ <span class="com">&#42;&#47;</span> }*/
+		FrozenContext./*{ <a href="#FrozenContext_suspendFreezing">suspendFreezing</a> }*/(ctx, this);
+		try {
+			this./*{ <a href="#FullName_lastName">lastName</a> }*/ = lastName;
+		} finally {
+			/*{ <span class="com">&#47;&#42;</span> }*/
+			/*{ <span class="com"> * After modification, add the current object into the all the</span> }*/
+			/*{ <span class="com"> * hash-tables and red-black-trees retained by <span class="kwd">this</span>.<a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a></span> }*/
+			/*{ <span class="com"> * AGAIN!</span> }*/
+			/*{ <span class="com">&#42;&#47;</span> }*/
+			FrozenContext./*{ <a href="#FrozenContext_resumeFreezing">resumeFreezing</a> }*/(ctx);
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return "{ firstName: '" + this.firstName + "', lastName: '" + this.lastName + "' }";
+	}
+	
+	private static class /*{ <a name="FullName_FirstNameComparator" class="pln">FirstNameComparator</a> }*/ extends Singleton 
+	implements /*{ <a href="#FrozenComparatorDeclaration">FrozenComparator</a> }*/<FullName>, Serializable {
+	
+		private static final long serialVersionUID = 3457648054782417419L;
+		
+		@Override
+		public int compare(FullName o1, FullName o2) {
+			Integer preCmp = Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">preCompare</a> }*/(o1, o2);
+			if (preCmp != null) {
+				return preCmp;
+			}
+			return Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">compare</a> }*/(o1./*{ <a href="#FullName_firstName">firstName</a> }*/, o2./*{ <a href="#FullName_firstName">firstName</a> }*/);
+		}
+		
+		@Override
+		public void freeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_combine">combine</a> }*/(obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/, ctx);
+		}
+		
+		@Override
+		public void unfreeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_remove">remove</a> }*/(obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/, ctx);
+		}
+	}
+	
+	private static class /*{ <a name="FullName_FirstNameEqualityComparator" class="pln">FirstNameEqualityComparator</a> }*/ extends Singleton 
+	implements /*{ <a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a> }*/<FullName>, Serializable {
+		
+		private static final long serialVersionUID = 3457648054782417419L;
+		
+		@Override
+		public int hashCode(FullName o) {
+			/*
+			 * For EqualityComparator, you need NOT to check whether
+			 * "o == null" because BabyFish X Collection Framework can handle it automatically.
+			 */
+			return Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">hashCode</a> }*/(o./*{ <a href="#FullName_firstName">firstName</a> }*/);
+		}
+
+		@Override
+		public boolean equals(FullName o1, FullName o2) {
+			/*
+			 * For EqualityComparator, you need NOT to check whether
+			 * "o1 == null" and "o2 == null" because BabyFish X Collection Framework can handle it automatically.
+			 */
+			return Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">equals</a> }*/(o1./*{ <a href="#FullName_firstName">firstName</a> }*/, o2./*{ <a href="#FullName_firstName">firstName</a> }*/);
+		}
+		
+		@Override
+		public void freeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_combine">combine</a> }*/(obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/, ctx);
+		}
+		
+		@Override
+		public void unfreeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_remove">remove</a> }*/(obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/, ctx);
+		}
+	}
+	
+	private static class /*{ <a name="FullName_LastNameComparator" class="pln">LastNameComparator</a> }*/ extends Singleton 
+	implements /*{ <a href="#FrozenComparatorDeclaration">FrozenComparator</a> }*/<FullName>, Serializable {
+		
+		private static final long serialVersionUID = 3457648054782417419L;
+		
+		@Override
+		public int compare(FullName o1, FullName o2) {
+			Integer preCmp = Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">preCompare</a> }*/(o1, o2);
+			if (preCmp != null) {
+				return preCmp;
+			}
+			return Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">compare</a> }*/(o1./*{ <a href="#FullName_lastName">lastName</a> }*/, o2./*{ <a href="#FullName_lastName">lastName</a> }*/);
+		}
+		
+		@Override
+		public void freeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_combine">combine</a> }*/(obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/, ctx);
+		}
+		
+		@Override
+		public void unfreeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_remove">remove</a> }*/(obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/, ctx);
+		}
+	}
+	
+	private static class /*{ <a name="FullName_LastNameEqualityComparator" class="pln">LastNameEqualityComparator</a> }*/ extends Singleton 
+	implements /*{ <a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a> }*/<FullName>, Serializable {
+		
+		private static final long serialVersionUID = 3457648054782417419L;
+		
+		@Override
+		public int hashCode(FullName o) {
+			/*
+			 * For EqualityComparator, you need NOT to check whether
+			 * "o == null" because BabyFish X Collection Framework can handle it automatically.
+			 */
+			return Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">hashCode</a> }*/(o./*{ <a href="#FullName_lastName">lastName</a> }*/);
+		}
+
+		@Override
+		public boolean equals(FullName o1, FullName o2) {
+			/*
+			 * For EqualityComparator, you need NOT to check whether
+			 * "o1 == null" and "o2 == null" because BabyFish X Collection Framework can handle it automatically.
+			 */
+			return Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">equals</a> }*/(o1./*{ <a href="#FullName_lastName">lastName</a> }*/, o2./*{ <a href="#FullName_lastName">lastName</a> }*/);
+		}
+		
+		@Override
+		public void freeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_combine">combine</a> }*/(obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/, ctx);
+		}
+		
+		@Override
+		public void unfreeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_remove">remove</a> }*/(obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/, ctx);
+		}
+	}
+	
+	private static class /*{ <a name="FullName_FullNameComparator" class="pln">FullNameComparator</a> }*/ extends Singleton 
+	implements /*{ <a href="#FrozenComparatorDeclaration">FrozenComparator</a> }*/<FullName>, Serializable {
+		
+		private static final long serialVersionUID = 3457648054782417419L;
+		
+		@Override
+		public int compare(FullName o1, FullName o2) {
+			Integer preCmp = Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">preCompare</a> }*/(o1, o2);
+			if (preCmp != null) {
+				return preCmp;
+			}
+			int cmp = Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">compare</a> }*/(o1./*{ <a href="#FullName_firstName">firstName</a> }*/, o2./*{ <a href="#FullName_firstName">firstName</a> }*/);
+			if (cmp != 0) {
+				return cmp;
+			}
+			return Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">compare</a> }*/(o1./*{ <a href="#FullName_lastName">lastName</a> }*/, o2./*{ <a href="#FullName_lastName">lastName</a> }*/);
+		}
+		
+		@Override
+		public void freeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_combine">combine</a> }*/(obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/, ctx);
+			obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_combine">combine</a> }*/(obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/, ctx);
+		}
+		
+		@Override
+		public void unfreeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_remove">remove</a> }*/(obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/, ctx);
+			obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_remove">remove</a> }*/(obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/, ctx);
+		}
+	}
+	
+	private static class /*{ <a name="FullName_FullNameEqualityComparator" class="pln">FullNameEqualityComparator</a> }*/ extends Singleton 
+	implements /*{ <a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a> }*/<FullName>, Serializable {
+		
+		private static final long serialVersionUID = 3457648054782417419L;
+		
+		@Override
+		public int hashCode(FullName o) {
+			/*
+			 * For EqualityComparator, you need NOT to check whether
+			 * "o == null" because BabyFish X Collection Framework can handle it automatically.
+			 */
+			return 31 * Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">hashCode</a> }*/(o./*{ <a href="#FullName_firstName">firstName</a> }*/) + Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">hashCode</a> }*/(o./*{ <a href="#FullName_lastName">lastName</a> }*/);
+		}
+
+		@Override
+		public boolean equals(FullName o1, FullName o2) {
+			/*
+			 * For EqualityComparator, you need NOT to check whether
+			 * "o1 == null" and "o2 == null" because BabyFish X Collection Framework can handle it automatically.
+			 */
+			return Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">equals</a> }*/(o1./*{ <a href="#FullName_firstName">firstName</a> }*/, o2./*{ <a href="#FullName_firstName">firstName</a> }*/) && Nulls./*{ <a href="javascript:openNullsSourceCodeDialog();">equals</a> }*/(o1./*{ <a href="#FullName_lastName">lastName</a> }*/, o2./*{ <a href="#FullName_lastName">lastName</a> }*/);
+		}
+		
+		@Override
+		public void freeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_combine">combine</a> }*/(obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/, ctx);
+			obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_combine">combine</a> }*/(obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/, ctx);
+		}
+		
+		@Override
+		public void unfreeze(FullName obj, /*{ <a href="#FrozenContextDeclaration">FrozenContext</a> }*/<FullName> ctx) {
+			obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_remove">remove</a> }*/(obj./*{ <a href="#FullName_firstNameFrozenContext">firstNameFrozenContext</a> }*/, ctx);
+			obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/ = FrozenContext./*{ <a href="#FrozenContext_remove">remove</a> }*/(obj./*{ <a href="#FullName_lastNameFrozenContext">lastNameFrozenContext</a> }*/, ctx);
+		}
+	}
+}
+   						]]></pre>
+   					</div>
+   					<p class="paragraphs">
+	   					In <a href="../object-model/index.xhtml">ObjectModel</a>(both ObjectModel4Java and ObjectModel4JPA),
+	    				the code about frozen comparators implementation and the setter of unstable collection elements
+	    				is generated as JVM bytecode at runtime, you need <span class="important">ONLY</span> uses
+	    				annotations to declare your object model.
+   					</p>
+    			</fieldset>
+    			<fieldset class="chapter">
+    				<legend>Test code</legend>
+    				<p class="paragraphs">
+    					Let's create a test class for the <span class="important2">Unstable Collection Elements</span>.
+    					Though org.babyfish.collection.HashSet&lt;E&gt; and org.babyfish.collection.HashMap&lt;K, V&gt; supports
+    					Modification Collection Elements, but their elements/key-value-pairs is managed WITHOUT particular order,
+    					in order to make our demo test to be vivid, this demo test only test the sets/maps with particular order
+    					such as org.babyfish.collection.LinkedHashSet&lt;E&gt;, org.babyfish.collection.LinkedHashMap&lt;K, V&gt;,
+    					org.babyfish.collection.TreeSet&lt;E&gt;, org.babyfish.collection.TreeMap&lt;K, V&gt;.
+    				</p>
+    				<p class="paragraphs">
+    					As we discussed in <a href="#replacementRuleChapater">ReplacementRule Chapter</a>, 
+    					the default value of <a href="#ReplacementRuleDeclaration">ReplacementRule</a> is
+    					NEW_REFERENCE_WIN.
+    					Unstable Collection Elements removes the element/key from the sets/maps before the element/key is changed
+    					and re-adds the element/key into the sets/maps again after the element/key is changed. 
+    					All the collections in the test class use the default replacment rule, that means the 
+    					other element/key that is in the same set/map and equal to  the current element/key has been modified
+    					will be removed from the set/map automactially.
+    				</p>
+    				<p class="paragraphs">
+    					The class FullName in the <a href="finishedExampleChapter">Finished Example Chapter</a> declares 6 Frozen Comparators,
+    					so we will test 12 collection object in the test case, 6 sets and 6 maps. 
+    				</p>
+    				<p class="paragraphs">
+    					In this test code, there are 3 special code style:
+    					<ul class="no-paragraphs">
+    						<li>
+    							<span class="explicit">Orange &amp; Bold: </span>
+    							The code to modify the data of element/key object
+    						</li>
+    						<li>
+    							<span class="implicit-no">Dark Pink: </span>
+    							The set/map has been adjusted automatically but you can <span class="important">NOT</span>
+    							feel the set/map has been changed.
+    						</li>
+    						<li>
+    							<span class="implicit-yes">Pink: </span>
+    							The set/map has been adjusted automatically and you can feel the set/map has been changed.
+    						</li>
+    					</ul>
+    				</p>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.xcollection.learn.mce;
+ 
+import java.util.Map;
+import java.util.Set;
+ 
+import org.babyfish.collection.LinkedHashMap;
+import org.babyfish.collection.LinkedHashSet;
+import org.babyfish.collection.TreeMap;
+import org.babyfish.collection.TreeSet;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class UnstableCollectionElementsTest {
+
+	@Test
+	public void test() {
+	
+		/*
+		 * Prepare data
+		 */
+		FullName jamesGosling = new FullName("james", "gosling");
+		FullName joshBloch = new FullName("josh", "bloch");
+		FullName gavinKing = new FullName("gavin", "king");
+		
+		Set<FullName> firstNameHashSet = new LinkedHashSet<>(FullName./*{ <a href="#FullName_FIRST_NAME_EQUALITY_COMPARATOR">FIRST_NAME_EQUALITY_COMPARATOR</a> }*/);
+		Map<FullName, Void> firstNameHashMap = new LinkedHashMap<>(FullName./*{ <a href="#FullName_FIRST_NAME_EQUALITY_COMPARATOR">FIRST_NAME_EQUALITY_COMPARATOR</a> }*/);
+		Set<FullName> firstNameTreeSet = new TreeSet<>(FullName./*{ <a href="#FullName_FIRST_NAME_COMPARATOR">FIRST_NAME_COMPARATOR</a> }*/);
+		Map<FullName, Void> firstNameTreeMap = new TreeMap<>(FullName./*{ <a href="#FullName_FIRST_NAME_COMPARATOR">FIRST_NAME_COMPARATOR</a> }*/);
+			
+		Set<FullName> lastNameHashSet = new LinkedHashSet<>(FullName./*{ <a href="#FullName_LAST_NAME_EQUALITY_COMPARATOR">LAST_NAME_EQUALITY_COMPARATOR</a> }*/);
+		Map<FullName, Void> lastNameHashMap = new LinkedHashMap<>(FullName./*{ <a href="#FullName_LAST_NAME_EQUALITY_COMPARATOR">LAST_NAME_EQUALITY_COMPARATOR</a> }*/);
+		Set<FullName> lastNameTreeSet = new TreeSet<>(FullName./*{ <a href="#FullName_LAST_NAME_COMPARATOR">LAST_NAME_COMPARATOR</a> }*/);
+		Map<FullName, Void> lastNameTreeMap = new TreeMap<>(FullName./*{ <a href="#FullName_LAST_NAME_COMPARATOR">LAST_NAME_COMPARATOR</a> }*/);
+			
+		Set<FullName> fullNameHashSet = new LinkedHashSet<>(FullName./*{ <a href="#FullName_FULL_NAME_EQUALITY_COMPARATOR">FULL_NAME_EQUALITY_COMPARATOR</a> }*/);
+		Map<FullName, Void> fullNameHashMap = new LinkedHashMap<>(FullName./*{ <a href="#FullName_FULL_NAME_EQUALITY_COMPARATOR">FULL_NAME_EQUALITY_COMPARATOR</a> }*/);
+		Set<FullName> fullNameTreeSet = new TreeSet<>(FullName./*{ <a href="#FullName_FULL_NAME_COMPARATOR">FULL_NAME_COMPARATOR</a> }*/);
+		Map<FullName, Void> fullNameTreeMap = new TreeMap<>(FullName./*{ <a href="#FullName_FULL_NAME_COMPARATOR">FULL_NAME_COMPARATOR</a> }*/);
+			
+		firstNameHashSet.add(jamesGosling);
+		firstNameHashSet.add(joshBloch);
+		firstNameHashSet.add(gavinKing);
+		firstNameHashMap.put(jamesGosling, null);
+		firstNameHashMap.put(joshBloch, null);
+		firstNameHashMap.put(gavinKing, null);
+		firstNameTreeSet.add(jamesGosling);
+		firstNameTreeSet.add(joshBloch);
+		firstNameTreeSet.add(gavinKing);
+		firstNameTreeMap.put(jamesGosling, null);
+		firstNameTreeMap.put(joshBloch, null);
+		firstNameTreeMap.put(gavinKing, null);
+		
+		lastNameHashSet.add(jamesGosling);
+		lastNameHashSet.add(joshBloch);
+		lastNameHashSet.add(gavinKing);
+		lastNameHashMap.put(jamesGosling, null);
+		lastNameHashMap.put(joshBloch, null);
+		lastNameHashMap.put(gavinKing, null);
+		lastNameTreeSet.add(jamesGosling);
+		lastNameTreeSet.add(joshBloch);
+		lastNameTreeSet.add(gavinKing);
+		lastNameTreeMap.put(jamesGosling, null);
+		lastNameTreeMap.put(joshBloch, null);
+		lastNameTreeMap.put(gavinKing, null);
+		
+		fullNameHashSet.add(jamesGosling);
+		fullNameHashSet.add(joshBloch);
+		fullNameHashSet.add(gavinKing);
+		fullNameHashMap.put(jamesGosling, null);
+		fullNameHashMap.put(joshBloch, null);
+		fullNameHashMap.put(gavinKing, null);
+		fullNameTreeSet.add(jamesGosling);
+		fullNameTreeSet.add(joshBloch);
+		fullNameTreeSet.add(gavinKing);
+		fullNameTreeMap.put(jamesGosling, null);
+		fullNameTreeMap.put(joshBloch, null);
+		fullNameTreeMap.put(gavinKing, null);
+		
+		/*
+		 * Assert initalizations
+		 */
+		assertFullNames(firstNameHashSet, jamesGosling, joshBloch, gavinKing);
+		assertFullNames(firstNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+		// "gavin" < "james" < "josh"
+		assertFullNames(firstNameTreeSet, gavinKing, jamesGosling, joshBloch);
+		assertFullNames(firstNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);
+		
+		assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);
+		assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+		// "bloch" < "gosling" < "king"
+		assertFullNames(lastNameTreeSet, joshBloch, jamesGosling, gavinKing);
+		assertFullNames(lastNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);
+		
+		assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);
+		assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+		// { "gavin", "king" } < { "james", "gosling" } < { "josh", "bloch" }
+		assertFullNames(fullNameTreeSet, gavinKing, jamesGosling, joshBloch);
+		assertFullNames(fullNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);
+		
+		/*
+		 * (1) Change the first name of jamesGosling to be "JAMES", the 
+         * firstNameHashSet, firstNameHashSet, firstNameTreeSet, firstNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">jamesGosling.setFirstName("JAMES");</span> }*/
+        
+        /*{ <span class="implicit-no">assertFullNames(firstNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-no">assertFullNames(firstNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+		// "JAMES" < "gavin" < "josh"
+		/*{ <span class="implicit-yes">assertFullNames(firstNameTreeSet, jamesGosling, gavinKing, joshBloch);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(firstNameTreeMap.keySet(), jamesGosling, gavinKing, joshBloch);</span> }*/
+		
+		assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);
+		assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+		// "bloch" < "gosling" < "king"
+		assertFullNames(lastNameTreeSet, joshBloch, jamesGosling, gavinKing);
+		assertFullNames(lastNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);
+		
+		/*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+		// { "JAMES", "gosling" } < { "gavin", "king" } < { "josh", "bloch" }
+		/*{ <span class="implicit-yes">assertFullNames(fullNameTreeSet, jamesGosling, gavinKing, joshBloch);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(fullNameTreeMap.keySet(), jamesGosling, gavinKing, joshBloch);</span> }*/
+		
+		/*
+         * (2) Change the first name of joshBloch to be "JOSH", the 
+         * firstNameHashSet, firstNameHashSet, firstNameTreeSet, firstNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">joshBloch.setFirstName("JOSH");</span> }*/
+        
+        /*{ <span class="implicit-no">assertFullNames(firstNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(firstNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // "JAMES" < "JOSH" < "gavin"
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        
+        assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);
+		assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+		// "bloch" < "gosling" < "king"
+		assertFullNames(lastNameTreeSet, joshBloch, jamesGosling, gavinKing);
+		assertFullNames(lastNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);
+        
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // { "JAMES", "gosling" } < { "JOSH", "bloch" } < { "gavin", "king" }
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        
+        /*
+         * (3) Change the first name of gavinKing to be "GAVIN", the 
+         * firstNameHashSet, firstNameHashSet, firstNameTreeSet, firstNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">gavinKing.setFirstName("GAVIN");</span> }*/
+        
+        /*{ <span class="implicit-no">assertFullNames(firstNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(firstNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // "GAVIN" < "JAMES" < "JOSH"
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeSet, gavinKing, jamesGosling, joshBloch);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);</span> }*/
+        
+        assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);
+		assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+		// "bloch" < "gosling" < "king"
+		assertFullNames(lastNameTreeSet, joshBloch, jamesGosling, gavinKing);
+		assertFullNames(lastNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);
+        
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // { "GAVIN", "king" } < { "JAMES", "gosling" } < { "JOSH", "bloch" }
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeSet, gavinKing, jamesGosling, joshBloch);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);</span> }*/
+        
+        /*
+         * (4) Change the last name of jamesGosling to be "GOSLING", the 
+         * lastNameHashSet, lastNameHashSet, lastNameTreeSet, lastNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">jamesGosling.setLastName("GOSLING");</span> }*/
+        
+        assertFullNames(firstNameHashSet, jamesGosling, joshBloch, gavinKing);
+        assertFullNames(firstNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+        // "GAVIN" < "JAMES" < "JOSH"
+        assertFullNames(firstNameTreeSet, gavinKing, jamesGosling, joshBloch);
+        assertFullNames(firstNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);
+        
+        /*{ <span class="implicit-no">assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-no">assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+		// "GOSLING" < "bloch" < "king"
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // { "GAVIN", "king" } < { "JAMES", "GOSLING" } < { "JOSH", "bloch" }
+        /*{ <span class="implicit-no">assertFullNames(fullNameTreeSet, gavinKing, jamesGosling, joshBloch);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);</span> }*/
+        
+        /*
+         * (5) Change the last name of joshBloch to be "BLOCH", the 
+         * lastNameHashSet, lastNameHashSet, lastNameTreeSet, lastNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">joshBloch.setLastName("BLOCH");</span> }*/
+        
+        assertFullNames(firstNameHashSet, jamesGosling, joshBloch, gavinKing);
+        assertFullNames(firstNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+        // "GAVIN" < "JAMES" < "JOSH"
+        assertFullNames(firstNameTreeSet, gavinKing, jamesGosling, joshBloch);
+        assertFullNames(firstNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);
+        
+        /*{ <span class="implicit-no">assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-no">assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+		// "BLOCH" < "GOSLING" < "king"
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeSet, joshBloch, jamesGosling, gavinKing);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);</span> }*/
+        
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // { "GAVIN", "king" } < { "JAMES", "GOSLING" } < { "JOSH", "BLOCH" }
+        /*{ <span class="implicit-no">assertFullNames(fullNameTreeSet, gavinKing, jamesGosling, joshBloch);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);</span> }*/
+        
+        /*
+         * (6) Change the last name of gavinKing to be "KING", the 
+         * lastNameHashSet, lastNameHashSet, lastNameTreeSet, lastNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">gavinKing.setLastName("KING");</span> }*/
+        
+        assertFullNames(firstNameHashSet, jamesGosling, joshBloch, gavinKing);
+        assertFullNames(firstNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+        // "GAVIN" < "JAMES" < "JOSH"
+        assertFullNames(firstNameTreeSet, gavinKing, jamesGosling, joshBloch);
+        assertFullNames(firstNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);
+        
+        /*{ <span class="implicit-no">assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-no">assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+		// "BLOCH" < "GOSLING" < "KING"
+		/*{ <span class="implicit-no">assertFullNames(lastNameTreeSet, joshBloch, jamesGosling, gavinKing);</span> }*/
+		/*{ <span class="implicit-no">assertFullNames(lastNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);</span> }*/
+        
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // { "GAVIN", "KING" } < { "JAMES", "GOSLING" } < { "JOSH", "BLOCH" }
+        /*{ <span class="implicit-no">assertFullNames(fullNameTreeSet, gavinKing, jamesGosling, joshBloch);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameTreeMap.keySet(), gavinKing, jamesGosling, joshBloch);</span> }*/
+        
+        /*
+         * (7) Change the first name of jamesGosling to be null, the 
+         * firstNameHashSet, firstNameHashSet, firstNameTreeSet, firstNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">jamesGosling.setFirstName(null);</span> }*/
+        
+        /*{ <span class="implicit-no">assertFullNames(firstNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(firstNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // null < "GAVIN" < "JOSH"
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeSet, jamesGosling, gavinKing, joshBloch);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeMap.keySet(), jamesGosling, gavinKing, joshBloch);</span> }*/
+        
+        assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);
+		assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+		// "BLOCH" < "GOSLING" < "KING"
+		assertFullNames(lastNameTreeSet, joshBloch, jamesGosling, gavinKing);
+		assertFullNames(lastNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);
+        
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // { null, "GOSLING" } < { "GAVIN", "KING" } < { "JOSH", "bloch" }
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeSet, jamesGosling, gavinKing, joshBloch);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeMap.keySet(), jamesGosling, gavinKing, joshBloch);</span> }*/
+        
+        /*
+         * (8) Change the first name of joshBloch to be null, the 
+         * firstNameHashSet, firstNameHashSet, firstNameTreeSet, firstNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">joshBloch.setFirstName(null);</span> }*/
+        /*{ <span class="com">&#47;&#42;</span> }*/
+        /*{ <span class="com"> * The first name of jamesGosling <span class="important">already</span> is null, now the first name of joshBloch become to be null <span class="important">too</span>,</span> }*/
+        /*{ <span class="com"> * so jamesGlosing will be removed automactically because the default <a href="#ReplacementRuleDeclaration">ReplacementRule</a> is <a href="#ReplacementRule_NEW_REFERENCE_WIN">NEW_REFERENCE_WIN</a>.</span> }*/
+        /*{ <span class="com"> * <span style="color:gray">(If <a href="#ReplacementRuleDeclaration">ReplacementRule</a> of set/map is <a href="#ReplacementRule_OLD_REFERENCE_WIN">OLD_REFERENCE_WIN</a>, joshBloch will be removed automatically)</span></span> }*/
+        /*{ <span class="com"> &#42;&#47;</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameHashSet, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameHashMap.keySet(), joshBloch, gavinKing);</span> }*/
+        // null < "GAVIN"
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeSet, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeMap.keySet(), joshBloch, gavinKing);</span> }*/
+        
+        assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);
+		assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+		// "BLOCH" < "GOSLING" < "KING"
+		assertFullNames(lastNameTreeSet, joshBloch, jamesGosling, gavinKing);
+		assertFullNames(lastNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);
+        
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // { null, "BLOCH" } < { null, "GOSLING" } < { "GAVIN", "KING" }
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeSet, joshBloch, jamesGosling, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);</span> }*/
+        
+        /*
+         * (9) Change the first name of gavinKing to be null, the 
+         * firstNameHashSet, firstNameHashSet, firstNameTreeSet, firstNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">gavinKing.setFirstName(null);</span> }*/
+        /*{ <span class="com">&#47;&#42;</span> }*/
+        /*{ <span class="com"> * The first name of joshBloch <span class="important">already</span> is null, now the first name of gavinKing become to be null <span class="important">too</span>,</span> }*/
+        /*{ <span class="com"> * so joshBloch will be removed automactically because the default <a href="#ReplacementRuleDeclaration">ReplacementRule</a> is <a href="#ReplacementRule_NEW_REFERENCE_WIN">NEW_REFERENCE_WIN</a>.</span> }*/
+        /*{ <span class="com"> * <span style="color:gray">(If <a href="#ReplacementRuleDeclaration">ReplacementRule</a> of set/map is <a href="#ReplacementRule_OLD_REFERENCE_WIN">OLD_REFERENCE_WIN</a>, gavinKing will be removed automatically)</span></span> }*/
+        /*{ <span class="com"> &#42;&#47;</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameHashSet, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameHashMap.keySet(), gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeSet, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(firstNameTreeMap.keySet(), gavinKing);</span> }*/
+        
+        assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);
+		assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);
+		// "BLOCH" < "GOSLING" < "KING"
+		assertFullNames(lastNameTreeSet, joshBloch, jamesGosling, gavinKing);
+		assertFullNames(lastNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);
+        
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // { null, "BLOCH" } < { null, "GOSLING" } < { null, "KING" }
+        /*{ <span class="implicit-no">assertFullNames(fullNameTreeSet, joshBloch, jamesGosling, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameTreeMap.keySet(), joshBloch, jamesGosling, gavinKing);</span> }*/
+        
+        /*
+         * (10) Change the last name of jamesGosling to be null, the 
+         * lastNameHashSet, lastNameHashMap, lastNameTreeSet, lastNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">jamesGosling.setLastName(null);</span> }*/
+        assertFullNames(firstNameHashSet, gavinKing);
+        assertFullNames(firstNameHashMap.keySet(), gavinKing);
+        assertFullNames(firstNameTreeSet, gavinKing);
+        assertFullNames(firstNameTreeMap.keySet(), gavinKing);
+        
+        /*{ <span class="implicit-no">assertFullNames(lastNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-no">assertFullNames(lastNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+		// null < "BLOCH" < "KING"
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-no">assertFullNames(fullNameHashMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        // { null, null } < { null, "BLOCH" } < { null, "KING" }
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeSet, jamesGosling, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeMap.keySet(), jamesGosling, joshBloch, gavinKing);</span> }*/
+        
+        /*
+         * (11) Change the last name of joshBloch to be null, the 
+         * lastNameHashSet, lastNameHashMap, lastNameTreeSet, lastNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">joshBloch.setLastName(null);</span> }*/
+        assertFullNames(firstNameHashSet, gavinKing);
+        assertFullNames(firstNameHashMap.keySet(), gavinKing);
+        assertFullNames(firstNameTreeSet, gavinKing);
+        assertFullNames(firstNameTreeMap.keySet(), gavinKing);
+        
+        /*{ <span class="com">&#47;&#42;</span> }*/
+        /*{ <span class="com"> * The last name of jamesGosling <span class="important">already</span> is null, now the last name of joshBloch become to be null <span class="important">too</span>,</span> }*/
+        /*{ <span class="com"> * so jamesGosling will be removed automactically because the default <a href="#ReplacementRuleDeclaration">ReplacementRule</a> is <a href="#ReplacementRule_NEW_REFERENCE_WIN">NEW_REFERENCE_WIN</a>.</span> }*/
+        /*{ <span class="com"> * <span style="color:gray">(If <a href="#ReplacementRuleDeclaration">ReplacementRule</a> of set/map is <a href="#ReplacementRule_OLD_REFERENCE_WIN">OLD_REFERENCE_WIN</a>, joshBloch will be removed automatically)</span></span> }*/
+        /*{ <span class="com"> &#42;&#47;</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(lastNameHashSet, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(lastNameHashMap.keySet(), joshBloch, gavinKing);</span> }*/
+		// null < "KING"
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeSet, joshBloch, gavinKing);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeMap.keySet(), joshBloch, gavinKing);</span> }*/
+        
+        /*{ <span class="com">&#47;&#42;</span> }*/
+        /*{ <span class="com"> * The full name of jamesGosling <span class="important">already</span> is { null, null }, now the full name of joshBloch become to be { null, null } <span class="important">too</span>,</span> }*/
+        /*{ <span class="com"> * so jamesGosling will be removed automactically because the default <a href="#ReplacementRuleDeclaration">ReplacementRule</a> is <a href="#ReplacementRule_NEW_REFERENCE_WIN">NEW_REFERENCE_WIN</a>.</span> }*/
+        /*{ <span class="com"> * <span style="color:gray">(If <a href="#ReplacementRuleDeclaration">ReplacementRule</a> of set/map is <a href="#ReplacementRule_OLD_REFERENCE_WIN">OLD_REFERENCE_WIN</a>, joshBloch will be removed automatically)</span></span> }*/
+        /*{ <span class="com"> &#42;&#47;</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameHashSet, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameHashMap.keySet(), joshBloch, gavinKing);</span> }*/
+        // { null, null } < { null, "KING" }
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeSet, joshBloch, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeMap.keySet(), joshBloch, gavinKing);</span> }*/
+        
+        /*
+         * (12) Change the last name of gavinKing to be null, the 
+         * lastNameHashSet, lastNameHashMap, lastNameTreeSet, lastNameTreeMap,
+         * fullNameHashSet, fullNameHashSet, fullNameTreeSet and fullNameTreeMap 
+         * will be adjusted automatically. 
+         */
+        /*{ <span class="explicit">gavinKing.setLastName(null);</span> }*/
+        assertFullNames(firstNameHashSet, gavinKing);
+        assertFullNames(firstNameHashMap.keySet(), gavinKing);
+        assertFullNames(firstNameTreeSet, gavinKing);
+        assertFullNames(firstNameTreeMap.keySet(), gavinKing);
+        
+        /*{ <span class="com">&#47;&#42;</span> }*/
+        /*{ <span class="com"> * The last name of joshBloch <span class="important">already</span> is null, now the last name of gavinKing become to be null <span class="important">too</span>,</span> }*/
+        /*{ <span class="com"> * so joshBloch will be removed automactically because the default <a href="#ReplacementRuleDeclaration">ReplacementRule</a> is <a href="#ReplacementRule_NEW_REFERENCE_WIN">NEW_REFERENCE_WIN</a>.</span> }*/
+        /*{ <span class="com"> * <span style="color:gray">(If <a href="#ReplacementRuleDeclaration">ReplacementRule</a> of set/map is <a href="#ReplacementRule_OLD_REFERENCE_WIN">OLD_REFERENCE_WIN</a>, gavinKing will be removed automatically)</span></span> }*/
+        /*{ <span class="com"> &#42;&#47;</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(lastNameHashSet, gavinKing);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(lastNameHashMap.keySet(), gavinKing);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeSet, gavinKing);</span> }*/
+		/*{ <span class="implicit-yes">assertFullNames(lastNameTreeMap.keySet(), gavinKing);</span> }*/
+        
+        /*{ <span class="com">&#47;&#42;</span> }*/
+        /*{ <span class="com"> * The full name of joshBloch <span class="important">already</span> is { null, null }, now the full name of gavinKing become to be { null, null } <span class="important">too</span>,</span> }*/
+        /*{ <span class="com"> * so joshBloch will be removed automactically because the default <a href="#ReplacementRuleDeclaration">ReplacementRule</a> is <a href="#ReplacementRule_NEW_REFERENCE_WIN">NEW_REFERENCE_WIN</a>.</span> }*/
+        /*{ <span class="com"> * <span style="color:gray">(If <a href="#ReplacementRuleDeclaration">ReplacementRule</a> of set/map is <a href="#ReplacementRule_OLD_REFERENCE_WIN">OLD_REFERENCE_WIN</a>, gavinKing will be removed automatically)</span></span> }*/
+        /*{ <span class="com"> &#42;&#47;</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameHashSet, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameHashMap.keySet(), gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeSet, gavinKing);</span> }*/
+        /*{ <span class="implicit-yes">assertFullNames(fullNameTreeMap.keySet(), gavinKing);</span> }*/
+	}
+	
+	private static void assertFullNames(Set<FullName> fullNameSetWithParticularOrder, FullName ... fullNames) {
+		Assert.assertEquals(fullNames.length, fullNameSetWithParticularOrder.size());
+		int index = 0;
+		for (FullName fullName : fullNameSetWithParticularOrder) {
+			Assert.assertSame(fullNames[index++], fullName);
+		}
+	}
+}
+    					]]></pre>
+    				</div>
+    			</fieldset>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend><a name="unifiedComparatorChapter">Unified Comparator</a></legend>
+    			<p class="paragraphs">
+    				As we discussed, BabyFish X Collection Framework support 4 comparators
+    				<ul class="no-paragraphs">
+    					<li>java.util.Comparator&lt;T&gt;</li>
+    					<li>org.babyfish.collection.<a href="#EqualityComparatorDeclaration">EqualityComparator</a>&lt;T&gt;</li>
+    					<li>org.babyfish.collection.<a href="#FrozenComparatorDeclaration">FrozenComparator</a>&lt;T&gt;</li>
+    					<li>org.babyfish.collection.<a href="#FrozenEqualityComparatorDeclaration">FrozenEqualityComparator</a>&lt;T&gt;</li>
+    				</ul>
+    				In order to manage these 4 comparators by an unified approach, babyfish supports org.babyfish.collection.UnifiedComparator&lt;T&gt;
+    				, this is the unified wrapper of any comparator.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import java.io.Serializable;
+import java.util.Comparator;
+... ...
+
+public abstract class UnifiedComparator<T> implements Serializable {
+
+	private UnifiedComparator() {}
+	
+	public static <T> UnifiedComparator<T> empty() { ... ... }
+
+	public static <T> UnifiedComparator<T> nullToEmpty(UnifiedComparator<T> unifiedComparator) { ... ... }
+
+	public static <T> UnifiedComparator<T> emptyToNull(UnifiedComparator<T> unifiedComparator) { ... ... }
+	
+	public static <T> UnifiedComparator<T> of(Comparator<T> comparator) { ... ... }
+	
+	public static <T> UnifiedComparator<T> of(EqualityComparator<T> equalityComparator) { ... ...}
+
+	public static <T> UnifiedComparator<T> of(FrozenComparator<T> frozenComparator) { ... ... }
+
+	public static <T> UnifiedComparator<T> of(FrozenEqualityComparator<T> frozenEqualityComparator) { ... ... }
+	
+	public final Comparator<T> comparator() {
+		return this.comparator(false);
+	}
+	
+	public final EqualityComparator<T> equalityComparator() {
+		return this.equalityComparator(false);
+	}
+	
+	public FrozenComparator<T> frozenComparator() {
+		return this.frozenComparator(false);
+	}
+	
+	public FrozenEqualityComparator<T> froznEqualityComparator() {
+		return this.frozenEqualityComparator(false);
+	}
+	
+	public abstract Comparator<T> comparator(boolean force);
+	
+	public abstract EqualityComparator<T> equalityComparator(boolean force);
+	
+	public abstract FrozenComparator<T> frozenComparator(boolean force);
+	
+	public abstract FrozenEqualityComparator<T> frozenEqualityComparator(boolean force);
+	
+	... ...
+}
+    					]]></pre>
+    				</div>
+    				<ul class="no-paragraphs">
+    					<li>
+    						The constructor of this class is private, so you can not create its instances by "new" statement.
+    					</li>
+    					<li>
+    						"UnifiedComparator.empty()" returns a singleton instance, like null, it means no comparators,
+    						BabyFish Collection Framework consider that "UnifiedComparator.empty()" and "null" are same.
+    					</li>
+    					<li>
+    						"UnifiedComparator.nullToEmpty(UnifiedComparator)" converts null to empty, it returns "UnifiedComparator.empty()" if the parameter is null;
+    						otherwise, it returns the parameter itself.
+    					</li>
+    					<li>
+    						"UnifiedComparator.emptyToNull(UnifiedComparator)" converts empty to null, it returns null if the parameter is "UnifiedComparator.empty()";
+    						otherwise, it returns the parameter itself.
+    					</li>
+    					<li>
+		    				The methods of(Comparator), of(EqualityComparator), of(FrozenComparator) and of(FrozenEqualityComparator)
+		    				can create an UnifiedComparator wrapper for those 4 comparators supported by BabyFish Collection Framework.
+		    				It will return null if the parameter is null, it <span class="important">NEVER</span> returns UnifiedComparator.empty().
+    					</li>
+    					<li>
+    						The methods comparator(boolean), equalityComparator(boolean), frozenComparator(boolean) and frozenEqualityComparator(boolean)
+    						can extract the real comparators from the wrapper UnifiedComparator. When the actual real comparator is not the expected real comparator
+    						that you want to extract, it throws the exception "java.lang.IllegalStateException" if the parameter is true and returns null
+    						when the parameter is false.
+    					</li>
+    				</ul>
+    			</p>
+    			<p class="paragaraphs">
+    				Both the interface "org.babyfish.collection.XCollection" and "org.babyfish.collection.XMap" supports methods return "org.babyfish.collection.UnifiedComparator"
+    				so that any collection/map of BabyFish XCollection Framework supports "java.util.Comparator", "org.babyfish.collection.EqualityComparator",
+    				"org.babyfish.collection.FrozenComparator" and "org.babyfish.collection.FrozenEqualityComparator".
+    			</p>
+    			<div class="important">org.babyfish.collection.XCollection</div>
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import java.util.Collection;
+import org.babyfish.lang.LockDescriptor;
+... ...
+
+public interface XCollection<E> extends Collection<E>, LockDescriptor {
+	
+	UnifiedComparator<? super E> unifiedComparator();
+	
+	... ...
+}
+    				]]></pre>
+    			</div>
+    			<div class="important">org.babyfish.collection.XMap</div>
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import java.util.Map;
+import org.babyfish.lang.LockDescriptor;
+... ...
+
+public interface XMap<K, V> extends Map<K, V>, LockDescriptor {
+	
+	UnifiedComparator<? super K> keyUnifiedComparator(); //Given by user
+	
+	UnifiedComparator<? super V> valueUnifiedComparator(); //Given by user
+	
+	UnifiedComparator<? super Entry<K, V>> entryUnifiedComparator(); //Decide automatically
+	
+	... ...
+}
+    				]]></pre>
+    			</div>
+    			<ul>
+    				<li>For "org.babyfish.collection.XSortedSet", you can do "Assert.assertSame(sortedSet.comparator(), sortedSet.unifiedComparator().comparator(true));"</li>
+    				<li>For "org.babyfish.collection.XSortedMap", you can do "Assert.assertSame(sortedMap.comparator(), sortedSet.keyUnifiedComparator().comparator(true));"</li>
+    				<li>
+    					These 4 methods <span class="important">NEVER</span> return null, so the developper who implements the collections <span class="important">MUST</span> invoke 
+    					"UnifiedComparator.nullToEmpty(UnifiedComparator)" to <span class="important">GUARANTEE</span> the return value is <span class="important">NOT</span> null.
+    				</li>
+    			</ul>
+    		</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Validators</legend>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.validator.Validator&lt;T&gt;</legend>
+    			<p class="paragraphs">
+    				BabyFish XCollection Framework supports validation mechanism, the collection/map can validate the elements/keys/values that are going to be added,
+    				if the validator consider that those elements/keys/values are invalid, the validators should throws exception so that those elements/keys/values
+    				can <span class="important">NOT</span> be added.
+    			</p>
+    			<p class="paragraphs">
+    				The interface "org.babyfish.collection.Validator&lt;T&gt;" is designed to validate an element/key/value.
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.validator;
+
+public interface Validator<T> {
+
+	void validate(T e);
+}
+    					]]></pre>
+    				</div>
+    				If the validator consider an element/key/value is invalid, please throw an exception so that the element/key/value can not be added into the collection/map.
+    			</p>
+    			<div class="important-section">
+    				Validator can <span class="important">NOT</span> suppose the parameter to be validate is <span class="important">NOT</span> null.
+    			</div>
+    			<p class="paragrahs">
+    				BabyFish XCollection Framework allows the collection/map to retain several validators, each validator can forbid the elements/keys/values to be added. 
+    			</p>
+    			<div class="important">org.babyfish.collection.XCollection</div>
+   				<div class="source-code">
+   					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import java.util.Collection;
+import org.babyfish.lang.LockDescriptor;
+import org.babyfish.validator.Validator;
+
+... ...
+
+public interface XCollection<E> extends Collection<E>, LockDescriptor {
+	
+	void /*{ <a name="XCollection_addValidator">addValidator</a> }*/(Validator<E> validator);
+	
+	void removeValidator(Validator<E> validator);
+	
+	... ...
+}
+   					]]></pre>
+   				</div>
+   				<div class="important">org.babyfish.collection.XMap</div>
+   				<div class="source-code">
+   					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import java.util.Map;
+import org.babyfish.lang.LockDescriptor;
+import org.babyfish.validator.Validator;
+... ...
+
+public interface XMap<K, V> extends Map<K, V>, LockDescriptor {
+	
+	void /*{ <a name="XMap_addKeyValidator">addKeyValidator</a> }*/(Validator<K> validator);
+	
+	void removeKeyValidator(Validator<K> validator);
+	
+	void /*{ <a name="XMap_addValueValidator">addValueValidator</a> }*/(Validator<V> validator);
+	
+	void removeValueValidator(Validator<V> validator);
+	
+	... ...
+}
+   					]]></pre>
+   				</div>
+   				<p class="paragraphs">
+   					Let's see a small example.
+   				</p>
+   				<div class="source-code">
+ 					<pre class="lang-java"><![CDATA[
+Validator<Integer> evenValidator = new Validator<Integer>() {
+	@Override
+	public void validate(Integer e) {
+		if (e != null && (e % 2) != 0) {
+			throw new IllegalArgumentException("The element can not be odd number");
+		}
+	}
+};
+Validator<Integer> rangeValidator = new Validator<Integer>() {
+	@Override
+	public void validate(Integer e) {
+		Arguments.mustBetween("e", e, -100, true, +100, true);
+	}
+}; 
+XCollection<Integer> c1 = new ArrayList<>();
+XCollection<Integer> c2 = new HashSet<>();
+XMap<Integer, Integer> m1 = new TreeMap<>();
+XMap<Integer, Integer> m2 = new HashMap<>();
+XMap<Integer, Integer> m3 = new LinkedHashMap<>();
+c1./*{ <a href="#XCollection_addValidator">addValidator</a> }*/(org.babyfish.validators.Validators.notNull());
+c1./*{ <a href="#XCollection_addValidator">addValidator</a> }*/(evenValidator);
+c1./*{ <a href="#XCollection_addValidator">addValidator</a> }*/(rangevalidator);
+c2./*{ <a href="#XCollection_addValidator">addValidator</a> }*/(org.babyfish.validators.Validators.notNull());
+c2./*{ <a href="#XCollection_addValidator">addValidator</a> }*/(evenValidator);
+c2./*{ <a href="#XCollection_addValidator">addValidator</a> }*/(rangevalidator);
+m1./*{ <a href="#XMap_addKeyValidator">addKeyValidator</a> }*/(org.babyfish.validators.Validators.notNull());
+m1./*{ <a href="#XMap_addKeyValidator">addKeyValidator</a> }*/(evenValidator);
+m1./*{ <a href="#XMap_addKeyValidator">addKeyValidator</a> }*/(rangevalidator);
+m2./*{ <a href="#XMap_addValueValidator">addValueValidator</a> }*/(org.babyfish.validators.Validators.notNull());
+m2./*{ <a href="#XMap_addValueValidator">addValueValidator</a> }*/(evenValidator);
+m2./*{ <a href="#XMap_addValueValidator">addValueValidator</a> }*/(rangevalidator);
+m3./*{ <a href="#XMap_addKeyValidator">addKeyValidator</a> }*/(org.babyfish.validators.Validators.notNull());
+m3./*{ <a href="#XMap_addKeyValidator">addKeyValidator</a> }*/(evenValidator);
+m3./*{ <a href="#XMap_addKeyValidator">addKeyValidator</a> }*/(rangevalidator);
+m3./*{ <a href="#XMap_addValueValidator">addValueValidator</a> }*/(org.babyfish.validators.Validators.notNull());
+m3./*{ <a href="#XMap_addValueValidator">addValueValidator</a> }*/(evenValidator);
+m3./*{ <a href="#XMap_addValueValidator">addValueValidator</a> }*/(rangevalidator);
+ 					]]></pre>
+ 				</div>
+ 				In this example
+ 				<ul>
+ 					<li>c1 and c2 can only accept the element that is non-null, even-number and between -100 and +100</li>
+ 					<li>m1 and m3 can only accept the key that is non-null, even-number and between -100 and +100</li>
+ 					<li>m2 and m3 can only accept the value that is non-null, even-number and between -100 and +100</li>
+ 				</ul>
+    		</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Conflict Voters</legend>
+    		<p class="paragraphs">
+    			In Java Collection Framework, be differenct with the elements of "java.util.Set" and the keys of "java.util.Map", 
+    			there is <span class="important">NO</span> restriction for the elements of "java.util.List" and the values of 
+    			"java.util.Map", that is why "java.util.List" can contain duplicated elements and the "java.util.Map" can contain
+    			 duplicated values. 
+    			This is the default behavior of BabyFish X Collection Framework too, but BabyFish Collection Framework supports 
+    			a new way to change this default behavior.
+    		</p>
+    		<p class="paragraphs">
+    			In BabyFish XCollection Framework, "org.babyfish.collection.XList" and "org.babyfish.collection.XMap" 
+    			support a functionality: <span class="important2">Conflict Voter</span>. When a new element/value is 
+    			going to be added into the list/map, the conflict voters of this list/map can check whether the 
+    			new element/value is conflict with some existing elements/values in the list/map, the list/map 
+    			will remove the conflict element/values automatically before add the new element/value if these 
+    			conflict elements/values have been found.
+    		</p>
+    		<p class="paragraphs">
+    			Let's see the declaration of the conflict voter for list and map
+    		</p>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.conflict.ListConflictVoter&lt;E&gt;</legend>
+    			<p class="paragraphs">
+    				The org.babyfish.collection.XList can retain several conflict voters:
+    				<div class="source-code">
+	    				<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import org.babyfish.collection.conflict./*{ <a href="#ListConflictVoterDeclaration">ListConflictVoter</a> }*/;
+... ...
+
+public interface XList<E> extends List<E>, XCollection<E> {
+	
+	void /*{ <a name="XList_addConflictVoter">addConflictVoter</a> }*/(/*{ <a href="#ListConflictVoterDeclaration">ListConflictVoter</a> }*/<E> voter);
+	
+	void removeConflictVoter(/*{ <a href="#ListConflictVoterDeclaration">ListConflictVoter</a> }*/<E> voter);
+	
+	... ...
+}
+	    				]]></pre>
+	    			</div>
+	    			, and the ListConflictVoter is declared as
+	    			<div class="source-code">
+	    				<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.conflict;
+
+public interface /*{ <a name="ListConflictVoterDeclaration">ListConflictVoter</a> }*/<E> {
+
+	void vote(ListConflictVoterArgs<E> args);
+}
+	    				]]></pre>
+	    			</div>
+	    			<div class="important-section">
+	    				The method "vote" of all ListConflictVoter will be invoked when an element is going to be added into the list.
+	    			</div>
+    			</p>
+    			<p class="paragraphs">
+    				Let's see an example, in this test case, we create an org.babyfish.collection.XList&lt;String&gt;
+    				to retain the change history of files.
+    				<ul class="no-paragraphs">
+    					<li>
+    						We use org.validator.collection.Validator to make the format of each element of this list
+    						<span class="important">MUST</span> be the format of file path of linux.
+    					</li>
+    					<li>
+    						Each element of this list is file path of linux(directory name + file name),
+    						we use org.babyfish.collection.conflict.ListConflictVoter to make sure that
+    						<span class="important">ANY</span> directory 
+    						<span class="important">EXCEPT</span> the special directory "/usr/include" can contain 
+    						<span class="important">at most 3</span> history events, the special directory "/usr/include" can contains 
+    						<span class="important">at most 4</span> history events.
+    					</li>
+    				</ul>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.xcollection.learn.lcv;
+
+import java.util.List;
+import java.util.regex.Pattern;
+
+import org.babyfish.collection.ArrayList;
+import org.babyfish.collection.MACollections;
+import org.babyfish.collection.XList;
+import org.babyfish.collection.conflict.ListConflictVoter;
+import org.babyfish.collection.conflict.ListConflictVoterArgs;
+import org.babyfish.collection.conflict.ListReader;
+import org.babyfish.validator.Validator;
+import org.babyfish.validator.Validators;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+public class ListConflictVoterTest {
+
+	private static final Pattern LINUX_ABS_FILE_PATH = Pattern.compile("^(/[^/]{1,255})+$");
+	
+	private static final String SPECIAL_DIR = "/usr/include";
+
+	private XList<String> fileChangeHistory;
+	
+	@Before
+	public void setUp() {
+		this.fileChangeHistory = new ArrayList<>();
+		
+		/*
+		 * Add validators to the list.
+		 */
+		this.fileChangeHistory.addValidator(Validators.<String>notNull());
+		this.fileChangeHistory.addValidator(Validators.instanceOf(String.class));
+		this.fileChangeHistory.addValidator(new Validator<String>() {
+			@Override
+			public void validate(String e) {
+				if (!LINUX_ABS_FILE_PATH.matcher(e).matches()) {
+					throw new IllegalArgumentException("Illegal formant of new element.");
+				}
+			}
+		});
+		
+		/*
+		 * Add conflict voter to the list.
+		 */
+		this.fileChangeHistory./*{ <a href="#XList_addConflictVoter">addConflictVoter</a> }*/(new ListConflictVoter<String>() {
+			@Override
+			public void vote(ListConflictVoterArgs<String> args) {
+				String newElement = args.newElement();
+				String newDir = newElement.substring(0, newElement.lastIndexOf('/'));
+				List<Integer> indexes = new ArrayList<>();
+				
+				/*
+				 * Create an org.babyfish.collection.conflict.ListReader to iterate the elements.
+				 * Be different with java.util.Iterator and java.util.ListIterator,
+				 * (1) org.babyfish.collection.conflict.ListReader always skips the elements 
+				 * that have been voted to be conflict by this conflict voter.
+				 * (2) org.babyfish.collection.conflict.ListReader can contains the elements
+				 * that are going to be added into the current list and are processed by this
+				 * conflict voter.
+				 */
+				ListReader<String> reader = args.reader();
+				while (reader.read()) {
+					int index = reader.index();
+					String e = reader.element();
+					String dir = e.substring(0, e.lastIndexOf('/'));
+					if (dir.equals(newDir)) {
+						indexes.add(index);
+					}
+				}
+				int maxHistoryEventCount = newDir.equals(SPECIAL_DIR) ? 4 : 3;
+				int size = indexes.size();
+				if (size > maxHistoryEventCount - 1) {
+					args.conflictFound(indexes.subList(0, size - maxHistoryEventCount + 1));
+				}
+			}
+		});
+	}
+	
+	@Test
+	public void testDirectoryContainsAtMost3Files() {
+		
+		this.fileChangeHistory.add("/var/tmp/1.cpp");
+		this.fileChangeHistory.add("/var/tmp/2.cpp");
+		this.fileChangeHistory.add("/var/tmp/3.cpp");
+		assertList(this.fileChangeHistory, "/var/tmp/1.cpp", "/var/tmp/2.cpp", "/var/tmp/3.cpp");
+		
+		/*
+		 * Add "/var/tmp/4.cpp" into the list, the ListConflictVoter must make sure the
+		 * directory "/var/tmp" can contains at most 3 file change history events so that "/var/tmp/1.cpp" is
+		 * voted to be the conflict element and it is removed automatically 
+		 */
+		this.fileChangeHistory.add("/var/tmp/4.cpp");
+		/*{ <span class="implicit-yes">assertList(this.fileChangeHistory, "/var/tmp/2.cpp", "/var/tmp/3.cpp", "/var/tmp/4.cpp");</span> }*/
+		
+		/*
+		 * Add "/var/tmp/5.cpp" and ""/var/tmp/6.cpp"" into the list, the ListConflictVoter must make sure the
+		 * directory "/var/tmp" can contains at most 3 file change history events so that "/var/tmp/2.cpp" and "/var/tmp/3.cpp" are
+		 * voted to be the conflict element and they are removed automatically 
+		 */
+		this.fileChangeHistory.addAll(MACollections.wrap("/var/tmp/5.cpp", "/var/tmp/6.cpp"));
+		/*{ <span class="implicit-yes">assertList(this.fileChangeHistory, "/var/tmp/4.cpp", "/var/tmp/5.cpp", "/var/tmp/6.cpp");</span> }*/
+		
+		/*
+		 * Add "/var/tmp/7.cpp" into to the list twice, the ListConflictVoter must make sure the
+		 * directory "/var/tmp" can contains at most 3 file change history events so that "/var/tmp/4.cpp" and "/var/tmp/5.cpp" are
+		 * voted to be the conflict element and they are removed automatically 
+		 */
+		this.fileChangeHistory.addAll(MACollections.wrap("/var/tmp/7.cpp", "/var/tmp/7.cpp"));
+		/*{ <span class="implicit-yes">assertList(this.fileChangeHistory, "/var/tmp/6.cpp", "/var/tmp/7.cpp", "/var/tmp/7.cpp");</span> }*/
+		
+		/*
+		 * Add "/var/tmp/A.cpp", "/var/tmp/B.cpp", "/var/tmp/C.cpp", "/var/tmp/D.cpp", "/var/tmp/E.cpp", "/var/tmp/F.cpp" and 
+		 * "/var/tmp/G.cpp" into to the list, the ListConflictVoter must make sure the
+		 * directory "/var/tmp" can contains at most 3 file change history events so that "/var/tmp/6.cpp", "/var/tmp/7.cpp", 
+		 * "/var/tmp/A.cpp", "/var/tmp/B.cpp", "/var/tmp/C.cpp" and "/var/tmp/D.cpp"
+		 * voted to be the conflict element and they are removed automatically 
+		 */
+		this.fileChangeHistory.addAll(
+				MACollections.wrap(
+					"/var/tmp/A.cpp", 
+					"/var/tmp/B.cpp",
+					"/var/tmp/C.cpp",
+					"/var/tmp/D.cpp",
+					"/var/tmp/E.cpp",
+					"/var/tmp/F.cpp",
+					"/var/tmp/G.cpp"
+				)
+		);
+		/*{ <span class="implicit-yes">assertList(this.fileChangeHistory, "/var/tmp/E.cpp", "/var/tmp/F.cpp", "/var/tmp/G.cpp");</span> }*/
+	}
+	
+	@Test
+	public void testSpecialDirectoryContainsAtMost4Files() {
+		
+		this.fileChangeHistory.add("/usr/include/1.h");
+		this.fileChangeHistory.add("/usr/include/2.h");
+		this.fileChangeHistory.add("/usr/include/3.h");
+		this.fileChangeHistory.add("/usr/include/4.h");
+		assertList(this.fileChangeHistory, "/usr/include/1.h", "/usr/include/2.h", "/usr/include/3.h", "/usr/include/4.h");
+		
+		/*
+		 * Add "/usr/include/5.h" into the list, the ListConflictVoter must make sure the
+		 * special directory "/usr/include" can contains at most 4 file change history events so that "/usr/include/1.h" is
+		 * voted to be the conflict element and it is removed automatically 
+		 */
+		this.fileChangeHistory.add("/usr/include/5.h");
+		/*{ <span class="implicit-yes">assertList(this.fileChangeHistory, "/usr/include/2.h", "/usr/include/3.h", "/usr/include/4.h", "/usr/include/5.h");</span> }*/
+		
+		/*
+		 * Add "/usr/include/6.h" and ""/usr/include/7.h"" into the list, the ListConflictVoter must make sure the
+		 * special directory "/usr/include" can contains at most 4 file change history events so that "/usr/include/2.h" 
+		 * and "/usr/include/3.h" are voted to be the conflict element and they are removed automatically 
+		 */
+		this.fileChangeHistory.addAll(MACollections.wrap("/usr/include/6.h", "/usr/include/7.h"));
+		/*{ <span class="implicit-yes">assertList(this.fileChangeHistory, "/usr/include/4.h", "/usr/include/5.h", "/usr/include/6.h", "/usr/include/7.h");</span> }*/
+		
+		/*
+		 * Add "/usr/include/8.h" into to the list for three times, the ListConflictVoter must make sure the
+		 * special directory "/usr/include" can contains at most 4 file change history events so that "/usr/include/4.h", 
+		 * "/usr/include/5.h" and "/usr/include/6.h" are voted to be the conflict element and they are removed automatically 
+		 */
+		this.fileChangeHistory.addAll(MACollections.wrap("/usr/include/8.h", "/usr/include/8.h", "/usr/include/8.h"));
+		/*{ <span class="implicit-yes">assertList(this.fileChangeHistory, "/usr/include/7.h", "/usr/include/8.h", "/usr/include/8.h", "/usr/include/8.h");</span> }*/
+		
+		/*
+		 * Add "/usr/include/A.h", "/usr/include/B.h", "/usr/include/C.h", "/usr/include/D.h", "/usr/include/E.h", 
+		 * "/usr/include/F.h" and "/usr/include/G.h" into to the list, the ListConflictVoter must make sure the
+		 * special directory "/usr/include" can contains at most 4 file change history events so that 
+		 * "/usr/include/7.h", "/usr/include/8.h", "/usr/include/A.h", "/usr/include/B.h" and "/usr/include/C.h"
+		 * voted to be the conflict element and they are removed automatically
+		 */
+		this.fileChangeHistory.addAll(
+				MACollections.wrap(
+					"/usr/include/A.h", 
+					"/usr/include/B.h",
+					"/usr/include/C.h",
+					"/usr/include/D.h",
+					"/usr/include/E.h",
+					"/usr/include/F.h",
+					"/usr/include/G.h"
+				)
+		);
+		/*{ <span class="implicit-yes">assertList(this.fileChangeHistory, "/usr/include/D.h", "/usr/include/E.h", "/usr/include/F.h", "/usr/include/G.h");</span> }*/
+	}
+	
+	private static void assertList(List<String> list, String ... elements) {
+		Assert.assertEquals(elements.length, list.size());
+		int index = 0;
+		for (String element : list) {
+			Assert.assertEquals(elements[index++], element);
+		}
+	}
+}
+    					]]></pre>
+    				</div>
+    			</p>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.conflict.MapConflictVoter&lt;K, V&gt;</legend>
+    			<p class="paragraphs">
+    				The org.babyfish.collection.XMap can retain several conflict voters:
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+import java.util.Map;
+import org.babyfish.collection.conflict./*{ <a href="#MapConflictVoterDeclaration">MapConflictVoter</a> }*/;
+... ...
+
+public interface XMap<K, V> extends Map<K, V>, LockDescriptor {
+	
+	void /*{ <a name="XMap_addConflictVoter">addConflictVoter</a> }*/(/*{ <a href="#MapConflictVoterDeclaration">MapConflictVoter</a> }*/<K, V> voter);
+	
+	void removeConflictVoter(/*{ <a href="#MapConflictVoterDeclaration">MapConflictVoter</a> }*/<K, V> voter);
+	
+	... ...
+}
+    					]]></pre>
+    				</div>
+    				, and the MapConflictVorer is declared as:
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.conflict;
+
+public interface /*{ <a name="MapConflictVoterDeclaration">MapConflictVoter</a> }*/<K, V> {
+	
+	void vote(MapConflictVoterArgs<K, V> args);
+}
+    					]]></pre>
+    				</div>
+    				<div class="important-section">
+    					The method "vote" of all MapConflictVoter will be invoked when a key-value pair is going to be added into the map.
+    				</div>
+    			</p>
+    			<p class="paragraphs">
+    				Let's see an example, in this test case, we create an org.babyfish.collection.XMap&lt;String&gt;
+    				to retain the change history of files. The key is the event sequence number, the value is the full name of the changed file.
+    				<ul class="no-paragraphs">
+    					<li>
+    						We use org.validator.collection.Validator to make the format of each value of this map
+    						<span class="important">MUST</span> be the format of file path of linux.
+    					</li>
+    					<li>
+    						Each value of this map is file path of linux(directory name + file name),
+    						we use org.babyfish.collection.conflict.MapConflictVoter to make sure that
+    						<span class="important">ANY</span> directory 
+    						<span class="important">EXCEPT</span> the special directory "/usr/include" can contain 
+    						<span class="important">at most 3</span> history events, the special directory "/usr/include" can contains 
+    						<span class="important">at most 4</span> history events.
+    					</li>
+    				</ul>
+    			</p>
+    			<div class="important-section">
+    				org.babyfish.collection.conflict.MapConflictVoter has a derived class 
+    				<a href="#maMapConflictVoterChapter">org.babyfish.collection.conflict.MAMapConflictVoter</a>
+    				that works in a special mode.
+    				In order to make our test case can test both MapConflictVoter and MAMapConflictVoter, we
+    				create an abstract test case at first.
+    			</div>
+    			<p>
+    				<div class="important">AbstractMapConflictVoterTest.java</div>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.xcollection.learn.mcv;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
+
+import org.babyfish.collection.LinkedHashMap;
+import org.babyfish.collection.XOrderedMap;
+import org.babyfish.collection.conflict./*{ <a href="#MapConflictVoterDeclaration">MapConflictVoter</a> }*/;
+import org.babyfish.lang.Arguments;
+import org.babyfish.validator.Validator;
+import org.babyfish.validator.Validators;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+public abstract class /*{ <a name="AbstractMapConflictVoterTestDeclaration">AbstractMapConflictVoterTest</a> }*/ {
+
+	private static final Pattern LINUX_ABS_FILE_PATH = Pattern.compile("^(/[^/]{1,255})+$");
+	
+	protected static final String /*{ <a name="AbstractMapConflictVoter_SPECIAL_DIR">SPECIAL_DIR</a> }*/ = "/usr/include";
+
+    /*
+	 * In order to make our example is easy to understand, 
+	 * we use org.babyfish.collection.XOrderedMap,
+	 * NOT org.babyfish.collection.XMap.
+	 */
+	private XOrderedMap<Long, String> fileChangeHistory;
+	
+	protected abstract /*{ <a href="#MapConflictVoterDeclaration">MapConflictVoter</a> }*/<Long, String> createVoter();
+	
+	@Before
+	public void setUp() {
+		this.fileChangeHistory = new LinkedHashMap<>();
+		
+		/*
+		 * Add validators to the map.
+		 */
+		this.fileChangeHistory.addValueValidator(Validators.<String>notNull());
+		this.fileChangeHistory.addValueValidator(Validators.instanceOf(String.class));
+		this.fileChangeHistory.addValueValidator(new Validator<String>() {
+			@Override
+			public void validate(String e) {
+				if (!LINUX_ABS_FILE_PATH.matcher(e).matches()) {
+					throw new IllegalArgumentException("Illegal formant of new value.");
+				}
+			}
+		});
+		
+		/*
+		 * Add conflict voter to the map.
+		 */
+		this.fileChangeHistory./*{ <a href="#XMap_addConflictVoter">addConflictVoter</a> }*/(this.createVoter());
+	}
+	
+	@Test
+	public void testDirectoryContainsAtMost3Files() {
+		
+		this.fileChangeHistory.put(1001L, "/var/tmp/1.cpp");
+		this.fileChangeHistory.put(1002L, "/var/tmp/2.cpp");
+		this.fileChangeHistory.put(1003L, "/var/tmp/3.cpp");
+		assertOrderedMap(this.fileChangeHistory, 1001L, "/var/tmp/1.cpp", 1002L, "/var/tmp/2.cpp", 1003L, "/var/tmp/3.cpp");
+		
+		/*
+		 * Add { 1004L, "/var/tmp/4.cpp" } into the map, the MapConflictVoter must make sure the
+		 * directory "/var/tmp" can contains at most 3 file change history events so that { 1001L : "/var/tmp/1.cpp" } is
+		 * voted to be the conflict key-value pair and it is removed automatically 
+		 */
+		this.fileChangeHistory.put(1004L, "/var/tmp/4.cpp");
+		/*{ <span class="implicit-yes">assertOrderedMap(this.fileChangeHistory, 1002L, "/var/tmp/2.cpp", 1003L, "/var/tmp/3.cpp", 1004L, "/var/tmp/4.cpp");</span> }*/
+		
+		/*
+		 * Add { 1005L, "/var/tmp/5.cpp" } and { 1006L, "/var/tmp/6.cpp"} into the map, the MapConflictVoter must make sure the
+		 * directory "/var/tmp" can contains at most 3 file change history events so that { 1002L, "/var/tmp/2.cpp" } and 
+		 * { 1003L, "/var/tmp/3.cpp" } are voted to be the conflict key-value pairs and they are removed automatically 
+		 */
+		this.fileChangeHistory.putAll(prepareMap(1005L, "/var/tmp/5.cpp", 1006L, "/var/tmp/6.cpp"));
+		/*{ <span class="implicit-yes">assertOrderedMap(this.fileChangeHistory, 1004L, "/var/tmp/4.cpp", 1005L, "/var/tmp/5.cpp", 1006L, "/var/tmp/6.cpp");</span> }*/
+		
+		/*
+		 * Add { 1007L, "/var/tmp/7.cpp" }, { 1008L, "/var/tmp/7.cpp" } into to the map, the MapConflictVoter must make sure the
+		 * directory "/var/tmp" can contains at most 3 file change history events so that { 1004L, "/var/tmp/4.cpp" } and 
+		 * { 1005L, "/var/tmp/5.cpp" } are voted to be the conflict key-value pairs and they are removed automatically 
+		 */
+		this.fileChangeHistory.putAll(prepareMap(1007L, "/var/tmp/7.cpp", 1008L, "/var/tmp/7.cpp"));
+		/*{ <span class="implicit-yes">assertOrderedMap(this.fileChangeHistory, 1006L, "/var/tmp/6.cpp", 1007L, "/var/tmp/7.cpp", 1008L, "/var/tmp/7.cpp");</span> }*/
+		
+		/*
+		 * Add { 1009L, "/var/tmp/A.cpp" }, { 1010L, "/var/tmp/B.cpp" }, { 1011L, "/var/tmp/C.cpp" }, { 1012L, "/var/tmp/D.cpp" }, 
+		 * { 1013L, "/var/tmp/E.cpp"}, { 1014L, "/var/tmp/F.cpp" } and { 1015L, "/var/tmp/G.cpp" } into to the map, the MapConflictVoter 
+		 * must make sure the directory "/var/tmp" can contains at most 3 file change history events so that { 1006L, "/var/tmp/6.cpp" }, 
+		 * { 1007L, "/var/tmp/7.cpp" }, { 1008L, "/var/tmp/7.cpp" }, { 1009L, "/var/tmp/A.cpp" }, { 1010L, "/var/tmp/B.cpp" },
+		 * { 1011L, "/var/tmp/C.cpp" } and { 1012L, "/var/tmp/D.cpp" } are voted to be the conflict key-value pairs and they are 
+		 * removed automatically 
+		 */
+		this.fileChangeHistory.putAll(
+				prepareMap(
+					1009L, "/var/tmp/A.cpp", 
+					1010L, "/var/tmp/B.cpp",
+					1011L, "/var/tmp/C.cpp",
+					1012L, "/var/tmp/D.cpp",
+					1013L, "/var/tmp/E.cpp",
+					1014L, "/var/tmp/F.cpp",
+					1015L, "/var/tmp/G.cpp"
+				)
+		);
+		/*{ <span class="implicit-yes">assertOrderedMap(</span> }*/
+		/*{ <span class="implicit-yes">    this.fileChangeHistory, </span> }*/
+		/*{ <span class="implicit-yes">    1013L, "/var/tmp/E.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1014L, "/var/tmp/F.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1015L, "/var/tmp/G.cpp"</span> }*/
+		/*{ <span class="implicit-yes">);</span> }*/
+	}
+	
+	@Test
+	public void testSpecialDirectoryContainsAtMost4Files() {
+		
+		this.fileChangeHistory.put(1001L, "/usr/include/1.cpp");
+		this.fileChangeHistory.put(1002L, "/usr/include/2.cpp");
+		this.fileChangeHistory.put(1003L, "/usr/include/3.cpp");
+		this.fileChangeHistory.put(1004L, "/usr/include/4.cpp");
+		assertOrderedMap(
+			this.fileChangeHistory, 
+			1001L, "/usr/include/1.cpp", 
+			1002L, "/usr/include/2.cpp", 
+			1003L, "/usr/include/3.cpp",
+			1004L, "/usr/include/4.cpp");
+		
+		/*
+		 * Add { 1005L, "/usr/include/5.cpp" } into the map, the MapConflictVoter must make sure the
+		 * special directory "/usr/include" can contains at most 4 file change history events so that 
+		 * { 1001L : "/usr/include/1.cpp" } is voted to be the conflict key-value pair and 
+		 * it is removed automatically 
+		 */
+		this.fileChangeHistory.put(1005L, "/usr/include/5.cpp");
+		/*{ <span class="implicit-yes">assertOrderedMap(</span> }*/
+		/*{ <span class="implicit-yes">    this.fileChangeHistory, </span> }*/
+		/*{ <span class="implicit-yes">    1002L, "/usr/include/2.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1003L, "/usr/include/3.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1004L, "/usr/include/4.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1005L, "/usr/include/5.cpp"</span> }*/
+		/*{ <span class="implicit-yes">);</span> }*/
+		
+		/*
+		 * Add { 1006L, "/usr/include/6.cpp" } and { 1007L, "/usr/include/7.cpp"} into the map, the MapConflictVoter must make sure the
+		 * special directory "/usr/include" can contains at most 4 file change history events so that { 1002L, "/usr/include/2.cpp" } and 
+		 * { 1003L, "/usr/include/3.cpp" } are voted to be the conflict key-value pairs and they are removed automatically 
+		 */
+		this.fileChangeHistory.putAll(prepareMap(1006L, "/usr/include/6.cpp", 1007L, "/usr/include/7.cpp"));
+		/*{ <span class="implicit-yes">assertOrderedMap(</span> }*/
+		/*{ <span class="implicit-yes">    this.fileChangeHistory, </span> }*/
+		/*{ <span class="implicit-yes">    1004L, "/usr/include/4.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1005L, "/usr/include/5.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1006L, "/usr/include/6.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1007L, "/usr/include/7.cpp"</span> }*/
+		/*{ <span class="implicit-yes">);</span> }*/
+		
+		/*
+		 * Add { 1008L, "/usr/include/8.cpp" }, { 1009L, "/usr/include/9.cpp" } into to the map, the MapConflictVoter must make sure the
+		 * special directory "/usr/include" can contains at most 4 file change history events so that { 1004L, "/usr/include/4.cpp" } and 
+		 * { 1005L, "/usr/include/5.cpp" } are voted to be the conflict key-value pairs and they are removed automatically 
+		 */
+		this.fileChangeHistory.putAll(prepareMap(1008L, "/usr/include/8.cpp", 1009L, "/usr/include/8.cpp"));
+		/*{ <span class="implicit-yes">assertOrderedMap(</span> }*/
+		/*{ <span class="implicit-yes">    this.fileChangeHistory, </span> }*/
+		/*{ <span class="implicit-yes">    1006L, "/usr/include/6.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1007L, "/usr/include/7.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1008L, "/usr/include/8.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1009L, "/usr/include/8.cpp"</span> }*/
+		/*{ <span class="implicit-yes">);</span> }*/
+		
+		/*
+		 * Add { 1010L, "/usr/include/A.cpp" }, { 1011L, "/usr/include/B.cpp" }, { 1012L, "/usr/include/C.cpp" }, { 1013L, "/usr/include/D.cpp" }, 
+		 * { 1014L, "/usr/include/E.cpp"}, { 1015L, "/usr/include/F.cpp" } and { 1016L, "/usr/include/G.cpp" } into to the map, 
+		 * the MapConflictVoter must make sure the special directory "/usr/include" can contains at most 4 file change history events so that 
+		 * { 1006L, "/usr/include/6.cpp" }, { 1007L, "/usr/include/7.cpp" }, { 1008L, "/usr/include/8.cpp" }, { 1009L, "/usr/include/8.cpp" }, 
+		 * { 1010L, "/usr/include/A.cpp" }, { 1011L, "/usr/include/B.cpp" } and { 1012L, "/usr/include/C.cpp" } are voted to be 
+		 * the conflict key-value pairs and they are 
+		 * removed automatically 
+		 */
+		this.fileChangeHistory.putAll(
+				prepareMap(
+					1010L, "/usr/include/A.cpp", 
+					1011L, "/usr/include/B.cpp",
+					1012L, "/usr/include/C.cpp",
+					1013L, "/usr/include/D.cpp",
+					1014L, "/usr/include/E.cpp",
+					1015L, "/usr/include/F.cpp",
+					1016L, "/usr/include/G.cpp"
+				)
+		);
+		/*{ <span class="implicit-yes">assertOrderedMap(</span> }*/
+		/*{ <span class="implicit-yes">    this.fileChangeHistory, </span> }*/
+		/*{ <span class="implicit-yes">    1013L, "/usr/include/D.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1014L, "/usr/include/E.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1015L, "/usr/include/F.cpp", </span> }*/
+		/*{ <span class="implicit-yes">    1016L, "/usr/include/G.cpp"</span> }*/
+		/*{ <span class="implicit-yes">);</span> }*/
+	}
+	
+	private static Map<Long, String> prepareMap(Object ... keysAndValues) {
+		if (keysAndValues.length % 2 != 0) {
+			throw new IllegalArgumentException("The parameter count must be even number");
+		}
+		int size = keysAndValues.length / 2;
+		Map<Long, String> map = new LinkedHashMap<>((size * 4 + 2) / 3);
+		for (int i = 0; i < size; i++) {
+			Long key = (Long)Arguments.mustBeInstanceOfValue("keysAndValues[2 * " + i + ']', keysAndValues[2 * i], Long.class);
+			String value = (String)Arguments.mustBeInstanceOfValue("keysAndValues[2 * " + i + " + 1]", keysAndValues[2 * i + 1], String.class);
+			map.put(key, value);
+		}
+		return map;
+	}
+	
+	private static void assertOrderedMap(XOrderedMap<Long, String> map, Object ... keysAndValues) {
+		Assert.assertEquals(keysAndValues.length, map.size() * 2);
+		int index = 0;
+		for (Entry<Long, String> entry : map.entrySet()) {
+			Long key = (Long)Arguments.mustBeInstanceOfValue("keysAndValues[" + index + ']', keysAndValues[index++], Long.class);
+			String value = (String)Arguments.mustBeInstanceOfValue("keysAndValues[" + index + ']', keysAndValues[index++], String.class);
+			Assert.assertEquals(key, entry.getKey());
+			Assert.assertEquals(value, entry.getValue());
+		}
+	}
+}
+    					]]></pre>
+    				</div>
+    				<div class="important">MapConflictVoterTest.java</div>
+    				<div class="source-code">
+    					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.xcollection.learn.mcv;
+
+import java.util.List;
+
+import org.babyfish.collection.ArrayList;
+import org.babyfish.collection.conflict./*{ <a href="#MapConflictVoterDeclaration">MapConflictVoter</a> }*/;
+import org.babyfish.collection.conflict.MapConflictVoterArgs;
+import org.babyfish.collection.conflict.MapReader;
+
+public class MapConflictVoterTest extends /*{ <a href="#AbstractMapConflictVoterTestDeclaration">AbstractMapConflictVoterTest</a> }*/ {
+
+	@Override
+	protected /*{ <a href="#MapConflictVoterDeclaration">MapConflictVoter</a> }*/<Long, String> createVoter() {
+		return new /*{ <a href="#MapConflictVoterDeclaration">MapConflictVoter</a> }*/<Long, String>() {
+			@Override
+			public void vote(MapConflictVoterArgs<Long, String> args) {
+				String newValue = args.newValue();
+				String newDir = newValue.substring(0, newValue.lastIndexOf('/'));
+				List<Long> keys = new ArrayList<>();
+				
+				/*
+				 * Create an org.babyfish.collection.conflict.MapReader to iterate the key-value pairs.
+				 * Be different with java.util.Iterator
+				 * (1) org.babyfish.collection.conflict.MapReader always skips the key-value pairs 
+				 * that have been voted to be conflict by this conflict voter.
+				 * (2) org.babyfish.collection.conflict.MapReader can contains the key-value pairs
+				 * that are going to be added into the current map and are processed by this
+				 * conflict voter.
+				 */
+				MapReader<Long, String> reader = args.reader();
+				while (reader.read()) {
+					Long key = reader.key();
+					String value = reader.value();
+					String dir = value.substring(0, value.lastIndexOf('/'));
+					if (dir.equals(newDir)) {
+						keys.add(key);
+					}
+				}
+				int maxHistoryEventCount = newDir.equals(/*{ <a href="#AbstractMapConflictVoter_SPECIAL_DIR">SPECIAL_DIR</a> }*/) ? 4 : 3;
+				int size = keys.size();
+				if (size > maxHistoryEventCount - 1) {
+					args.conflictFound(keys.subList(0, size - maxHistoryEventCount + 1));
+				}
+			}
+		};
+	}
+}
+    					]]></pre>
+    				</div>
+    			</p>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend><a name="maMapConflictVoterChapter">org.babyfish.collection.conflict.MAMapConflictVoter&lt;K, V&gt;</a></legend>
+    			<p class="paragraphs">
+   					We've learned the knowledge about org.babyfish.collection.conflict.<a href="#MapConflictVoterDeclaration">MapConflictVoter</a>,
+   					the implementation classes of this interface can vote the conflict value of a map by avoiding the space cost by the time cost.
+   					Conversely, doing the same thing by avoiding the time cost by the space cost is supported by babyfish too.
+   				</p>
+   				<p class="paragraphs">
+   					BabyFish supports a <span class="important">special</span> derived class of <a href="#MapConflictVoterDeclaration">MapConflictVoter</a>:
+   				</p>
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package org.babyfish.collection.conflict;
+
+public abstract class /*{ <a name="MAMapConflictVoterDeclaration">MAMapConflictVoter</a> }*/<K, V> implements /*{ <a href="#MapConflictVoterDeclaration">MapConflictVoter</a> }*/<K, V> {
+	
+	protected abstract void detach(K key, V value);
+	
+	protected abstract void attach(K key, V value);
+	
+	... ...
+}
+    				]]></pre>
+    			</div>
+    			You can inherit this abstract class and retain some private member data structures in your own drived class, those 
+    			private member data structure can help you to implement the the method "vote" and this method should be run very fast.  
+    			<ul>
+    				<li>
+    					The method "detach" will be invoked automatically when an real or fake key-value pair will be removed from the map,
+    					you must override it to change your private member data.
+    				</li>
+    				<li>
+    					The method "attach" will be invoked automatically when an real or fake key-value pair will be added into the map,
+    					you must override it to change your private member data.
+    				</li>
+    			</ul>
+    			<div class="important-section">
+    				<ul>
+    					<li>
+    						Be different with <a href="#MapConflictVoterDeclaration">MapConflictVoter</a>, 
+    						<a href="#MAMapConflictVoterDeclaration">MAMapConflictVoter</a> is very <span class="important">SPECIAL</span>,
+    						MAMapConflictVoter can not be shared by several maps, the exception <span class="important2">java.lang.IllegalArgumentException</span>
+    						will be raised if you try to add a MAMapConflictVoter into a map if it is <span class="important">ALREADY</span> belong to another map. 
+    					</li>
+    					<li>
+    						Don't consider the methods "detach/attach" to be the real modification notification mechanism, though they will be invoked
+    						automatically when the map is really changed, but they will be invoked to trigger the <span class="important">FAKE</span> 
+    						modification events when the map is not changed but the internal algorithm of babyfish thinks it is necessary. 
+    						Please use <a href="ma-collection.xhtml">BabyFish <span class="important">MA</span> Collection Framework</a> if you
+    						want to use the real modification notification mechanism of the collections.
+    					</li>
+    				</ul>
+    			</div>
+    			<div class="source-code">
+    				<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.xcollection.learn.mcv;
+
+import java.util.List;
+import java.util.Map;
+
+import org.babyfish.collection.ArrayList;
+import org.babyfish.collection.HashMap;    				
+import org.babyfish.collection.conflict.MAMapConflictVoter;
+import org.babyfish.collection.conflict.MapConflictVoterArgs;
+
+public class MAMapConflictVoterTest extends /*{ <a href="#AbstractMapConflictVoterTestDeclaration">AbstractMapConflictVoterTest</a> }*/ {
+
+	@Override
+	protected /*{ <a href="#MAMapConflictVoterDeclaration">MAMapConflictVoter</a> }*/<Long, String> createVoter() {
+		return new /*{ <a href="#MAMapConflictVoterDeclaration">MAMapConflictVoter</a> }*/<Long, String>() {
+		
+			private Map<String, List<Long>> /*{ <a name="AbstractMapConflictVoterTest$1_keysGroupByDir">keysGroupByDir</a> }*/ = new HashMap<>();
+
+			@Override
+			public void vote(MapConflictVoterArgs<Long, String> args) {
+			
+				/*
+				 * Be different with the implementation classes of org.babyfish.collection.conflict.MapConflictVoter<K, V>
+				 * you can NOT invoke "args.reader()" in this method of the derived classes of 
+				 * org.babyfish.collection.conflict.MAMapConflictVoter, the exception "java.lang.UnsupportedOperationException"
+				 * will be raise if you do thant. 
+				 */
+				 
+				String newValue = args.newValue();
+				String newDir = newValue.substring(0, newValue.lastIndexOf('/'));
+				List<Long> keys = this./*{ <a href="#AbstractMapConflictVoterTest$1_keysGroupByDir">keysGroupByDir</a> }*/.get(newDir);
+				if (keys != null) {
+					int maxHistoryEventCount = newDir.equals(/*{ <a href="#AbstractMapConflictVoter_SPECIAL_DIR">SPECIAL_DIR</a> }*/) ? 4 : 3;
+					int size = keys.size();
+	                if (size > maxHistoryEventCount - 1) {
+	                    args.conflictFound(keys.subList(0, size - maxHistoryEventCount + 1));
+	                }
+				}
+			}
+
+			@Override
+			protected void detach(Long key, String value) {
+				String dir = value.substring(0, value.lastIndexOf('/'));
+				List<Long> keys = this./*{ <a href="#AbstractMapConflictVoterTest$1_keysGroupByDir">keysGroupByDir</a> }*/.get(dir);
+				keys.remove(key);
+			}
+
+			@Override
+			protected void attach(Long key, String value) {
+				String dir = value.substring(0, value.lastIndexOf('/'));
+				List<Long> keys = this./*{ <a href="#AbstractMapConflictVoterTest$1_keysGroupByDir">keysGroupByDir</a> }*/.get(dir);
+				if (keys == null) {
+					this./*{ <a href="#AbstractMapConflictVoterTest$1_keysGroupByDir">keysGroupByDir</a> }*/.put(dir, keys = new ArrayList<>());
+				}
+				keys.add(key);
+			}
+		};
+	}
+}
+    				]]></pre>
+    			</div>
+    		</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>org.babyfish.collection.XMap.XEntry&lt;K, V&gt;</legend>
+    		<fieldset class="chapter">
+   				<legend>The problem of Map.Entry&lt;K, V&gt; and java.util.TreeMap&lt;K, V&gt;</legend>
+   				<p class="paragraphs">
+   					In java.util.Map.Entry&lt;K, V&gt;, the behavior of method "getValue" and "setValue" 
+   					is <span class="important">UNDEFINED</span> if the mapping has already been removed from the map
+   					<span class="not-important">(by the iterator's <tt>remove</tt> operation)</span>.
+   					Please view the screen snapshot about the document comment of java.util.Map.Entry&lt;K, V&gt;
+   				</p>
+   				<img src="map-entry.png"/>
+   				<p class="paragraphs">
+   					Let's create the showcase<span class="not-important">(NOT testcase)</span> to show the undefined behavior
+   					of java.util.Map.Entry&lt;K, V&gt;
+   				</p>
+   				<div class="source-code">
+   					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.xcollection.learn.ebsc;
+
+import java.util.Map;
+import java.util.Map.Entry;
+
+public abstract class /*{ <a name="EntryBehaviorShowcaseDeclaration">EntryBehaviorShowcase</a> }*/ {
+
+	protected abstract Map<Integer, String> createMap();
+	
+	public void show() {
+	
+		Map<Integer, String> map = this.createMap();
+		System.out.println(
+				"----------------Show the entry behavior of \"" + 
+				map.getClass().getName() + 
+				"\"----------------");
+				
+		map.put(1, "one");
+		map.put(2, "one");
+		map.put(3, "three");
+		Entry<Integer, String> middleEntry = null;
+		for (Entry<Integer, String> entry : map.entrySet()) {
+			if (entry.getKey().intValue() == 2) {
+				middleEntry = entry;
+				break;
+			}
+		}
+		System.out.println("The middle entry is \"" + middleEntry + "\".");
+		
+		System.out.println("map.remove(2); //remove the middleEntry");
+		map.remove(2);
+		System.out.println(
+				"The moddleEntry is \"" + 
+				middleEntry + 
+				"\" after it is removed.");
+		
+		System.out.println("middleEntry.setValue(\"x\")");
+		middleEntry.setValue("x");
+		System.out.println("After middleEntry.setValue(\"x\"), the map is \"" + 
+		map + 
+		"\".");
+	}
+	
+	public static void main(String[] args) {
+		EntryBehaviorShowcase[] showcases = new EntryBehaviorShowcase[] {
+				new EntryBehaviorShowcase() {
+					@Override
+					protected Map<Integer, String> createMap() {
+						return new java.util.HashMap<>();
+					}
+				},
+				new EntryBehaviorShowcase() {
+					@Override
+					protected Map<Integer, String> createMap() {
+						return new java.util.TreeMap<>();
+					}
+				}
+		};
+		for (EntryBehaviorShowcase showcase : showcases) {
+			showcase.show();
+		}
+	}
+}
+   					]]></pre>
+   				</div>
+   				<p>
+   				The output result of this program is:
+   				</p>
+   				<img src="map-entry-output.png"/>
+   				<p class="paragraphs">
+   					In the output, the output caused by java.util.HashMap is OK; but the output
+   					caused by java.util.TreeMap has two problems:
+   					<ul class="no-paragraphs">
+   						<li>The entry { key: 2, value: "two" } became to be { key: 3, value: "three" } when it is removed from the map</li>
+   						<li>The modification for the <span class="important">removed</span> entry can affect the map</li>
+   					</ul>
+   				</p>
+   				<div class="important-section">
+   					The java.util.TreeMap has a problem, the java reference of an entry of java.util.TreeMap may point to another 
+   					alive entry of the map when it is removed from the map, that's why the document of Java Collection Framework 
+   					says the behavior of "Entry.getValue" and "Entry.setValue" is <span class="important">UNDEFINED</span> sometimes.
+   				</div>
+   			</fieldset>
+   			<fieldset class="chapter">
+   				<legend>XMap.XEntry&lt;K, V&gt; and org.babyfish.collection.TreeMap&lt;K, V&gt;</legend>
+   				<p class="paragraphs">
+   					BabyFish X Collection uses org.babyfish.collection.XMap&lt;K, V&gt; to extend java.util.Map&lt;K, V&gt;, 
+   					and uses org.babyfish.collection.XMap.XEntry&lt;K, V&gt; to extend java.util.Map.Entry&lt;K, V&gt;.
+   				</p>
+   				<div class="source-code">
+   					<pre class="lang-java"><![CDATA[
+package org.babyfish.collection;
+
+public interface XMap<K, V> extends Map<K, V>, LockDescriptor {
+	
+	... ...
+	
+	interface XEntry<K, V> extends Entry<K, V>, LockDescriptor, View {
+		
+		... ...
+		
+		boolean isAlive();
+	}
+}
+   					]]></pre>
+   				</div>
+   				<p class="paragraphs">
+   					Be differenct with java.util.Map.Entry&lt;K, V&gt;, any behavior of org.babyfish.collection.XMap.XEntry&lt;K, V&gt;
+   					must be <span class="important">PRECISE</span>.
+   					<ol class="no-paragraphs">
+						<li>
+							The method "isAlive" returns whether the entry is still managed by a map, it must returns true for the initialized entry 
+							<span class="important">UNTIL</span> the entry is removed from the map.
+						</li>
+						<li>
+							If an entry has beean removed from map<span class="not-important">(isAlive() returns false)</span>, 
+							its method "getValue" <span class="important">MUST</span> return the value
+							when it is going to be deleted <span class="important">UNLESS</span> the value has beean changed by the programer.
+						</li>
+						<li>
+							If an entry has beean removed from map<span class="not-important">(isAlive() returns false)</span>,
+							its method "setValue" must <span class="important">NOT</span> affect the its original owner map.
+						</li>
+   					</ol>
+   				</p>
+   				<p class="paragraphs">
+   					Let's change the code of the <a href="#EntryBehaviorShowcaseDeclaration">prvious example</a> to show the entry behavior of 
+   					org.babyfish.collection.TreeMap.<span class="not-important">(Only changed code here)</span>
+   				</p>
+   				<div class="source-code">
+   					<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.xcollection.learn.ebsc;
+
+... ...
+
+public abstract class /*{ <a name="EntryBehaviorShowcaseDeclaration">EntryBehaviorShowcase</a> }*/ {
+
+	... ...
+	
+	public static void main(String[] args) {
+		EntryBehaviorShowcase[] showcases = new EntryBehaviorShowcase[] {
+				new EntryBehaviorShowcase() {
+					@Override
+					protected Map<Integer, String> createMap() {
+						return new java.util.HashMap<>();
+					}
+				},
+				new EntryBehaviorShowcase() {
+					@Override
+					protected Map<Integer, String> createMap() {
+						return new java.util.TreeMap<>();
+					}
+				},
+				new EntryBehaviorShowcase() {
+					@Override
+					protected Map<Integer, String> createMap() {
+						return new /*{ <span class="important">org.babyfish.collection.TreeMap</span> }*/<>();
+					}
+				}
+		};
+		... ...
+	}
+}
+   					]]></pre>
+   				</div>
+   				<p class="paragraphs">
+   					The output is
+   				</p>
+   				<img src="map-entry-output2.png"/>
+   				<p class="paragraphs">
+   					In this output, the output caused org.babyfish.collection.TreeMap is different with the
+   					output caused by java.util.TreeMap, but it is same with the output caused by java.util.HashMap.
+   					That means the problems of java.util.TreeMap has been resolved by org.babyfish.collection.TreeMap. 
+   				</p>
+   			</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Insertion Order</legend>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.XOrderedSet&lt;K, V&gt;</legend>
+    		</fieldset>
+    		<fieldset class="chapter">
+    			<legend>org.babyfish.collection.XOrderedMap&lt;K, V&gt;</legend>
+    		</fieldset>
+    	</fieldset>
+    	<fieldset class="chapter">
+    		<legend>Views and ViewInfos</legend>
+    		<img src="viewinfos.png"/>
+    	</fieldset>
+    </div>
+</body>
+</html>

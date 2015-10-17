@@ -1,0 +1,614 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>BabyFish Appendix</title>
+	
+	<script type="text/javascript" src="./common/jquery-1.10.2.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="./common/babyfish-doc.css"/>
+	<script type="text/javascript" src="./common/babyfish-doc.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="./common/google-code-prettify.css"/>
+	<script type="text/javascript" src="./common/google-code-prettify.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="./common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="./common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		$(function() {
+			initChapters();
+			initCodeBlocks();
+			initButtons();
+		});
+	</script>
+</head>
+<body id="no-margin-body">
+    <div id="head">
+        <div id="title">BabyFish Appendix</div>
+        <div id="right-top-conner">
+            <a class="button" href="./index.xhtml">Back to the start page</a>
+        </div>
+    </div>
+    <div id="content">
+    	<div id="dictionary"></div>
+    	<fieldset class="chapter">
+    		<legend>JVM system properties for unit test</legend>
+			<p class="paragraphs">
+				These two system properties are designed for babyfish Typed-I18N,
+				it can help the unit tests to report the I18N resource errors
+				as early as possible.
+			</p>
+			<ul>
+				<li>
+					org.babyfish.util.Resources.LOAD_RESOURCE_LOCALE:
+					Specify locale list to let the unit test can report the errors
+                    of all resource files.
+				</li>
+				<li>
+					org.babyfish.util.LazyResource.LOAD_LAZY_RESOURCE_IMMEDIATELY:
+					Let unit test ignore the laziness of "org.bayfish.util.LazyResource" 
+					so that the resource errors can be report as soon as possible.					
+				</li>
+			</ul>
+			Example, style-I
+			<div class="source-code">
+				<pre class="lang-xml"><![CDATA[
+<plugin>
+	<artifactId>maven-surefire-plugin</artifactId> 
+	<configuration>
+		<systemPropertyVariables>
+			<org.babyfish.util.Resources.LOAD_RESOURCE_LOCALE>com.yourcompany.yourproject = null, zh_CN; com.yourcompany.yourcompany.specialpackage = null, zh_CN, fr_FR</org.babyfish.util.Resources.LOAD_RESOURCE_LOCALE>
+			<org.babyfish.util.LazyResource.LOAD_LAZY_RESOURCE_IMMEDIATELY>true</org.babyfish.util.LazyResource.LOAD_LAZY_RESOURCE_IMMEDIATELY>
+		</systemPropertyVariables>
+	</configuration>
+</plugin>
+				]]></pre>
+			</div>
+			Example, style-II
+			<div class="source-code">
+				<pre class="lang-xml"><![CDATA[
+<plugin>
+	<artifactId>maven-surefire-plugin</artifactId> 
+	<configuration>
+		<argLine>-Dorg.babyfish.util.Resources.LOAD_RESOURCE_LOCALE="com.yourcompany.yourproject = null, zh_CN; com.yourcompany.yourcompany.specialpackage = null, zh_CN, fr_FR" -Dorg.babyfish.util.LazyResource.LOAD_LAZY_RESOURCE_IMMEDIATELY=true</argLine>
+    </configuration>
+</plugin>
+				]]></pre>
+			</div>
+    	</fieldset>
+		<fieldset class="chapter">
+			<legend>ObjectModel4Java annotations</legend>
+			<table class="grid" border="1">
+				<tr class="grid-title">
+					<td>Annotation</td>
+					<td>Description</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.model.metadata.ObjectModelDeclaration</td>
+					<td>
+						Can be used by the nested on the neste interface of model class 
+						to declare the ObjectModel interface.
+						</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.model.metadata.StaticMethodToGetObjectModel</td>
+					<td>
+						Can be used by a static method of model class, this method accepts 
+						an instance of model class and returns the instance of ObjectModel interface,
+						its visibility must be default(not private, protected or public). 
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.model.metadata.Scalar</td>
+					<td>
+						Can be used by the getter methods of ObjectModel interface to
+						declare scalar properties. the scalar property type can be
+						<ul>
+							<li>Primitive types</li>
+							<li>Box type of primitive types, such as java.lang.Integer</li>
+							<li>java.lang.String</li>
+							<li>java.util.Date, java.util.Calendar, java.util.GregorianCalendar</li>
+							<li>java.sql.Date, java.sql.Time, java.sql.Timestamp</li>
+							<li>java.math.BigInteger, java.math.BigDecimal</li>
+							<li>char[], byte[], java.io.Serializable</li>
+							<li>All the new data time types under package "java.time" of Java8</li>
+							<li>The model class that uses ObjectModel and its ObjectModelMode is EMBEDDABLE</li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.model.metadata.Association</td>
+					<td>
+						Can be used by the getter methods of ObjectModel interface to
+						declare association properties(Association properties can't have
+						setter methods). 
+						<ul>
+							<li>
+								The type of association properties can be
+								<ul>
+									<li>
+										All the standard reference interfaces under the package
+										"org.babyfish.reference": Reference&lt;T&gt;,
+										IndexedReference&lt;T&gt;, KeyedReference&lt;K, T&gt;,
+										MAReference&lt;T&gt;,
+										MAIndexedReference&lt;T&gt;, MAKeyedReference&lt;K, T&gt;.
+									</li>
+									<li>
+										The standard collection interfaces under the package "java.util":
+										Collection&lt;E&gt;, List&lt;E&gt;, 
+										Set&lt;E&gt;, SortedSet&lt;E&gt;,	NavigableSet&lt;E&gt;, 
+										Map&lt;K, V&gt;, SortedMap&lt;K, V&gt;, NavigableMap&lt;K, V&gt;.		
+									</li>
+									<li>
+										The X-collection interfaces under the package "org.babyfish.collection":
+										XCollection&lt;E&gt;, XList&lt;E&gt;, 
+										XSet&lt;E&gt;, XOrderedSet&lt;E&gt;, XSortedSet&lt;E&gt;,	XNavigableSet&lt;E&gt;, 
+										XMap&lt;K, V&gt;, XOrderedMap&lt;K, V&gt;, XSortedMap&lt;K, V&gt;, XNavigableMap&lt;K, V&gt;.
+									</li>
+								</ul>
+							</li>
+							<li>
+								The type of association properties must be generic type, the last generic type argument
+								must be model class that uses ObjectModel and its ObjectModelMode is REFERENCE.
+							</li>
+							<li>
+								In most cases, @org.babyfish.meta.metadata.Association is used to 
+								create bidirectional associations so it argument "opposite" must 
+								be specified to the name of opposite association property. 
+								But specially, if property type is "org.babyfish.reference.Reference&lt;T&gt;"
+								or "org.babyfish.reference.MAReference&lt;Tgt;", both bidirectional and
+								unidirectional is allowed, if unidirectional association is choosed,
+								the argument "opposite" can be ignored.
+							</li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.model.metadata.AllowDisability</td>
+					<td>
+						Can be used by the ObjectModel interface so that the properties of that ObjectModel
+						interface can be enabled or disabled.
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.model.metadata.Deferrable</td>
+					<td>
+						Can be used by the getter methods of scalar properties
+						to declare lazy scalar properties. @Scalar can be omitted
+						when @Deferrable is used.
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.model.metadata.ReferenceComparisonRule</td>
+					<td>
+						Can be used by both ObjectModel interface and collection association properties.
+						to specified the "org.babyfish.collection.FrozenComparator&lt;T&gt;"
+						or "org.babyfish.collection.FrozenEqualityComparator&lt;T&gt;"
+						for collection association properties.
+						<ul>
+							<li>
+								If it's used by collection association property, 
+								only that association property will be affected;
+								It it's used by ObjectModel interface, all the
+								collection properties that don't use "@ReferenceComparisonRule"
+								and reference the Owner Model class of that ObjectModel interface
+								will be affected.
+							</li>
+							<li>
+								If type of association property is java.util.Map&lt;K, V&gt;
+								of its derived interface, @ReferenceComparisonRule
+								is used to specify the comparator for the map value,
+								not map key. So the specified comparator is 
+								"org.babyfish.collection.FrozenEqualityComparator&lt;T&gt;"
+								(not "org.babyfish.collection.FrozenComparator&lt;T&gt;")
+								even if the type of association property is
+								"java.util.SortedMap&lt;K, V&gt;" of its derived interface.
+							</li>
+							<li>
+								When the type of association property
+								is "java.util.SortedSet&lt;E&gt;" or its derived interface
+								so that "org.babyfish.collection.FrozenComparator&lt;T&gt;"
+								is specified,
+								the annotation "@ReferenceComparisonRule" 
+								is required, because be different with "FrozenEqualityComparator&lt;E&gt;",
+								ObjectModel does not support default value for "FrozenComparator&lt;E&gt;". 
+							</li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.model.metadata.Contravariance</td>
+					<td>
+						In an association property of ObjectModel interface in
+						derived model class is contravariance property
+						for an association property of ObjectModel interface
+						in super mode class, this annotation is required.
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="chapter">
+			<legend>ObjectModel4JPA annotations</legend>
+			<div class="important-section">
+				<div>Note:</div>
+				<ul>
+					<li>
+						Generically, ObjectModel4JPA annotations should <span class="important">NOT</span>
+						be used by the programmer directly. The better way is using the maven-plugin(ant-task)
+						to change the byte-code of JPA entity classes automatically at compilation-time.
+						Please see <a href="#jpaInstrumentAnnotations">JPA Instrument annotations</a>to known more
+					</li>
+					<li>
+						In order to use ObjectModel4JPA, the argument "provider" of the annotation 
+						"@org.babyfish.model.metadata.ObjectModelDeclaration" must be specified
+						to be "jpa".
+					</li>
+				</ul>
+			</div>
+			<table class="grid" border="1">
+				<tr class="grid-title">
+					<td>Annotation</td>
+					<td>Description</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.model.metadata.EntityId</td>
+					<td>
+						For the ObjetModel4JPA interface whose owner JPA entity class
+						is not derived entity class, it can be used by the getter
+						method of scalar property which is referenced by the JPA id property.
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.model.metadata.OptimisticLock</td>
+					<td>
+						For the ObjetModel4JPA interface whose owner JPA entity class
+						is not derived entity class, it can be used by the getter
+						method of scalar property which is referenced by the JPA version property.
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.model.metadata.Inverse</td>
+					<td>
+						Can be used by the getter of association property
+						of ObjectModel4JPA interface, The JPA association property
+						declared by the owner entity class of this interface
+						should be inverse by using 'mappedBy=...', 'insertable="false"'
+						, 'updatable="false"' in its JPA annotation.
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.model.metadata.Mapping</td>
+					<td>
+						Used by the getter method of property of ObjectModel4JPA interface,
+						specify the name of the JPA property wrapper in the owner entity class.
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.model.metadata.IndexMapping</td>
+					<td>
+						Used by the getter method of ObjectModel interface property 
+						whose type is "org.babyfish.reference.IndexedReference&lt;T&gt;"
+						or "org.babyfish.reference.MAIndexedReference&lt;T&gt;",
+						specify the name of "list-index" property in JPA entity class.
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.model.metadata.KeyMapping</td>
+					<td>
+						Used by the getter method of ObjectModel interface property 
+						whose type is "org.babyfish.reference.KeyedReference&lt;K, T&gt;"
+						or "org.babyfish.reference.MAKeyedReference&lt;K, T&gt;",
+						specify the name of "map-key" property in JPA entity class.
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="chapter">
+			<legend><a id="jpaInstrumentAnnotations" name="jpaInstrumentAnnotations">JPA Instrument annotations</a></legend>
+			<table class="grid" border="1">
+				<tr class="grid-title">
+					<td>Annotation</td>
+					<td>Description</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.instrument.JPAObjectModelInstrument</td>
+					<td>Use by the JPA entity/embeddable class</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.instrument.ReferenceComparisonRuleInstrument</td>
+					<td>
+						Used by the field or getter of JPA collection property, to specify
+						"org.babyfish.collection.FrozenComparator&lt;T&gt;" or
+						"org.babyfish.collection.FrozenEqualityComparator&lt;T&gt;"
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.instrument.NavigableInstrument</td>
+					<td>
+						Used by the field or getter of JPA collection property whose type
+						is "java.util.Set&lt;E&gt;" or "java.util.Map&lt;K, V&gt;" if
+						they should be consider as "java.util.NavigableSet&lt;E&gt;"
+						or "java.util.NavigableMap&lt;K, V&gt;" by ObjectModel.
+					</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.instrument.ContravarianceInstrument</td>
+					<td>
+						Use by the field or getter of JPA association property if
+						it is contravarianced property base on another property 
+						declared in the super JPA entity class. It must be used
+						with @javax.persistence.Transient together.
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="chapter">
+			<legend>JPA properties of BabyFish-Hibernate</legend>
+			<p class="paragraphs">
+				BabyFish extends the JPA/Hibernate, it supports three hibernate configuration
+				properties, which should be configured in hibernate.cfg.xml, persistence.xml
+				or spring configuration XML/annotation.
+			</p>
+			<table class="grid" border="1">
+				<tr class="grid-title">
+					<td>Property Name</td>
+					<td>Description</td>
+				</tr>
+				<tr>
+					<td>babyfish.hibernate.enable_limit_in_memory</td>
+					<td>
+						<p class="paragraphs">
+							When Hibernate execute a paging query with firstResult/maxResults,
+							if the query has collection fetches, Hibernate will apply memory
+							level paging, that means query all the data from database into
+							memory and select the data in the current page by Java, Hibernate 
+							also writes a warning message into the log file so that the
+							user can know there is a huge performance issue.
+						</p>
+						<p class="paragraphs">
+							If database is Oracle, BabyFish-Hibernate can resolve this problem.
+							but if database is <span class="important">NOT</span> oracle, 
+							BabyFish-Hibernate has no idea too(In this version, I don't have enough
+							time to change implementation of collection fetches for paging query 
+							to using ActiveRecord style batch query), but, only a warning message
+							is not enough. So BabyFish-Hibernate disable the memory level paing query
+							functionality of Hibernate by throwing exception.
+						</p>
+						<p class="paragraphs">
+							If the user still want to use the memory level query and can accept
+							the performance issue, Please enable this functionality of Hibernate
+							by configuring "babyfish.hibernate.enable_limit_in_memory" to be "true".
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<td>babyfish.hibernate.create_oracle_distinct_rank</td>
+					<td>
+						Fortunately, when data is Oracle,
+						BabyFish-Hibernate can apply the paging query with 
+						firstResult/maxResults has collection fetches in database level.
+						The programmer need to
+						<ul>
+							<li>Use the Oracle dialect of BabyFish, not Oracle dialect of Hibernate</li>
+							<li>Install the BabyFish defined analytic function "DISTINCT_RANK(ROWID)" manually or automatically</li>
+						</ul>
+						If the user choose to install the analytic function "DISTINCT_RANK(ROWID)" automatically,
+						please configure "babyfish.hibernate.create_oracle_distinct_rank" to be "true".
+					</td>
+				</tr>
+				<tr>
+					<td>babyfish.hibernate.strict_db_schema</td>
+					<td>
+						Some JPA many-to-one properties can configured to be not null,
+						if the user can guarantee the corresponding foreign key(s) 
+						in the database is(are) not null too, BabyFish can do some 
+						performance optimization on "BabyFish JPACriteria" and 
+						"UnlimitCount Query". If the user can guarantee that, please
+						let BabyFish to do performance optimization by 
+						by configuring "babyfish.hibernate.strict_db_schema" to be "true".
+					</td>
+				</tr>
+			</table>
+			<div class="important-section">
+				<div>Note:</div>
+				<p class="paragraphs">
+					In babyfishdemo, all the projects about JPA must demonstrate how to work
+					with both Hsqldb and Oracle, so both "babyfish.hibernate.enable_limit_in_memory"
+					and "babyfish.hibernate.create_oracle_distinct_rank" are used.
+				</p>
+				<p class="paragraphs">
+					In real projects, In real projects, it unnecessary to work with two databases, 
+					please don't use both of them together.
+				</p>
+			</div>
+		</fieldset>
+		<fieldset class="chapter">
+			<legend>JPA entity classes project maven configuration</legend>
+			<p class="paragraphs">
+				For entity classes project that used Babyfish-JPA, 
+				three maven actions must be execute during compilation.
+			</p>
+			<table class="grid" border="1">
+				<tr class="grid-title">
+					<td>Type</td>
+					<td>Description</td>
+				</tr>
+				<tr>
+					<td>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</td>
+					<td>This is standard functinality of Hibernate, generate source code of the static metadata model for JPA criteria.</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.persistence.tool.path.TypedQueryPathProcessor</td>
+					<td>Generate source code of TypedQueryPath for JPA entity classes</td>
+				</tr>
+				<tr>
+					<td>org.babyfish.hibernate.tool.InstrumentTask</td>
+					<td>Instrument the byte code of JPA Entity Classes for ObjectMode4JPA(Replace the byte-code instrument mechanism of Hibernate)</td>
+				</tr>
+			</table>
+			Example:
+			<div class="source-code">
+				<pre class="lang-xml"><![CDATA[
+<plugin>
+  <groupId>org.bsc.maven</groupId>
+  <artifactId>maven-processor-plugin</artifactId>
+  <version>2.0.0</version>
+  <executions>
+    <execution>
+      <id>process</id>
+      <goals>
+        <goal>process</goal>
+      </goals>
+      <phase>generate-sources</phase>
+      <configuration>
+        <outputDirectory>${project.build.directory}/metamodel</outputDirectory>
+        <processors>
+          <processor>
+            <!--{ <span class="important">org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</span> }-->
+          </processor>
+          <processor>
+            <!--{ <span class="important">org.babyfish.persistence.tool.path.TypedQueryPathProcessor</span> }-->
+          </processor>
+        </processors>
+      </configuration>
+    </execution>
+  </executions>
+  <dependencies>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-jpamodelgen</artifactId>
+      <version>4.3.8.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.babyfish</groupId>
+      <artifactId>babyfish-persistence-tool</artifactId>
+      <version>${babyfish.version}</version>
+    </dependency>
+  </dependencies>
+</plugin>
+<plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>build-helper-maven-plugin</artifactId>
+  <version>1.3</version>
+  <executions>
+    <execution>
+      <id>add-source</id>
+      <phase>generate-sources</phase>
+      <goals>
+        <goal>add-source</goal>
+      </goals>
+      <configuration>
+        <sources>
+          <source>${project.build.directory}/metamodel</source>
+        </sources>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+<plugin>
+  <artifactId>maven-antrun-plugin</artifactId>
+  <executions>
+    <execution>
+      <phase>process-classes</phase>
+      <goals>
+        <goal>run</goal>
+      </goals>
+    </execution>
+  </executions>
+  <dependencies>
+    <dependency>
+      <groupId>org.babyfish</groupId>
+      <artifactId>babyfish-hibernate-tool</artifactId>
+      <version>${babyfish.version}</version>
+    </dependency>
+  </dependencies>
+  <configuration>
+    <tasks>
+      <taskdef name="instrument" classname="{{{[[span class='important']]org.babyfish.hibernate.tool.InstrumentTask[[/span]]}}}">
+        <classpath>
+          <path refid="maven.runtime.classpath" />
+          <path refid="maven.plugin.classpath" />
+        </classpath>
+      </taskdef>
+      <instrument>
+        <fileset dir="${project.build.outputDirectory}">
+          <include name="**/*.class" />
+        </fileset>
+      </instrument>
+    </tasks>
+  </configuration>
+</plugin>
+				]]></pre>
+			</div>
+		</fieldset>
+		<fieldset class="chapter">
+			<legend>Important(Not all) API replacements</legend>
+			<p class="paragraphs">
+				This table lists the important(not all) API replacements of BabyFish Framework.
+			</p>
+			<table class="grid" border="1">
+				<tr class="grid-title">
+					<td>Old type(or method)</td>
+					<td>New type(or method)</td>
+					<td>Remark</td>
+				</tr>
+				<tr>
+					<td>java.util.Collections.reversedOrder(java.util.Comparator&lt;T&gt; comparator)</td>
+					<td>org.babyfish.collection.MACollections.reversedOrder(java.util.Comparator&lt;T&gt; comparator)</td>
+					<td>
+						If comparator is instance of "org.babyfish.collection.FrozenComparator&lt;E&gt;",
+						the returned value is instance of that interface too.
+					</td>
+				</tr>
+				<tr>
+					<td>java.util.Collections.unmodifable...(...)</td>
+					<td>org.babyfish.collection.MACollections.unmodifable(...)</td>
+					<td>N/A</td>
+				</tr>
+				<tr>
+					<td>java.util.Collections.synchronized...(...)</td>
+					<td>org.babyfish.collection.MACollections.locked(...)</td>
+					<td>N/A</td>
+				</tr>
+				<tr>
+					<td>org.hibernate.dialect.Oracle8iDialect</td>
+					<td>org.babyfish.hibernate.dialect.Oracle8iDialect</td>
+					<td>For DistinctLimitQuery</td>
+				</tr>
+				<tr>
+					<td>org.hibernate.dialect.Oracle9iDialect</td>
+					<td>org.babyfish.hibernate.dialect.Oracle9iDialect</td>
+					<td>For DistinctLimitQuery</td>
+				</tr>
+				<tr>
+					<td>org.hibernate.dialect.Oracle10gDialect</td>
+					<td>org.babyfish.hibernate.dialect.Oracle10gDialect</td>
+					<td>For DistinctLimitQuery</td>
+				</tr>
+				<tr>
+					<td>org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter</td>
+					<td>org.babyfish.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter</td>
+					<td>N/A</td>
+				</tr>
+				<tr>
+					<td>org.hibernate.tool.instrument.javassist.InstrumentTask</td>
+					<td>org.babyfish.hibernate.tool.InstrumentTask</td>
+					<td>
+						Not only for lazy scalar properties, but also for ObjectModel4JPA.
+					</td>
+				</tr>
+				<tr>
+					<td>org.springframework.orm.hibernate4.LocalSessionFactoryBean</td>
+					<td>org.babyfish.springframework.orm.hibernate.LocalXSessionFactoryBean</td>
+					<td>Not recommended to use BabyFish-Spring-Hibernate, please use Babyfish-Spring-JPA</td>
+				</tr>
+				<tr>
+					<td>org.springframework.orm.hibernate4.SpringSessionContext</td>
+					<td>org.babyfish.springframework.orm.hibernate.SpringXSessionContext</td>
+					<td>Not recommended to use BabyFish-Spring-Hibernate, please use Babyfish-Spring-JPA</td>
+				</tr>
+			</table>
+		</fieldset>
+    </div>
+</body>
+</html>

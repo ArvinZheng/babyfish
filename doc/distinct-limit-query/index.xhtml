@@ -1,0 +1,1876 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Distinct LimitQuery</title>
+	
+	<script type="text/javascript" src="../common/jquery-1.10.2.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/babyfish-doc.css"/>
+	<script type="text/javascript" src="../common/babyfish-doc.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/google-code-prettify.css"/>
+	<script type="text/javascript" src="../common/google-code-prettify.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="../common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		$(function() {
+			initChapters();
+			initCodeBlocks();
+			initButtons();
+			initGrids();
+		});
+	</script>
+</head>
+<body id="no-margin-body">
+    <div id="head">
+        <div id="title">Distinct Limit Query</div>
+        <div id="right-top-conner">
+            <a class="button" href="../index.xhtml">Back to the start page</a>
+        </div>
+    </div>
+    <div id="content">
+    	<div id="dictionary"></div>
+    	<fieldset class="chapter">
+    		<legend>Outline</legend>
+    		<p class="paragraphs">
+    			Paging query is very useful in the real projects, JPA/Hibernate supports it very will via the methods setFirstResult and setMaxResults of 
+    			javax.persistence.EntityManager, org.hibernate.Query, and org.hibernate.Criteria.
+    			<ul>
+    				<li>When the query has no collection fetches, Hibernate works good, it generates different SQL for different database to apply the "firstResult/maxResults" on database level</li>
+    				<li>
+    					When the query has some collection fetches, Hibernate does not works good, it queries all the rows from database and applies the "firstResult/maxResults" on the memory level
+    					This problem is called <span class="important">HHH-1412</span>, please view
+    					<a href="https://hibernate.atlassian.net/browse/HHH-1412" target="_blank" class="button">https://hibernate.atlassian.net/browse/HHH-1412</a>
+    					to know more.
+    				</li>
+    			</ul>
+   			</p>
+   			<p class="paragraphs">
+   				This functionality "DistinctLimitQuery" is designed to resolve the problem of Hibernate when it uses Oracle. 
+   			</p>
+    	</fieldset>
+    	<fieldset class="chapter">
+       		<legend>Prepare our examples</legend>
+       		<fieldset class="chapter">
+       			<legend>Class diagram</legend>
+	       		Before we learn the knowledge of DistinctLimitQuery, please see this entity class diagram of our examples
+	        	<div>
+	        		<img src="../common/entities-example.jpg" border="1px solid gray"/>
+	        	</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Database data</legend>
+        		<ul>
+        			<li style="margin-bottom:20px;">
+        				The data of table "COMPANY"
+        				<table class="grid" border="1" border-color="black">
+        					<tr class="grid-title">
+        						<td>COMPANY_ID</td>
+        						<td>NAME</td>
+        					</tr>
+        					<tr>
+        						<td>1</td>
+        						<td>Terran</td>
+        					</tr>
+        					<tr>
+        						<td>2</td>
+        						<td>Protoss</td>
+        					</tr>
+        				</table>
+        			</li>
+        			<li style="margin-bottom:20px;">
+        				The data of table "DEPARTMENT"
+        				<table class="grid" border="1" border-color="black">
+        					<tr class="grid-title">
+        						<td>DEPARTMENT_ID</td>
+        						<td>NAME</td>
+        						<td>COMPANY_ID</td>		
+        					</tr>
+        					<tr>
+        						<td>1</td>
+        						<td>Barracks</td>
+        						<td>1</td>
+        					</tr>
+        					<tr>
+        						<td>2</td>
+        						<td>Ghost Academy</td>
+        						<td>1</td>
+        					</tr>
+        					<tr>
+        						<td>3</td>
+        						<td>Star Port</td>
+        						<td>1</td>
+        					</tr>
+        					<tr>
+        						<td>4</td>
+        						<td>Templar Archives</td>
+        						<td>2</td>
+        					</tr>
+        					<tr>
+        						<td>5</td>
+        						<td>Dark Shrine</td>
+        						<td>2</td>
+        					</tr>
+        					<tr>
+        						<td>6</td>
+        						<td>Star Gate</td>
+        						<td>2</td>
+        					</tr>
+        					<tr>
+        						<td>7</td>
+        						<td>Fleet Beacon</td>
+        						<td>2</td>
+        					</tr>
+        				</table>
+        			</li>
+        			<li style="margin-bottom:20px;">
+        				The data of table "EMPLOYEE", our examples do <span class="important">NOT</span> need the data of column "SALARY" and "SUPERVISOR_ID"
+        				<table class="grid" border="1" border-color="black">
+        					<tr class="grid-title">
+        						<td>EMPLOYEE_ID</td>
+        						<td>NAME</td>
+        						<td>JOB_TITLE</td>
+        						<td>SALARY</td>
+        						<td>SUPERVISOR_ID</td>
+        						<td>DEPARTMENT_ID</td>
+        					</tr>
+        					<tr>
+        						<td>1</td>
+        						<td>Jim Raynor</td>
+        						<td>Marine</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>1</td>
+        					</tr>
+        					<tr>
+        						<td>2</td>
+        						<td>Nova Terra</td>
+        						<td>Ghost</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>2</td>
+        					</tr>
+        					<tr>
+        						<td>3</td>
+        						<td>Gabriel Tosh</td>
+        						<td>Ghost</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>2</td>
+        					</tr>
+        					<tr>
+        						<td>4</td>
+        						<td>Tychus Findlay</td>
+        						<td>Marine</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>1</td>
+        					</tr>
+        					<tr>
+        						<td>5</td>
+        						<td>Matt Horner</td>
+        						<td>Battlecruiser</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>3</td>
+        					</tr>
+        					<tr>
+        						<td>6</td>
+        						<td>Tassadar</td>
+        						<td>High Templar</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>4</td>
+        					</tr>
+        					<tr>
+        						<td>7</td>
+        						<td>Zeratul</td>
+        						<td>Dark Templar</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>5</td>
+        					</tr>
+        					<tr>
+        						<td>8</td>
+        						<td>Artanis</td>
+        						<td>Mothership</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>7</td>
+        					</tr>
+        					<tr>
+        						<td>9</td>
+        						<td>Mohandar</td>
+        						<td>Void Ray</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>6</td>
+        					</tr>
+        					<tr>
+        						<td>10</td>
+        						<td>Urun</td>
+        						<td>Phoenix</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>6</td>
+        					</tr>
+        					<tr>
+        						<td>11</td>
+        						<td>Selendis</td>
+        						<td>Carrier</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>7</td>
+        					</tr>
+        					<tr>
+        						<td>12</td>
+        						<td>Karass</td>
+        						<td>High Templar</td>
+        						<td>--</td>
+        						<td>--</td>
+        						<td>4</td>
+        					</tr>
+        				</table>
+        			</li>
+        			<li style="margin-bottom:20px;">Our example need not AnnualLeave, so need not to know its data</li>
+        		</ul>
+        		<p class="paragraphs">
+        			The relationship of these object can be described by this tree
+        			<pre><![CDATA[
++Terran(1)
+| 
++----+Barracks(1)
+|    |
+|    +-----Jim Raynor(1, Marine)
+|    |
+|    \-----Tychus Findlay(4, Marine)
+|    
++----+Ghost Academy(2)
+|    |
+|    +-----Nova Terra(2, Ghost)
+|    |
+|    \-----Gabriel Tosh(3, Ghost)
+|
++----+Star Port(3)
+|    |
+|    \-----Matt Horner(5, Battlecruiser)
+|
++Protoss(2)
+| 
++----+Templar Archives(4)
+|    |
+|    +-----Tassadar(6, High Templar)
+|    |
+|    \-----Karass(12, High Templar)
+|
++----+Dark Shrine(5)
+|    |
+|    \-----Zeratul(7, Dark Templar)
+|    
++----+Star Gate(6)
+|    |
+|    +-----Mohandar(9, Void Ray)
+|    |
+|    \-----Urun(10, Phoenix)
+|
+\----+Fleet Beacon(7)
+     |
+     +-----Artanis(8, Mothership)
+     |
+     \-----Selendis(11, Carrier)
+        			]]></pre>
+        		</p>
+        	</fieldset>
+        </fieldset> 
+        <fieldset class="chapter">
+        	<legend>QueryType</legend>
+        	<p class="paragraphs">
+        		BabyFish supports QueryType
+        	</p>
+        	<div class="source-code">
+        		<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence;
+
+public enum QueryType {
+	
+	DISTINCT, //This mode is default
+	
+	RESULT,
+}
+        		]]></pre>
+        	</div>
+        	Query type is allowed to be used in both BabyFish-JPA
+        	<div class="source-code">
+        		<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence;
+
+import javax.persistence.Query;
+
+public interface XQuery extends Query {
+	
+	XQuery setQueryType(QueryType queryType);
+	
+	... ...
+}
+        		]]></pre>
+        	</div>	
+       		and 
+       		BabyFish-Hibernate API
+       		<div class="source-code">
+       			<pre class="lang-java"><![CDATA[
+package org.babyfish.hibernate;
+
+import org.babyfish.persistence.QueryType;
+
+import org.hibernate.Query;
+
+public interface XQuery extends Query {
+	
+	XQuery setQueryType(QueryType queryType);
+	
+	... ...
+}
+        		]]></pre>
+        	</div>
+        	<fieldset class="chapter">
+        		<legend>DISTINCT</legend>
+	        	<p class="prargraphs">
+	        		<span class="important">QueryType.DISTINCT</span>
+	        		is the default QueryType.
+	        		Please see the example of BabyFish-JPA:
+	        	</p>
+	       		<div class="source-code">
+	       			<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d", Department.class)
+		.setQueryType(QueryType./*{ <span class="important">DISTINCT</span> }*/);
+		.setQueryPaths(Department__.begin().employees().end())
+		.getResultList(); 
+	      			]]></pre>
+	      		</div>
+	      		The JPQL that is executed finally is
+	      		<div class="source-code">
+	      			<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join d.employees
+	       			]]></pre>
+	       		</div>
+	       		The ResultSet returned by database is
+				<table class="grid" border="1" border-color="black">
+					<tbody class="grid-title">
+						<tr>
+							<td colspan="3">
+								The data of DEPARTMENT
+							</td>
+							<td colspan="6" class="splitter">
+								The data of EMPLOYEE
+							</td>
+						</tr>
+						<tr class="grid-secondary-title">
+							<td>DEPARTMENT_ID</td>
+							<td>NAME</td>
+							<td>COMPANY_ID</td>
+							<td class="splitter">EMPLOYEE_ID</td>
+	    						<td>NAME</td>
+	    						<td>JOB_TITLE</td>
+	    						<td>SALARY</td>
+	    						<td>SUPERVISOR_ID</td>
+	    						<td>DEPARTMENT_ID</td>
+						</tr>
+					</tbody>
+					<tbody>
+						<tr>
+							<td>1</td>
+							<td>Barracks</td>
+							<td>1</td>
+							<td class="splitter">1</td>
+							<td>Jim Raynor</td>
+							<td>Marine</td>
+							<td>--</td>
+							<td>--</td>
+							<td>1</td>
+						</tr>
+						<tr>
+							<td>1</td>
+							<td>Barracks</td>
+							<td>1</td>
+							<td class="splitter">4</td>
+							<td>Tychus Findlay</td>
+							<td>Marine</td>
+							<td>--</td>
+							<td>--</td>
+							<td>1</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>Ghost Academy</td>
+							<td>1</td>
+							<td class="splitter">2</td>
+							<td>Nova Terra</td>
+							<td>Ghost</td>
+							<td>--</td>
+							<td>--</td>
+							<td>2</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>Ghost Academy</td>
+							<td>1</td>
+							<td class="splitter">3</td>
+							<td>Gabriel Tosh</td>
+							<td>Ghost</td>
+							<td>--</td>
+							<td>--</td>
+							<td>2</td>
+						</tr>
+						<tr>
+							<td>3</td>
+							<td>Star Port</td>
+							<td>1</td>
+							<td class="splitter">5</td>
+							<td>Matt Horner</td>
+							<td>Battlecruiser</td>
+							<td>--</td>
+							<td>--</td>
+							<td>3</td>
+						</tr>
+						<tr>
+							<td>4</td>
+							<td>Templar Archives</td>
+							<td>2</td>
+							<td class="splitter">6</td>
+							<td>Tassadar</td>
+							<td>High Templar</td>
+							<td>--</td>
+							<td>--</td>
+							<td>4</td>
+						</tr>
+						<tr>
+							<td>4</td>
+							<td>Templar Archives</td>
+							<td>2</td>
+							<td class="splitter">12</td>
+							<td>Karass</td>
+							<td>High Templar</td>
+							<td>--</td>
+							<td>--</td>
+							<td>4</td>
+						</tr>
+						<tr>
+							<td>5</td>
+							<td>Dark Shrine</td>
+							<td>2</td>
+							<td class="splitter">7</td>
+							<td>Zeratul</td>
+							<td>Dark Templar</td>
+							<td>--</td>
+							<td>--</td>
+							<td>5</td>
+						</tr>
+						<tr>
+							<td>6</td>
+							<td>Star Gate</td>
+							<td>2</td>
+							<td class="splitter">9</td>
+							<td>Mohandar</td>
+							<td>Void Ray</td>
+							<td>--</td>
+							<td>--</td>
+							<td>6</td>
+						</tr>
+						<tr>
+							<td>6</td>
+							<td>Star Gate</td>
+							<td>2</td>
+							<td class="splitter">10</td>
+							<td>Urun</td>
+							<td>Phoenix</td>
+							<td>--</td>
+							<td>--</td>
+							<td>6</td>
+						</tr>
+						<tr>
+							<td>7</td>
+							<td>Fleet Beacon</td>
+							<td>2</td>
+							<td class="splitter">8</td>
+							<td>Artanis</td>
+							<td>Mothership</td>
+							<td>--</td>
+							<td>--</td>
+							<td>7</td>
+						</tr>
+						<tr>
+							<td>7</td>
+							<td>Fleet Beacon</td>
+							<td>2</td>
+							<td class="splitter">11</td>
+							<td>Selendis</td>
+							<td>Carrier</td>
+							<td>--</td>
+							<td>--</td>
+							<td>7</td>
+						</tr>
+					</tbody>
+				</table>
+	    		Though there are 7 departments, but the row count of ResultSet is 12 because of the "lect join fetch".
+	    		It can remove duplicated parent rows automatically
+	    		so that the result java list is
+	    		<div>
+	    			<pre>
+<span class="important2">+---+      /-------></span>+Barracks(1)
+<span class="important2">|   |      |        </span>|
+<span class="important2">| 0 +------/        </span>+-----Jim Raynor(1, Marine)
+<span class="important2">|   |               </span>|
+<span class="important2">|   |               </span>+-----Tychus Findlay(4, Marine)
+<span class="important2">+---+               </span>|    
+<span class="important2">|   |      /-------></span>+Ghost Academy(2)
+<span class="important2">| 1 +------/        </span>|
+<span class="important2">|   |               </span>+-----Nova Terra(2, Ghost)
+<span class="important2">|   |               </span>|
+<span class="important2">+---+               </span>+-----Gabriel Tosh(3, Ghost)
+<span class="important2">|   |               </span>|
+<span class="important2">| 2 +--------------></span>+Star Port(3)
+<span class="important2">|   |               </span>|
+<span class="important2">|   |               </span>+-----Matt Horner(5, Battlecruiser)
+<span class="important2">+---+               </span>|
+<span class="important2">|   |      /-------></span>+Templar Archives(4)
+<span class="important2">| 3 +------/        </span>|
+<span class="important2">|   |               </span>+-----Tassadar(6, High Templar)
+<span class="important2">|   |               </span>|
+<span class="important2">+---+               </span>+-----Karass(12, High Templar)
+<span class="important2">|   |               </span>|
+<span class="important2">| 4 +--------------></span>+Dark Shrine(5)
+<span class="important2">|   |               </span>|
+<span class="important2">|   |               </span>+-----Zeratul(7, Dark Templar)
+<span class="important2">+---+               </span>|    
+<span class="important2">|   |      /-------></span>+Star Gate(6)
+<span class="important2">| 5 +------/        </span>|
+<span class="important2">|   |               </span>+-----Mohandar(9, Void Ray)
+<span class="important2">|   |               </span>|
+<span class="important2">+---+               </span>+-----Urun(10, Phoenix)
+<span class="important2">|   |               </span>|
+<span class="important2">| 6 +--------------></span>+Fleet Beacon(7)
+<span class="important2">|   |               </span>|
+<span class="important2">|   |               </span>+-----Artanis(8, Mothership)
+<span class="important2">+---+               </span>|
+<span class="important2">                    </span>\-----Selendis(11, Carrier)
+        			</pre>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>RESULT</legend>
+	        	<p class="prargraphs">
+	        		<span class="important">QueryType.RESULT</span> 
+	        		Please see the example of BabyFish-JPA:
+	        	</p>
+	       		<div class="source-code">
+	       			<pre class="lang-java"><![CDATA[
+return this
+		.entityManager
+		.createQuery("select d from Department d", Department.class)
+		.setQueryType(QueryType./*{ <span class="important">RESULT</span> }*/);
+		.setQueryPaths(Department__.begin().employees().end())
+		.getResultList(); 
+	      			]]></pre>
+	      		</div>
+	      		The JPQL that is executed finally is
+	      		<div class="source-code">
+	      			<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+left join d.employees
+	       			]]></pre>
+	       		</div>
+	       		The ResultSet returned by database is
+				<table class="grid" border="1" border-color="black">
+					<tbody class="grid-title">
+						<tr>
+							<td colspan="3">
+								The data of DEPARTMENT
+							</td>
+							<td colspan="6" class="splitter">
+								The data of EMPLOYEE
+							</td>
+						</tr>
+						<tr class="grid-secondary-title">
+							<td>DEPARTMENT_ID</td>
+							<td>NAME</td>
+							<td>COMPANY_ID</td>
+							<td class="splitter">EMPLOYEE_ID</td>
+	    						<td>NAME</td>
+	    						<td>JOB_TITLE</td>
+	    						<td>SALARY</td>
+	    						<td>SUPERVISOR_ID</td>
+	    						<td>DEPARTMENT_ID</td>
+						</tr>
+					</tbody>
+					<tbody>
+						<tr>
+							<td>1</td>
+							<td>Barracks</td>
+							<td>1</td>
+							<td class="splitter">1</td>
+							<td>Jim Raynor</td>
+							<td>Marine</td>
+							<td>--</td>
+							<td>--</td>
+							<td>1</td>
+						</tr>
+						<tr>
+							<td>1</td>
+							<td>Barracks</td>
+							<td>1</td>
+							<td class="splitter">4</td>
+							<td>Tychus Findlay</td>
+							<td>Marine</td>
+							<td>--</td>
+							<td>--</td>
+							<td>1</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>Ghost Academy</td>
+							<td>1</td>
+							<td class="splitter">2</td>
+							<td>Nova Terra</td>
+							<td>Ghost</td>
+							<td>--</td>
+							<td>--</td>
+							<td>2</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>Ghost Academy</td>
+							<td>1</td>
+							<td class="splitter">3</td>
+							<td>Gabriel Tosh</td>
+							<td>Ghost</td>
+							<td>--</td>
+							<td>--</td>
+							<td>2</td>
+						</tr>
+						<tr>
+							<td>3</td>
+							<td>Star Port</td>
+							<td>1</td>
+							<td class="splitter">5</td>
+							<td>Matt Horner</td>
+							<td>Battlecruiser</td>
+							<td>--</td>
+							<td>--</td>
+							<td>3</td>
+						</tr>
+						<tr>
+							<td>4</td>
+							<td>Templar Archives</td>
+							<td>2</td>
+							<td class="splitter">6</td>
+							<td>Tassadar</td>
+							<td>High Templar</td>
+							<td>--</td>
+							<td>--</td>
+							<td>4</td>
+						</tr>
+						<tr>
+							<td>4</td>
+							<td>Templar Archives</td>
+							<td>2</td>
+							<td class="splitter">12</td>
+							<td>Karass</td>
+							<td>High Templar</td>
+							<td>--</td>
+							<td>--</td>
+							<td>4</td>
+						</tr>
+						<tr>
+							<td>5</td>
+							<td>Dark Shrine</td>
+							<td>2</td>
+							<td class="splitter">7</td>
+							<td>Zeratul</td>
+							<td>Dark Templar</td>
+							<td>--</td>
+							<td>--</td>
+							<td>5</td>
+						</tr>
+						<tr>
+							<td>6</td>
+							<td>Star Gate</td>
+							<td>2</td>
+							<td class="splitter">9</td>
+							<td>Mohandar</td>
+							<td>Void Ray</td>
+							<td>--</td>
+							<td>--</td>
+							<td>6</td>
+						</tr>
+						<tr>
+							<td>6</td>
+							<td>Star Gate</td>
+							<td>2</td>
+							<td class="splitter">10</td>
+							<td>Urun</td>
+							<td>Phoenix</td>
+							<td>--</td>
+							<td>--</td>
+							<td>6</td>
+						</tr>
+						<tr>
+							<td>7</td>
+							<td>Fleet Beacon</td>
+							<td>2</td>
+							<td class="splitter">8</td>
+							<td>Artanis</td>
+							<td>Mothership</td>
+							<td>--</td>
+							<td>--</td>
+							<td>7</td>
+						</tr>
+						<tr>
+							<td>7</td>
+							<td>Fleet Beacon</td>
+							<td>2</td>
+							<td class="splitter">11</td>
+							<td>Selendis</td>
+							<td>Carrier</td>
+							<td>--</td>
+							<td>--</td>
+							<td>7</td>
+						</tr>
+					</tbody>
+				</table>
+	    		Though there are 7 departments, but the row count of ResultSet is 14 because of the "lect join fetch".
+	    		It will not without removing duplicated rows,
+	    		so the result list contains 12 object references, but these references refer to 7 objects.
+	    		<div>
+	    			<pre>
+<span class="important2">+---+      /-------></span>+Barracks(1)
+<span class="important2">| 0 +------+        </span>|
+<span class="important2">+---+      |        </span>+-----Jim Raynor(1, Marine)
+<span class="important2">| 1 +------/        </span>|
+<span class="important2">+---+               </span>+-----Tychus Findlay(4, Marine)
+<span class="important2">| 2 +------\        </span>|    
+<span class="important2">+---+      +-------></span>+Ghost Academy(2)
+<span class="important2">| 3 +------/        </span>|
+<span class="important2">+---+               </span>+-----Nova Terra(2, Ghost)
+<span class="important2">| 4 +------\        </span>|
+<span class="important2">+---+      |        </span>+-----Gabriel Tosh(3, Ghost)
+<span class="important2">|   |      |        </span>|
+<span class="important2">|   |      \-------></span>+Star Port(3)
+<span class="important2">|   |               </span>|
+<span class="important2">| 5 +------\        </span>+-----Matt Horner(5, Battlecruiser)
+<span class="important2">|   |      |        </span>|
+<span class="important2">|   |      +-------></span>+Templar Archives(4)
+<span class="important2">|   |      |        </span>|
+<span class="important2">+---+      |        </span>+-----Tassadar(6, High Templar)
+<span class="important2">| 6 +------/        </span>|
+<span class="important2">+---+               </span>+-----Karass(12, High Templar)
+<span class="important2">| 7 +------\        </span>|
+<span class="important2">+---+      \-------></span>+Dark Shrine(5)
+<span class="important2">|   |               </span>|
+<span class="important2">| 8 +------\        </span>+-----Zeratul(7, Dark Templar)
+<span class="important2">|   |      |        </span>|    
+<span class="important2">+---+      +-------></span>+Star Gate(6)
+<span class="important2">| 9 +------/        </span>|
+<span class="important2">+---+               </span>+-----Mohandar(9, Void Ray)
+<span class="important2">|10 +------\        </span>|
+<span class="important2">+---+      |        </span>+-----Urun(10, Phoenix)
+<span class="important2">|11 +------+        </span>|
+<span class="important2">+---+      \-------></span>+Fleet Beacon(7)
+<span class="important2">                    </span>|
+<span class="important2">                    </span>+-----Artanis(8, Mothership)
+<span class="important2">                    </span>|
+<span class="important2">                    </span>\-----Selendis(11, Carrier)
+        			</pre>
+        		</div>
+        	</fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+       		<legend>Hibernate's HHH-1412 issue</legend>
+       		<fieldset class="chapter">
+       			<legend>Hibernate's Limit Query</legend>
+       			<p class="paragraphs">
+       				It is easy to implement limit query via Hibernate, Hibernate supports the methods setFirstResult and setMaxResults of javax.persistence.EntityManager, org.hibernate.Query, and org.hibernate.Criteria.
+       				Please view the example of JPA
+       			</p>
+       			<div class="source-code">
+       				<pre class="lang-java"><![CDATA[
+int firstResult = ..., maxResults = ...;
+return this
+		.entityManager
+		.createQuery("select d from Department order by d.name asc", Department.class)
+		.setFirstResult(firstResult);
+		.setMaxResults(maxResults)
+		.getResultList();
+       				]]></pre>
+       			</div>
+       			Hibernate uses different SQL for different database to implement the limit query, just use Oracle to be the example, 
+       			the SQL that is executed finally is(The generated SQL is hard to read, so this sql is changed manually so that it is easy to read)
+       			<div class="source-code">
+       				<pre class="lang-sql"><![CDATA[
+select
+	DEPARTMENT_ID,
+	NAME,
+	COMPANY_ID
+from (
+	select
+		DEPARTMENT_ID,
+		NAME,
+		COMPANY_ID,
+		/*{<span class="important">rownum</span>}*/ /*{<span class="important2">rownum_</span>}*/
+	from (
+		select
+			d.DEPARTMENT_ID DEPARTMENT_ID,
+			d.NAME NAME,
+			d.COMPANY_ID COMPANY
+		from DEPARTMENT d
+		order by d.NAME asc /* apply "ORDER BY" before limit */
+	)
+	where /*{ <span class="important">rownum</span> }*/ <= :p1 /* firstResult + maxResults */
+)
+where /*{<span class="important2">rownum_</span>}*/ > :p2 /* fistResult */
+       				]]></pre>
+       			</div> 
+       			In this case, nice job is done by Hibernate
+       		</fieldset>
+       		<fieldset class="chapter">
+       			<legend>Hibernate's problem: The fixed result of HHH-1412</legend>
+       			Let's see a more complex case, please view this example
+       			<div class="source-code">
+       				<pre class="lang-java"><![CDATA[
+int firstResult = ..., maxResults = ...;
+return this
+		.entityManager
+		.createQuery("select d from Department order by d.name asc", Department.class)
+		./*{ <span class="important">setQueryPath</span> }*/(Department__.begin().employees().end())
+		.setFirstResult(firstResult);
+		.setMaxResults(maxResults)
+		.getResultList();
+       				]]></pre>
+       			</div>
+       			The query has a collection fetch. In this case, hibernate can not apply firstResult/maxResults in database-level.
+       			The SQL that is executed finally is(The generated SQL is hard to read, so this sql is changed manually so that it is easy to read)
+       			<div class="source-code">
+       				<pre class="lang-sql"><![CDATA[
+select
+	d.DEPARTMENT_ID,
+	d.NAME,
+	d.COMPANY_ID,
+	e.EMPLOYEE_ID,
+	e.NAME,
+	e.JOB_TITLE,
+	e.SLARAY,
+	e.SUPERVISOR_ID,
+	e.DEPARTMENT_ID
+from DEPARTMENT d
+left join EMPLOYEE e on d.DEPARTMENT_ID = e.DEPARTMENT_ID
+order by d.NAME asc
+       				]]></pre>
+       			</div>
+       			In this SQL, we can not see any logic of limit query. why does Hibernate give up the database level limit query?
+       			Plase see the ResultSet returned by the database
+       			<table class="grid" border="1" border-color="black">
+					<tbody class="grid-title">
+						<tr>
+							<td colspan="3">
+								The data of DEPARTMENT
+							</td>
+							<td colspan="6" class="splitter">
+								The data of EMPLOYEE
+							</td>
+						</tr>
+						<tr class="grid-secondary-title">
+							<td>DEPARTMENT_ID</td>
+							<td>NAME</td>
+							<td>COMPANY_ID</td>
+							<td class="splitter">EMPLOYEE_ID</td>
+	    						<td>NAME</td>
+	    						<td>JOB_TITLE</td>
+	    						<td>SALARY</td>
+	    						<td>SUPERVISOR_ID</td>
+	    						<td>DEPARTMENT_ID</td>
+						</tr>
+					</tbody>
+					<tbody>
+						<tr>
+							<td>1</td>
+							<td>Barracks</td>
+							<td>1</td>
+							<td class="splitter">1</td>
+							<td>Jim Raynor</td>
+							<td>Marine</td>
+							<td>--</td>
+							<td>--</td>
+							<td>1</td>
+						</tr>
+						<tr>
+							<td>1</td>
+							<td>Barracks</td>
+							<td>1</td>
+							<td class="splitter">4</td>
+							<td>Tychus Findlay</td>
+							<td>Marine</td>
+							<td>--</td>
+							<td>--</td>
+							<td>1</td>
+						</tr>
+						<tr>
+							<td>5</td>
+							<td>Dark Shrine</td>
+							<td>2</td>
+							<td class="splitter">7</td>
+							<td>Zeratul</td>
+							<td>Dark Templar</td>
+							<td>--</td>
+							<td>--</td>
+							<td>5</td>
+						</tr>
+						<tr>
+							<td>7</td>
+							<td>Fleet Beacon</td>
+							<td>2</td>
+							<td class="splitter">8</td>
+							<td>Artanis</td>
+							<td>Mothership</td>
+							<td>--</td>
+							<td>--</td>
+							<td>7</td>
+						</tr>
+						<tr>
+							<td>7</td>
+							<td>Fleet Beacon</td>
+							<td>2</td>
+							<td class="splitter">11</td>
+							<td>Selendis</td>
+							<td>Carrier</td>
+							<td>--</td>
+							<td>--</td>
+							<td>7</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>Ghost Academy</td>
+							<td>1</td>
+							<td class="splitter">2</td>
+							<td>Nova Terra</td>
+							<td>Ghost</td>
+							<td>--</td>
+							<td>--</td>
+							<td>2</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>Ghost Academy</td>
+							<td>1</td>
+							<td class="splitter">3</td>
+							<td>Gabriel Tosh</td>
+							<td>Ghost</td>
+							<td>--</td>
+							<td>--</td>
+							<td>2</td>
+						</tr>
+						<tr>
+							<td>6</td>
+							<td>Star Gate</td>
+							<td>2</td>
+							<td class="splitter">9</td>
+							<td>Mohandar</td>
+							<td>Void Ray</td>
+							<td>--</td>
+							<td>--</td>
+							<td>6</td>
+						</tr>
+						<tr>
+							<td>6</td>
+							<td>Star Gate</td>
+							<td>2</td>
+							<td class="splitter">10</td>
+							<td>Urun</td>
+							<td>Phoenix</td>
+							<td>--</td>
+							<td>--</td>
+							<td>6</td>
+						</tr>
+						<tr>
+							<td>3</td>
+							<td>Star Port</td>
+							<td>1</td>
+							<td class="splitter">5</td>
+							<td>Matt Horner</td>
+							<td>Battlecruiser</td>
+							<td>--</td>
+							<td>--</td>
+							<td>3</td>
+						</tr>
+						<tr>
+							<td>4</td>
+							<td>Templar Archives</td>
+							<td>2</td>
+							<td class="splitter">6</td>
+							<td>Tassadar</td>
+							<td>High Templar</td>
+							<td>--</td>
+							<td>--</td>
+							<td>4</td>
+						</tr>
+						<tr>
+							<td>4</td>
+							<td>Templar Archives</td>
+							<td>2</td>
+							<td class="splitter">12</td>
+							<td>Karass</td>
+							<td>High Templar</td>
+							<td>--</td>
+							<td>--</td>
+							<td>4</td>
+						</tr>
+					</tbody>
+				</table>
+				In the ResultSet, there are 12 rows, but contains only 7 departments, there are some duplicated
+				departments because of the "left join fetch" with collection association(s). 
+				HQL/JPQL query with firstResult/maxResults restriction require to remove the duplicated parent objects before apply the limit query, 
+				so Hibernate has to query all the data from database and apply the firstResult/maxResults in memory.
+				<p class="paragraphs">
+					In this case, Hibernate's solution has bad performance. This issue is injected when fixed another bug that is called <span class="important">HHH-1412</span>, 
+					please view 
+					<a href="https://hibernate.atlassian.net/browse/HHH-1412" class="button">https://hibernate.atlassian.net/browse/HHH-1412</a>
+					to know more.
+				</p>
+				<p>
+					This behavior is dangerous, so hibernate decide to use log to report the warning the user.
+					Just use hibernate-4.3.0.Final to be example, 
+					please see the code of line 344-354 of org.hibernate.hql.internal.ast.internal.QueryTranslatorImpl
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+QueryParameters queryParametersToUse;
+if (hasLimit && containsCollectionFetches() ) {
+	LOG./*{ <span class="important">firstOrMaxResultsSpecifiedWithCollectionFetch</span> }*/();
+	RowSelection selection = new RowSelection();
+	selection.setFetchSize( queryParameters.getRowSelection().getFetchSize() );
+	selection.setTimeout( queryParameters.getRowSelection().getTimeout() );
+	queryParametersToUse = queryParameters.createCopyUsing( selection );
+}
+else {
+	queryParametersToUse = queryParameters;
+}
+						]]></pre>
+					</div>
+					The warning is "<span class="important2">
+						firstResult/maxResults specified with collection fetch; 
+						<span class="important">applying in memory!</span>
+					</span>".
+				</p>
+       		</fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+   			<legend>DistinctLimitQuery</legend>
+   			<fieldset class="chapter">
+   				<legend>DistinctLimitDialect</legend>
+				<p class="paragraphs">
+					DistinctLimitQuery is used when the QueryType of the query oject of BabyFish-JPA or BabyFish-Hibernate is QueryType.DISTINCT(The default option),
+					when it is QueryType.RESULT, there is no problems about limit query, because QueryType.RESULT will not remove duplicated parent objects, 
+					but in most cases, the result is not desired by the user. 
+				</p>
+				<p class="paragraphs">
+	   				BabyFish can use "DistinctLimitQuery" resolve the issue for some databases, but not for any databases.
+					In order to mark whether the database can support DistinctLimitQuery, babyfish declared an interface "DistinctLimitDialect".
+				</p>
+				<div class="source-code">
+					<pre class="lang-java"><![CDATA[
+package org.babyfish.hibernate.dialect;
+
+import org.hibernate.dialect.pagination.LimitHandler;
+import org.hibernate.engine.spi.RowSelection;
+
+public interface DistinctLimitDialect {
+	
+	LimitHandler buildDistinctLimitHandler(String sql, RowSelection selection);
+}
+   					]]></pre>
+				</div>
+				If a database can support DistinctLimitQuery, babyfish can extend its hibernate Dialect class and implement this interface. please see the class diagram.
+				<img src="dialects.jpg"/>
+				<div class="important-section">
+	        		Actually, Microsoft SQL Server 2005(or higher) and DB2 can support DistinctLimitQuery too, 
+	        		but my time is not enough so that the DistinctLimitQuery of MSSQLServer2005+ and DB2 
+	        		will be supported in next version, not in this version 
+	        	</div>
+				<p class="paragraphis">
+					Before you use the DistinctLimitQuery, please configure the dialect class that implements the interface "org.babyfish.dialect.DistinctLimitDialect" in
+					your JPA configuration or Hibernate configure.
+				</p>
+			</fieldset>
+			<fieldset class="chapter">
+				<legend>Apply firstResult/maxResults to query with collection fetches</legend>
+				<p class="paragraphs">
+					Please view this example
+       				<div class="source-code">
+       					<pre class="lang-java"><![CDATA[
+int firstResult = ..., maxResults = ...;
+return this
+		.entityManager
+		.createQuery("select d from Department order by d.name asc", Department.class)
+		./*{ <span class="important">setQueryPath</span> }*/(Department__.begin().employees().end())
+		.setFirstResult(firstResult);
+		.setMaxResults(maxResults)
+		.getResultList();
+       					]]></pre>
+       				</div>
+       				If the dialect class in your JPA/Hibernate configuration has implemented the interface "org.babyfish.hibernate.dialect.Oracle10gDialect", the query with collection fetches
+       				will use DisinctLimitQuery. Just use Oracle to be the example, the SQL that is executed finally is
+       				(The generated SQL is hard to read, so this sql is changed manually so that it is easy to read)
+       				<div class="source-code">
+						<pre class="lang-sql"><![CDATA[
+select * 
+from (
+	select 
+		department0_.DEPARTMENT_ID,
+		department0_.NAME,
+		department0_.COMPANY_ID,
+		employee1_.EMPLOYEE_ID,
+		employee1_.NAME,
+		employee1_.JOB_TITLE,
+		employee1_.SLARAY,
+		employee1_.SUPERVISOR_ID,
+		employee1_.DEPARTMENT_ID,
+		/*{ <span class="important">dense_rank</span> }*/() over(
+			order by 
+				/*{ <span class="important">department0_.NAME asc</span> }*/, //All the "ORDER BY" clauses except the last one are moved from the orignal JPQL or SimpleOrderPath 
+				department0_.DEPARTMENT_ID asc //The last "ORDER BY" is added by babyfish automatically.
+		) /*{ <span class="important2">dense_rank____</span> }*/
+	from DEPARTMENT department0_
+	left join EMPLOYEE employee1_ 
+		on department0_.DEPARTMENT_ID = employee1_.DEPARTMENT_ID
+) 
+where 
+	/*{ <span class="important2">dense_rank____</span> }*/ <= :p1 /* firstResult + maxResults */ 
+and 
+	/*{ <span class="important2">dense_rank____</span> }*/ > :p2 /* firstResult */
+//No "ORDER BY" here, It has been moved into the analysis function "DENSE_RANK"
+						]]></pre>
+       				</div>
+       				In the query, the "order by d.name asc" that is specified by SimpleOrderPath was moved into the Oracle analysis function dense_rank(), use this method, babyfish can remove duplicated objects and then do limit query.
+				</p>
+				This limit is applied in database level, the ResultSet returned by the database is
+				<table class="grid" border="1" border-color="black">
+					<tbody class="grid-title">
+						<tr>
+							<td colspan="3">
+								The data of DEPARTMENT
+							</td>
+							<td colspan="6" class="splitter">
+								The data of EMPLOYEE
+							</td>
+						</tr>
+						<tr class="grid-secondary-title">
+							<td>DEPARTMENT_ID</td>
+							<td>NAME</td>
+							<td>COMPANY_ID</td>
+							<td class="splitter">EMPLOYEE_ID</td>
+	    						<td>NAME</td>
+	    						<td>JOB_TITLE</td>
+	    						<td>SALARY</td>
+	    						<td>SUPERVISOR_ID</td>
+	    						<td>DEPARTMENT_ID</td>
+						</tr>
+					</tbody>
+					<tbody>
+						<tr>
+							<td>7</td>
+							<td>Fleet Beacon</td>
+							<td>2</td>
+							<td class="splitter">8</td>
+							<td>Artanis</td>
+							<td>Mothership</td>
+							<td>--</td>
+							<td>--</td>
+							<td>7</td>
+						</tr>
+						<tr>
+							<td>7</td>
+							<td>Fleet Beacon</td>
+							<td>2</td>
+							<td class="splitter">11</td>
+							<td>Selendis</td>
+							<td>Carrier</td>
+							<td>--</td>
+							<td>--</td>
+							<td>7</td>
+						</tr>
+						<tr>
+							<td>2</td>
+							<td>Ghost Academy</td>
+							<td>1</td>
+							<td class="splitter">2</td>
+							<td>Nova Terra</td>
+							<td>Ghost</td>
+							<td>--</td>
+							<td>--</td>
+							<td>2</td>
+						</tr>
+						<tr>
+							<td>3</td>
+							<td>Ghost Academy</td>
+							<td>1</td>
+							<td class="splitter">3</td>
+							<td>Gabriel Tosh</td>
+							<td>Ghost</td>
+							<td>--</td>
+							<td>--</td>
+							<td>2</td>
+						</tr>
+						<tr>
+							<td>6</td>
+							<td>Star Gate</td>
+							<td>2</td>
+							<td class="splitter">9</td>
+							<td>Mohandar</td>
+							<td>Void Ray</td>
+							<td>--</td>
+							<td>--</td>
+							<td>6</td>
+						</tr>
+						<tr>
+							<td>6</td>
+							<td>Star Gate</td>
+							<td>2</td>
+							<td class="splitter">10</td>
+							<td>Urun</td>
+							<td>Phoenix</td>
+							<td>--</td>
+							<td>--</td>
+							<td>6</td>
+						</tr>
+					</tbody>
+				</table>
+				The result list is
+				<pre>
+<span class="important2">+---+      /-------></span>+Fleet Beacon(7)
+<span class="important2">|   |      |        </span>|
+<span class="important2">| 0 +------/        </span>+-----Artanis(8, Mothership)
+<span class="important2">|   |               </span>|
+<span class="important2">|   |               </span>+-----Selendis(11, Carrier)
+<span class="important2">+---+               </span>|
+<span class="important2">|   |      /-------></span>+Ghost Academy(2)
+<span class="important2">| 1 +------/        </span>|
+<span class="important2">|   |               </span>+-----Nova Terra(2, Ghost)
+<span class="important2">|   |               </span>|
+<span class="important2">+---+               </span>+-----Gabriel Tosh(3, Ghost)
+<span class="important2">|   |               </span>|
+<span class="important2">| 2 +--------------></span>+Star Gate(6)
+<span class="important2">|   |               </span>|
+<span class="important2">|   |               </span>+-----Mohandar(9, Void Ray)
+<span class="important2">+---+               </span>|
+<span class="important2">                    </span>\-----Urun(10, Phoenix)
+				</pre>
+				DistinctLimitQuery can only be applied when all these conditions is matched
+				<ol>
+					<li>The QueryType of the query is QueryMode.DISTINCT(it is default value)</li>
+					<li>The query has firstResult/maxResults restriction</li>
+					<li>The query has collection fetches</li>
+				</ol>
+				if anyone of it is matched, DistinctLimitQuery will not be applied and Hibernate's limit query 
+				implementation will be applied, even if your dialect has implemented the interface 
+				"org.babyfish.hibernate.dialect.DistinctLimitQuery".
+			</fieldset>
+   		</fieldset>
+		<fieldset class="chapter">
+			<legend>New analysis function for Oracle:DISTINCT_RANK()</legend>
+			<fieldset class="chapter">
+				<legend>Why need new Oracle analysis function?</legend>
+				<p class="paragraphs">
+					In the previous chapter, we discussed the when your query with firstResult/maxResults
+					has collection fetches, babyfish's distinct limit dialect will use the analysis function
+					"DENSE_RANK()" to apply the paging.
+				</p>
+				<p class="paragraphs">
+					But if "order by" sub statement of the query references the properties of child table(s),
+					"DENSE_RANK()" is wrong too. In the case the "DENSE_RANK" does not return the rank of parent objects.
+					Maybe use the aggregation function "count(distinct ...)" 
+					as analysis function is a good idea, like this.
+					<div class="source-code">
+						<pre class="lang-sql"><![CDATA[
+select * 
+from (
+	select 
+		p.*,
+		c.*,
+		/*{ <span class="com" style="font-weight:bold;">// Unfortunately, be different with "count(...)", "count(<span>distinct</span> ...)" is not allowed to be used as analysis function</span> }*/
+		/*{ <span class="important2">count</span> }*/(/*{ <span class="important">distinct</span> }*/ d.id_field) over(
+			order by 
+				c.field1 asc, //All the "ORDER BY" clauses except the last one are moved from the orignal JPQL or SimpleOrderPath 
+				c.field2 asc, //All the "ORDER BY" clauses except the last one are moved from the orignal JPQL or SimpleOrderPath 
+				p.id_field asc //The last "ORDER BY" is important for DistinctLimitQuery
+		) count_distinct_
+	from PARENT_TABLE p
+	left join CHILD_TABLE c on p.id_field = c.foreign_key_field
+) 
+where 
+	count_distinct_ <= :p1 /* firstResult + maxResults */ 
+and 
+	count_distinct_ > :p2 /* firstResult */
+//No "ORDER BY" here, It has been moved into the analysis function "COUNT(DISTINCT ...)"
+						]]></pre>
+					</div>
+					Unfortunately, in Oracle, "count(distinct ...)" can NOT be used as analysis function, though "count(...)" can.
+					In order to resolve this problem, babyfish support a new analysis function: 
+					<span class="important">DISTINCT_RANK()</span>, it accepts one ROWID argument.
+				</p>
+			</fieldset>
+			<fieldset class="chapter">
+				<legend>How to install this analysis function?</legend>
+				<fieldset class="chapter">
+					<legend>Automatic installation</legend>
+					<p class="paragraphs">
+						Babyfish-hibernate supports to install this Oracle
+						analysis function automatically if it doesn't exists
+						when the EntityManagerFactory/SessionFactory is created.
+						Please configure the property 
+						<span class="important">babyfish.hibernate.create_oracle_distinct_rank</span>
+						in "persistence.xml", "hibernate.cfg.xml", or EntityManagerFactory configuration
+						of spring-framework to be true.
+					</p>
+					<div class="important-section">
+						If the current dialect is not "org.babyfish.hibernate.dialect.Oracle??Dialect",
+						this configuration will be ignored, no error will be raised.
+					</div>
+					<p class="paragraphs">
+						I suggest you to choose this way when you use 
+						only one Oracle account to support your application.
+					</p>
+				</fieldset>
+				<fieldset class="chapter">
+					<legend>Manual installation</legend>
+					<p class="paragraphs">
+						Please open any PL/SQL tool, connect to your Oracle, and
+						<ol class="no-paragraphs">
+							<li>First, execute ${babyfish_home_dir}/install/oracle/oracle_distinct_rank_java.sql</li>
+							<li>Then, execute ${babyfish_home_dir}/install/oracle/oracle_distinct_rank.sql</li>
+						</ol>
+					</p>
+					<p class="paragraphs">
+						I suggest you to choose this way when you use 
+						several Oracle accounts to support your application.
+						A good style is create this analysis function in a special
+						oralce account that is responsible to retain PL/SQL code 
+						such as procedures, functions, packages, triggers; then create a 
+						synonym for the oracle account which is used by your Java application.
+					</p>
+				</fieldset>
+			</fieldset>
+			<fieldset class="chapter">
+				<legend>Example for DISTINCT_RANK()</legend>
+				<p class="paragraphs">
+					First, please view the query code
+					<div class="source-code">
+						<pre class="lang-java"><![CDATA[
+int firstResult = ..., maxResults = ...;
+return
+	this
+	.entityManager
+	.setQueryType(QueryType.DISINCT) //Can delete this line because DISTINCT is default mode
+	.createQuery(
+		"select d from Department d " + 
+		"left join d.employees e "
+		"left join fetch d.employees " + // (1) Fetch one-to-many collection
+		"order by e.name desc", // (2) Order by clause has properties of child table
+		Department.class
+	)
+	.setFirstResult(...) // (3) Limit query with firstResult/maxResults
+	.setMaxResults(...)
+	.getResultList();
+						]]></pre>
+					</div>
+				</p>
+				<p class="paragraphs">
+					When all of these conditions are true,
+					<ul class="no-paragraphs">
+						<li>This query uses firstResult/maxResults</li>
+						<li>This query has collection fetch(In JPQL or QueryPath)</li>
+						<li>This query has order by clause with properties of child table(In JPQL or QueryPath)</li>
+						<li>The database is Oracle</li>
+						<li>Uses the dialect of babyfish, not hibernate</li>
+					</ul>
+					BabyFish-JPA/BabyFish-Hibernate will uses the analysis function "DINSTINCT_RANK()" to execute this query,
+					the final SQL should be:
+					<div class="source-code">
+						<pre class="lang-sql"><![CDATA[
+select * 
+from (
+    select 
+        department0_.DEPARTMENT_ID,
+        department0_.NAME,
+        department0_.COMPANY_ID,
+        employee1_.EMPLOYEE_ID,
+        employee1_.NAME,
+        employee1_.JOB_TITLE,
+        employee1_.SLARAY,
+        employee1_.SUPERVISOR_ID,
+        employee1_.DEPARTMENT_ID,
+        /*{ <span class="important">distinct_rank</span> }*/(department0_.rowid) over(
+            order by employee1_.NAME desc
+		) /*{ <span class="important2">distinct_rank____</span> }*/
+    from DEPARTMENT department0_
+    left join EMPLOYEE employee1_ /* Normal Join */
+		on department0_.DEPARTMENT_ID = employee1_.DEPARTMENT_ID
+	left join EMPLOYEE employee2_ /* Fetch Join */
+		on department0_.DEPARTMENt_id = employee2_.DEPARTMENT_ID
+) 
+where 
+    /*{ <span class="important2">distinct_rank____</span> }*/ <= :p1 /* firstResult + maxResults */ 
+and 
+    /*{ <span class="important2">distinct_rank____</span> }*/ > :p2 /* firstResult */
+//No "ORDER BY" here, It has been moved into the analysis function "DISTINCT_RANK"
+						]]></pre>
+					</div>
+				</p>
+			</fieldset>
+		</fieldset>
+        <fieldset class="chapter">
+        	<legend>getUnlimitedCount &amp; Implement paging query via BabyFish</legend>
+        	<fieldset class="chapter">
+        		<legend>Write your common page class</legend>
+        		Before we learn the paging query, 
+        		please write a common data model class, this class is common class, 
+				it can be used for all the modules of your problem
+ 				<div class="source-code">
+  					<pre class="lang-java"><![CDATA[
+package /*{ <span class="important2">com.yourcompany.yourproject.common</span> }*/;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.babyfish.collections.MACollections;
+import org.babyfish.lang.Arguments;
+
+public class Page<T> implements Serializable {
+
+	private static final long serialVersionUID = -1028759853538819L;
+
+	private int expectedPageIndex;
+	
+	private int actualPageIndex;
+	
+	private int pageSize;
+	
+	private int totalPageCount;
+	
+	private long totalRowCount;
+	
+	private int rowCount;
+	
+	private List<T> rows;
+	
+	public Page(int pageIndex, int pageSize, long totalRowCount) {
+		this.pageSize = Arguments.mustBeGreaterThanOrEqualToValue("pageSize", pageSize, 1);
+		this.expectedPageIndex = Arguments.mustBeGreaterThanOrEqualToValue("pageIndex", pageIndex, 0);
+		this.totalRowCount = Arguments.mustBeGreaterThanOrEqualToValue("totalRowCount", totalRowCount, 0);
+		this.totalPageCount = (int)((totalRowCount + pageSize - 1) / totalRowCount);
+		if (pageIndex >= this.totalPageCount) {
+			pageIndex = this.totalPageCount - 1;
+		} else if (pageIndex < 0) {
+			pageIndex = 0;
+		}
+		this.actualPageIndex = pageIndex;
+		this.rowCount = Math.min((int)(totalRowCount - this.actualPageIndex * pageSize), pageSize);
+	}
+	
+	public void initialize(List<T> rows) {
+		Arguments.mustNotBeNull("rows", rows);
+		Arguments.mustBeEqualToValue("rows.size()", rows.size(), this.rowCount);
+		this.rows = MACollections.unmodifiable(rows);
+	}
+	
+	public int getExpectedPageIndex() {
+		return this.expectedPageIndex;
+	}
+	
+	public int getActualPageIndex() {
+		return this.actualPageIndex;
+	}
+	
+	public int getPageSize() {
+		return this.pageSize;
+	}
+	
+	public int getTotalPageCount() {
+		return this.totalPageCount;
+	}
+	
+	public long getTotalRowCount() {
+		return this.totalRowCount;
+	}
+	
+	public List<T> getRows() {
+		if (this.rows == null) {
+			throw new IllegalStateException("This object has not beean initialized");
+		}
+		return this.rows;
+	}
+	
+	public boolean isFirstPage() {
+		return this.pageIndex == 0;
+	}
+	
+	public boolean isLastPage() {
+		return this.pageIndex >= this.totalPageCount - 1;
+	}
+}
+		   			]]></pre>
+  				</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Unlimited count</legend>
+        		Often in the real projects, we want to create paging query, we want to get two value.
+        		<ol>
+        			<li>
+        				The row count of all matched rows, we use this value to calculate how many pages there are.
+        				We need a JPA/Hibernate query to get it, Let's call this query object <span class="important">"A"</span>
+        			</li>
+        			<li>
+        				Use limit query to find the rows in one page.
+        				We need a JPA/Hibernate query to get it too, Let's call this query object <span class="important">"B"</span>
+        			</li>
+        		</ol>
+        		Let's compare the queries <span class="important">"A"</span> and <span class="important">"B"</span>
+        		<ul>
+        			<li>
+        				Same point: 
+        				Both <span class="important">"A"</span> and <span class="important">"B"</span> 
+        				have same "FROM", "JOIN", "WHERE", "GROUP" and "HAVING" clause
+        			</li>
+        			<li>
+        				Different point:
+        				<ol>
+        					<li><span class="important">"A"</span> is used to query the count(...) expression; but <span class="important">"B"</span> is used to query data of all columns</li>
+        					<li><span class="important">"A"</span> can not contain fetchs(only can constain joins); but <span class="important">"B"</span> can</li>
+        					<li><span class="important">"A"</span> can not contain order by caluse; but <span class="important">"B"</span> can</li>
+        					<li><span class="important">"A"</span> has no firstResult/maxResults restriction; but <span class="important">"B"</span> has</li>
+        				</ol>
+        			</li>
+        		</ul>
+        		It is really boring to create these 2 queries for us. So babyfish allow to do it by one query object, not by two query objects.
+   				You write one query object to implement all the functionalities of <span class="important">"B"</span>,
+   				babyfish's query supports the functionalities like <span class="important">"A"</span> automatically.
+   				
+   				<p class="paragraphics">
+   					Babyfish supports unlimited count in both Babyfish-JPA
+   					<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+package org.babyfish.persistence;
+
+import javax.persistence.Query;
+
+public interface XQuery extends Query {
+	
+	long /*{ <span class="important">getUnlimitedCount</span> }*/();
+	... ...
+}
+   						]]></pre>
+   					</div> 
+   					and BabyFish-Hibernate
+   					<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+package org.babyfish.hibernate;
+
+import org.hibernate.Query;
+
+public interface XQuery extends Query {
+	
+	long /*{ <span class="important">unlimitedCount</span> }*/();
+	
+	... ...
+}
+   						]]></pre>
+   					</div>
+   				</p>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Paging query implementation</legend>
+        		<p class="paragraphs">
+   					By the methods org.babyfish.persistence.XQuery.getUnlimitedCount() or org.babyfish.hibernate.XQuery.unlimitedCount, it is very easy to implement paging query.
+   				</p>
+   				<div class="source-code">
+   					<pre class="lang-java"><![CDATA[
+package /*{ <span class="important2">com.yourcompany.yourproject.dal.impl</span> }*/;
+
+import java.util.List;
+ 
+import javax.persistence.PersistenceContext;
+ 
+import /*{ <span class="important2">com.yourcompany.yourproject.common.Page</span> }*/;
+import /*{ <span class="important2">com.yourcompany.yourproject.dal.DepartmentRepository</span> }*/;
+import /*{ <span class="important2">com.yourcompany.yourproject.entities.Department</span> }*/;
+import /*{ <span class="important2">com.yourcompany.yourproject.entities.Department__</span> }*/;
+ 
+import org.babyfish.persistence.XEntityManager;
+import org.babyfish.persistence.XTypedQuery;
+import org.babyfish.persistence.path.QueryPaths;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+@Repository
+@Transactional(propagation = Propagation.REQUIRED)
+public class DepartmentRepositoryImpl implements DepartmentRepository {
+
+	@PersistenceContext
+	private XEntityManager em;
+	
+	@Override
+	public Page<Department> getDepartmentLikeName(
+		String namePattern, 
+		int pageIndex, 
+		int pageSize, 
+		Department__ ... queryPaths) {
+		XTypeQuery<Department> typedQuery =
+			this
+			.em
+			.createQuery("select d from Department d where d.name like :namePattern")
+			//The default QueryType is distinct, that is my hope, so need not call setQueryType
+			.setQueryPaths(queryPaths)
+			.setFirstResult(pageIndex * pageSize)
+			.setMaxResult(pageSize)
+			.setParameter("namePattern", namePattern);
+			
+		long totalRowCount = typeQuery./*{ <span class="important">getUnlimitedCount</span> }*/();
+		Page page = new Page(pageIndex, pageSize, totalRowCount);
+		page.initialize(typedQuery.getResultList());
+		return page;
+	}
+}
+   					]]></pre>
+   				</div>
+   				The DepartmentRepositoryImpl implement the paging query very easy.
+   				Now let's continue to learn two examples to show how to used it. 
+   				one can not optimize the method <span class="important">getUnlimitedCount</span> and
+   				the other one can.  
+   				<fieldset class="chapter">
+   					<legend>Example without optimization</legend>
+   					Let's see an example, for this case, BabyFish can <span class="important">NOT</span> optimize the method <span class="important">getUnlimitedCount</span>
+   					<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+DepartmentRepository departmentRepository = ... ...;
+Page<Department> page = departmentRepository.getDepartmentsLikeName(
+	"%a%",
+	3,
+	10,
+	Department__.begin().employees(GetterType.REQUIRED).end(),
+	Department__.preOrderBy().name().asc()
+);
+   						]]></pre>
+   					</div>
+   					<ul class="block-list">
+		   				<li>
+		   					The JPQL executed by method "XTypedQuery.getUnlimitCount" is
+		   					<div class="source-code">
+		   						<pre class="lang-sql"><![CDATA[
+select count(distinct d) /* The QueryType of current query is QueryType.DISTINCT */
+from Department d
+inner join d.employees /* Apply Fetches: BabyFish can not generate FETCH here, because the current method is getUnlimitedCount() */
+where d.name like :namePattern
+/* Ignore orders, becuse the current method is getUnlimitedCount() */
+/* firstResult/maxResults is ignored because the current method is getUnlimitedCount() */
+		   						]]></pre>
+		   					</div>
+		   					<ul>
+		   						<li>The "order by d.name asc" of SimpleOrderPath has been ignored, because the aggregation query does not need it.</li>
+		   						<li>The keyword "fetch" is ignored because it can not appear in aggregation query, but join must be retained because the inner join can affect the "count(distinct ...)" expression.</li>
+		   					</ul>
+	   					</li>
+	   					<li>
+		   					The JPQL execute by method "XTypedQuery.getResultList()" is
+		   					<div class="source-code">
+		   						<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+inner join fetch d.employees /* Apply FetchPath: BabyFish must generate FETCH here, because the current method is getResultList() */
+where d.name like :namePattern
+order by d.name asc /* Apply SimpleOrderPath */
+/* firstResult/maxResults must be applied later because the current method is getResultList() */
+		   						]]></pre>
+		   					</div>
+	   					</li>
+	   					<li>
+		   					The SQL execute by method "XTypedQuery.getResultList()" is
+		   					(The generated SQL is hard to read, so this is manual changed code so that it is easy to read)
+		   					<div class="source-code">
+		   						<pre class="lang-sql"><![CDATA[
+select *
+from (
+	select 
+		d.DEPARTMENT_ID,
+		d.NAME,
+		d.COMPANY_ID,
+		e.EMPLOYEE_ID,
+		e.NAME,
+		e.JOB_TITLE,
+		e.SALARY,
+		e.SUPERVISOR_ID,
+		e.DPEARTMENT_ID,
+		/*{ <span class="important">dense_rank</span> }*/() over(
+			order by 
+				d.NAME asc, /* Apply SimpleOrderPath */
+				d.DEPARTMENT_ID asc
+		) /*{ <span class="important2">dense_rank_</span> }*/
+	from DEPARTMENT d
+	inner join EMPLOYEE e on d.DEPARTMENT_ID = e.DEPARTMENT_ID
+	where d.NAME like :namePattern
+	/* "ORDER BY" has been moved into the analysis function dense_rank */
+)
+where 
+	/*{ <span class="important2">dense_rank_</span> }*/ <= :p1 /* 40 */
+and
+	/*{ <span class="important2">dense_rank_</span> }*/ > :p2 /* 30 */
+		
+		   						]]></pre>
+		   					</div>
+		   				</li>
+   					</ul>
+   				</fieldset>
+   				<fieldset class="chapter">
+   					<legend>Example with optimization</legend>
+   					Let's see the other example, be different with previous example, change the join type of FetchPat to be LEFT JOIN.
+   					In this case, BabyFish can optimize the method <span class="important">getUnlimitedCount</span>
+   					<div class="source-code">
+   						<pre class="lang-java"><![CDATA[
+DepartmentRepository departmentRepository = ... ...;
+Page<Department> page = departmentRepository.getDepartmentsLikeName(
+	"%a%",
+	3,
+	10,
+	Department__.begin().employees(/* Default value GetterType.Optional means LEFT JOIN */).end(),
+	Department__.preOrderBy().name().asc()
+);
+   						]]></pre>
+   					</div>
+   					<ul class="block-list">
+   						<li>
+		   					The JPQL executed by method "XTypedQuery.getUnlimitCount" is
+		   					<div class="source-code">
+		   						<pre class="lang-sql"><![CDATA[
+select count(d) /*{ <span class="com">&#47;&#42; <span class="important">Optimize</span>: keyword "distinct" of count function has been removed &#42;&#47;</span> }*/
+from Department d
+/*{ <span class="com">&#47;&#42; <span class="important">Optimize</span>: Ingore the fetches &#42;&#47;</span> }*/
+where d.name like :namePattern
+/* Ignore orders, becuse the current method is getUnlimitedCount() */
+/* firstResult/maxResults is ignored because the current method is getUnlimitedCount() */
+		   						]]></pre>
+		   					</div>
+		   					<p class="paragraphs">
+			   					The FetchPath Department__.begin().employees.end() requires "left join fetch d.employees", in getUnlimitedCount() behavior, fetch is invlid,
+			   					so the keyword "fetch" must be ignored but the keyword "join" must be retained in this JPQL, but where is "left join d.employees"?
+		   					</p>
+		   					<p class="paragraphs">
+		   						<ol>
+		   							<li>
+		   								Though "d.employees" is collection assocation so that "left join d.employees" may make duplicated department rowsand it can affect the result of count(...), 
+		   								<span class="important">BUT</span> it can <span class="important">NOT</span> not affect the result of count(distinct ...)
+		   							</li>
+		   							<li>
+		   								Even if the department has no related employees, "left join" can guarantee the matched department can appear in the query result absolutly
+		   							</li>
+		   						</ol>
+		   						So here, babyfish optimize the JPQL for "getUnlimitedCount" operation, ignore the joins specified by the FetchPath
+		   					</p>
+		   				</li>
+		   				<li>
+		   					The JPQL execute by method "XTypedQuery.getResultList()" is
+		   					<div class="source-code">
+		   						<pre class="lang-sql"><![CDATA[
+select d
+from Department d
+inner join fetch d.employees /* Apply FetchPath: Baby must generate FETCH here, because the current method is getResultList() */
+where d.name like :namePattern
+order by d.name asc /* Apply SimpleOrderPath */
+/* firstResult/maxResults must be applied later because the current method is getResultList() */
+		   						]]></pre>
+		   					</div>
+		   				</li>
+		   				<li>
+		   					The SQL execute by method "XTypedQuery.getResultList()" is
+		   					(The generated SQL is hard to read, so this is manual changed code so that it is easy to read)
+		   					<div class="source-code">
+		   						<pre class="lang-sql"><![CDATA[
+select *
+from (
+	select 
+		d.DEPARTMENT_ID,
+		d.NAME,
+		d.COMPANY_ID,
+		e.EMPLOYEE_ID,
+		e.NAME,
+		e.JOB_TITLE,
+		e.SALARY,
+		e.SUPERVISOR_ID,
+		e.DPEARTMENT_ID,
+		/*{ <span class="important">dense_rank</span> }*/() over(
+			order by 
+				d.NAME asc, /* Apply SimpleOrderPath */
+				d.DEPARTMENT_ID asc
+		) /*{ <span class="important2">dense_rank_</span> }*/
+	from DEPARTMENT d
+	inner join EMPLOYEE e on d.DEPARTMENT_ID = e.DEPARTMENT_ID
+	where d.NAME like :namePattern
+	/* "ORDER BY" has been moved into the analysis function dense_rank */
+)
+where 
+	/*{ <span class="important2">dense_rank_</span> }*/ <= :p1 /* 40 */
+and
+	/*{ <span class="important2">dense_rank_</span> }*/ > :p2 /* 30 */
+		
+		   						]]></pre>
+		   					</div>
+		   				</li>
+		   			</ul>
+		   			<div class="important-section">
+			   			In other cases, BabyFish can optimize the org.babyfish.persistence.XQuery.getUnlimitedCount() and org.babyfish.hibernate.XQuery.unlimitedCount() too, 
+			   			but it is not necessary to list all the optimization conditions one by one. Overwall, babyfish will optimize the unlimited count behavior as much as possible.
+		   			</div>
+   				</fieldset>
+        	</fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>babyfish.hibernate.enable_limit_in_memory</legend>
+        	<p class="paragraphs">
+        		Hibernate may apply the limit query in memory level when any one of these cases is matched
+        	</p>
+        	<ol>
+        		<li>When the database is NOT oracle or distinct-limit-query for Oracle is NOT used by you, the query has collection fetches</li>
+        		<li>The query is polymorphic query, each derived entity class is mapped to a table, but the super class isn't</li>
+        	</ol>
+        	Hibernate applies the limit query in memory level and report the warning to the user via logging system. 
+        	this is not allowed in BabyFish-JPA/BabyFish-Hibernate. 
+        	<div>
+        		Defaultly, BabyFish-JPA/Babyfish-Hibernate <span class="important">throws exception</span> to forbid the memory level limit query.
+        	</div>
+        	<p class="paragraphs">
+        		If you insist on using hibernate's memory-level limit query, please configure this property
+        		<span class="important">babyfish.hibernate.enable_limit_in_memory</span>
+        		to be <span class="important">true</span> is your JPA configuration, such as persistence.xml, hibernate.cfg.xml or your spring JPA configuration.
+        	</p>
+        	<div class="important-section">
+        		This is my suggestion when your product is base on Oracle(DistinictLimitQuery for MSSQLServer2005+ and DB2 will be supported in next version)
+        		<ul>
+        			<li>
+        				For your <span class="important">MAIN</span> code, please configuration the dialect to be 
+        				<span class="important2">org.<span class="important">babyfish</span>.hibernate.dialect.Oracle10gDialect</span> 
+        				to enjoy the DistinctLimitQuery ablility of babyfish-jpa/babyfish-hibernate.
+        			</li>
+        			<li>
+        				For your <span class="important">TEST</span> code, please use <span class="important">hsqldb</span> to write the unit test cases,
+        				but the <span class="important">test-only</span> configuration of JPA/Hibernate should set
+        				<span class="important2">babyfish.hibernate.enable_limit_in_memory</span> to be 
+        				<span class="important2">true</span>.
+        			</li>
+        		</ul>
+        	</div>
+        </fieldset>
+    </div>
+</body>
+</html>

@@ -1,0 +1,2479 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www./TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>ObjectModel4JPA</title>
+	
+	<script type="text/javascript" src="../common/jquery-1.10.2.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/babyfish-doc.css"/>
+	<script type="text/javascript" src="../common/babyfish-doc.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/google-code-prettify.css"/>
+	<script type="text/javascript" src="../common/google-code-prettify.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="../common/jquery-ui-1.10.3-theme/dark-hive/jquery-ui.min.css"/>
+	<script type="text/javascript" src="../common/jquery-ui-1.10.3.min.js"/>
+	
+	<script type="text/javascript">
+		$(function() {
+			initChapters();
+			initButtons();
+			initCodeBlocks();
+			initGrids();
+		});
+	</script>
+	
+	<style>
+		.explicit-modification {
+			font-weight: bold;
+			color: rgb(200, 100, 0);
+		}
+		.explicit-assert {
+			color: rgb(200, 100, 0);
+		}
+		.implicit-assert {
+			color: rgb(255, 0, 255);
+		}
+	</style>
+</head>
+<body id="no-margin-body">
+    <div id="head">
+        <div id="title">ObjectModel4JPA</div>
+        <div id="right-top-conner">
+            <a class="button" href="../index.xhtml">Back to the start page</a>
+            <a class="button" href="index.xhtml">Back to ObjectModel</a>
+        </div>
+    </div>
+    <div id="content">
+    	<div id="dictionary"></div>
+    	<fieldset class="chapter">
+    		<legend>Outline</legend>
+    		<p class="paragraphs">
+    			ObjectModel4JPA an extension of <a href="objectmodel4java.xhtml">ObjectModel4Java</a>, it is designed 
+    			for babyfish-JPA and babyfish-hibernate, 
+    			please <span class="important">ONLY</span> use it in the babyfish-JPA and babyfish-hibernate.  
+    		</p>
+    		<div class="important-section">
+    			ObjectModel4JPA is base on ObjectModel4Java, so it have all the functionalities of ObjectModel4Java,
+    			so I will not discuss the functionalities that has been discussed in the document of ObjectModel4Java
+    			in this document. <span class="important2">Please learn <a href="objectmodel4java.xhtml">ObjectModel4Java</a>
+    			before you learn ObjectModel4JPA.</span>
+    		</div>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>First STEP BY STEP demo, one-many: Set-Reference</legend>
+        	<fieldset class="chapter">
+        		<legend>Main step-1: Create nested object interface</legend>
+        		<p class="paragraphs">
+        			This step is same with the corresponding step of ObjectModelJava except a tiny difference,
+        			the difference is that the parameter of the annotation @ObjectModelDeclaration must be 
+        			set to <span class="important">"jpa"</span>.
+        		</p>
+        		<div class="important">Department.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.s2r;
+ 
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+ 
+public class Department {
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {
+    }
+}
+        			]]></pre>
+        		</div>
+        		<div class="important">Employee.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.s2r;
+ 
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+ 
+public class Employee {
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {
+    }
+}
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Main step-2: Add id property in ObectModel interface</legend>
+        		<p class="paragraphs">
+        			ObjectModel4JPA requires that ObjectModel interface must have an id-property if owner class is not a derived class.
+        			id-property is scalar property that must be mared with the annotation @org.babyfish.persistence.model.metadata.EntityId,
+        			the annotation @org.babyfish.model.metadata.Scalar can be omitted if the @Entity is used.
+        		</p>
+        		<p class="paragraphs">
+        			The id-property can <span class="important">NOT</span> be primitive type that can <span class="important">NOT</span>
+        			be null, please do <span class="important">NOT</span> use
+    				<span style="color: rgb(127, 0, 85); font-weight: bold;">boolean</span>,
+    				<span style="color: rgb(127, 0, 85); font-weight: bold;">char</span>, 
+    				<span style="color: rgb(127, 0, 85); font-weight: bold;">byte</span>, 
+    				<span style="color: rgb(127, 0, 85); font-weight: bold;">short</span>, 
+    				<span style="color: rgb(127, 0, 85); font-weight: bold;">int</span>, 
+    				<span style="color: rgb(127, 0, 85); font-weight: bold;">long</span>, 
+    				<span style="color: rgb(127, 0, 85); font-weight: bold;">float</span> and 
+    				<span style="color: rgb(127, 0, 85); font-weight: bold;">double</span>,
+    				please replace them with
+			    	java.lang.Boolean,
+    				java.lang.Character,
+    				java.lang.Byte,
+    				java.lang.Short,
+    				java.lang.Integer,
+    				java.lang.Long,
+    				java.lang.Float and 
+    				java.lang.Double.
+    				If the id is null, that means the current entity has not been persisted and there is no corresponding row in the database.
+        		</p>
+        		<p class="paragraphs">
+        			As a implementation of JPA, Hibernate supports non-nullable id that uses primitive type because Hibernate supports the 
+        			XML attribute "unsaved-value" in the hibernate-mapping xml schema. In order to keep the simplicity, BabyFish does
+        			<span class="important">NOT</span> support the non-nullable id of Hibernate. 
+        		</p>
+        		<div class="important">Department.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.s2r;
+ 
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.persistence.model.metadata.EntityId;
+ 
+public class Department {
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {
+    
+    	/*{ <span class="important">@EntityId</span> }*/
+    	Long getId();
+    	void setId(Long id);
+    }
+}
+        			]]></pre>
+        		</div>
+        		<div class="important">Employee.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.s2r;
+ 
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.persistence.model.metadata.EntityId;
+ 
+public class Employee {
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {
+    
+    	/*{ <span class="important">@EntityId</span> }*/
+    	Long getId();
+    	void setId(Long id);
+    }
+}
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Main step-3: Add other properties</legend>
+        		<p class="paragraphs">
+        			Then add some properties into ObjectModel interface. Department.OM declares the association property 
+        			"employees" to reference the Employee; conversely, Employee.OM declares the association property 
+        			"departmentReference", the create a bidirectional association together. In ObjectModel4JPA, 
+        			an association property of bidirectional association must be marked by the annotation 
+        			@org.babyfish.persistence.model.metadata.Inverse and the other one must <span class="important">NOT</span>.
+        			In this demo, Department.OM.employees is marked by @Inverse but Employee.OM.departmentReference is <span class="important">NOT</span>.
+        		</p>
+        		<div class="important">Department.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.s2r;
+
+import java.util.Set;
+
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.Inverse;
+
+public class Department {
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {	
+    	
+    	/*{ <span class="important">@EntityId</span> }*/
+    	Long getId();
+    	void setId(Long id);
+    	
+    	@Scalar
+    	String getName();
+    	void setName();
+    	
+    	@Association(opposite = /*{ <a href="#s2r.3.departmentReference"><span class="str">"departmentReference"</span></a> }*/)
+    	/*{ <span class="important">@Inverse</span> }*/
+    	Set<Employee> /*{ <a name="s2r.3.employees"><span class="pln">getEmployees</span></a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        		<div class="important">Employee.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.s2r;
+ 
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.reference.Reference;
+ 
+public class Employee {
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {
+    
+    	/*{ <span class="important">@EntityId</span> }*/
+    	Long getId();
+    	void setId(Long id);
+    	
+    	@Scalar
+    	String getName();
+    	void setName();
+    	
+    	@Association(opposite = /*{ <a href="#s2r.3.employees"><span class="str">"employees"</span></a> }*/)
+    	Ref<Department> /*{ <a name="s2r.3.departmentReference"><span class="pln">getDepartmentReference</span></a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Main step-4: Add methods and JPA annotations for the entity class</legend>
+        		<div class="important">Department.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.s2r;
+
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.Inverse;
+
+@Entity
+@Table(name = "s2r_DEPARTMENT")
+@SequenceGenerator(
+	name = "departmentSequence",
+	sequenceName = "s2r_DEPARTMENT_ID_SEQ",
+	initialValue = 1,
+	allocationSize = 1
+)
+public class Department {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+    	
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+    	return department.om;
+    }
+    
+    @Id
+    @Column(name = "DEPARTMENT_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "departmentSequence")
+    public Long getId() {
+    	return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+	private void setId(Long id) {
+    	this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, unique = true, length = 50)
+    public String getName() {
+    	return this.om.getName();
+    }
+    
+    public void setName(String name) {
+    	this.om.setName(name);
+    }
+    
+    @OneToMany(mappedBy = /*{ <a href="#s2r.4.department"><span class="str">"department"</span></a> }*/)
+    public Set<Employee> getEmployees() {
+    	return this.om.getEmployees();
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {
+    
+    	/*{ <span class="important">@EntityId</span> }*/
+    	Long getId();
+    	void setId(Long id);
+    	
+    	@Scalar
+    	String getName();
+    	void setName(String name);
+    	
+    	@Association(opposite = /*{ <a href="#s2r.4.departmentReference"><span class="str">"departmentReference"</span></a> }*/)
+    	/*{ <span class="important">@Inverse</span> }*/
+    	Set<Employee> /*{ <a name="s2r.4.employees"><span class="pln">getEmployees</span></a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        		<div class="important">Employee.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.s2r;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.reference.Reference;
+
+@Entity
+@Table(name = "s2r_EMPLOYEE")
+@SequenceGenerator(
+	name = "employeeSequence",
+	sequenceName = "s2r_EMPLOYEE_ID_SEQ",
+	initialValue = 1,
+	allocationSize = 1
+)
+public class Employee {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+    	
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+    	return employee.om;
+    }
+    
+    @Id
+    @Column(name = "EMPLOYEE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeSequence")
+    public Long getId() {
+    	return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+	private void setId(Long id) {
+    	this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, length = 50)
+    public String getName() {
+    	return this.om.getName();
+    }
+    
+    public void setName(String name) {
+    	this.om.setName(name);
+    }
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public Department /*{ <a name="s2r.4.department"><span class="pln">getDepartment</span></a> }*/() {
+    	return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+    	this.om.getDepartmentReference().set(department);
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {
+    
+    	/*{ <span class="important">@EntityId</span> }*/
+    	Long getId();
+    	void setId(Long id);
+    	
+    	@Scalar
+    	String getName();
+    	void setName(String name);
+    	
+    	@Association(opposite = /*{ <a href="#s2r.4.employees"><span class="str">"employees"</span></a> }*/)
+    	Reference<Department> /*{ <a name="s2r.4.departmentReference"><span class="pln">getDepartmentReference</span></a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        		<div class="important-section">
+        			There are several important points of this demo
+        			<ol>
+        				<li>
+        					The default value of the parameter "fetch" of javax.persistence.ManyToOne is "FetchType.EAGER", 
+        					<span class="important2">but BabyFish suggest you to use "FetchType.LAZY"</span> because there is a very strong functionality
+        					<a href="../query-path/index.xhtml">QueryPath</a> in BabyFish-JPA/BabyFish-Hibernate.
+        				</li>
+        				<li>
+        					The JPA property "Department.employees" <span class="important">ONLY</span> supports getter methods, 
+        					there is no setter method. In ObjectModel4JPA, the collection property should <span class="important">ONLY</span>
+        					supports getter method.   
+        				</li>
+        				<li>
+        					Department.OM.getId() is marked by @org.babyfish.persistence.model.metadata.EntityId and Department.getId() is marked by @javax.persistence.Id,
+        					but this is <span class="important">NOT</span> duplicated desgin, the @EntityId is required because
+        					<ul>
+        						<li>
+        							The parsing result of @org.babyfish.persistence.model.metadata.EntityId is everlasting, you can use by the babyfish API 
+        							to access the metadata at <span class="important">ANY</span> time.
+        						</li>
+        						<li>
+        							The parsing result of @javax.persistence.Id has lifecycle, 
+        							you can <span class="important">ONLY</span> use JPA API to access the metadata after the the EntityManagerFactory(or SessionFactory) is created and 
+        							before the the EntityManagerFactory(or SessionFactory) is closed. 
+        							The only advantage is you can configure it by several ways: JPA-annotation, JPA-mapping-xml or Hibernate-mapping-xml.
+        						</li>
+        					</ul>
+        					ObjectModel4JPA needs to read the configuration metadata before the EntityManagerFactory(or SessionFactory) is created, this can be guaranteed by 
+        					@org.babyfish.persistence.model.metadata.EntityId, not by @javax.persistence.Id.
+        				</li>
+        				<li>
+        					Employee.OM.getId() is marked by annotation @org.babyfish.persistence.model.metadata.EntityId and Employee.getId() is marked by the
+        					annotation @javax.persistence.Id, similarly with above, this is not duplicated desgin too.
+        				</li>
+        				<li>
+        					Department.OM.getEmployees() is marked by annotation @org.babyfish.persistence.model.metadata.Inverse and Department.getEmployees() is marked by the
+        					annotation @javax.persistence.OneToMany with the parameter <span class="important2">"mappedBy"</span>, similarly with above, this is not duplicated desgin too.
+        				</li>
+        			</ol>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Test step1: Configure annotation processor of JPA</legend>
+        		<p class="paragraphs">
+        			Add two plugins into the pom.xml
+        		</p>
+        		<div class="source-code">
+        			<pre class="lang-xml"><![CDATA[
+<plugin>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <configuration>
+    <source>1.7</source>
+    <target>1.7</target>
+  </configuration>
+</plugin>
+<plugin>
+  <groupId>org.bsc.maven</groupId>
+  <artifactId>maven-processor-plugin</artifactId>
+  <version>2.0.0</version>
+  <executions>
+    <execution>
+      <id>process</id>
+      <goals>
+        <goal>process</goal>
+      </goals>
+      <phase>generate-sources</phase>
+      <configuration>
+        <outputDirectory>target/metamodel</outputDirectory>
+        <processors>
+          <processor>
+            <!--{ <span class="important">org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</span> }-->
+          </processor>
+          <processor>
+            <!--{ <span class="important">org.babyfish.jpaqpmodelgen.JPAQueryPathModelEntityProcessor</span> }-->
+          </processor>
+        </processors>
+      </configuration>
+    </execution>
+  </executions>
+  <dependencies>
+    <dependency>
+  	<groupId>org.hibernate</groupId>
+      <artifactId>hibernate-jpamodelgen</artifactId>
+      <version>1.3.0.Final</version>
+    </dependency>
+    <dependency>
+   	<groupId>org.babyfish</groupId>
+       <artifactId>babyfish-jpaqpmodelgen</artifactId>
+       <version>${babyfish.version}</version>
+    </dependency>
+  </dependencies>
+</plugin>
+<plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>build-helper-maven-plugin</artifactId>
+  <version>1.3</version>
+  <executions>
+    <execution>
+      <id>add-source</id>
+      <phase>generate-sources</phase>
+      <goals>
+        <goal>add-source</goal>
+      </goals>
+      <configuration>
+        <sources>
+          <source>target/metamodel</source>
+        </sources>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Test step2: Create persistence.xml</legend>
+        		<p class="paragraphs">
+        			Create package "com.yourcompany.yourproject.om4jpa.s2r" under the source folder "src/test/resources", 
+        			then create file "persistence.xml" under this package
+        		</p>
+       			<div class="source-code">
+       				<pre class="lang-xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence 
+ 	version="2.0" 
+ 	xmlns="http://java.sun.com/xml/ns/persistence" 
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence 
+ 	http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+ 	<persistence-unit name="main">
+ 		<provider>org.babyfish.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<class>com.yourcompany.yourproject.om4jpa.s2r.Department</class>
+		<class>com.yourcompany.yourproject.om4jpa.s2r.Employee</class>
+		<properties>
+			<property name="hibernate.connection.driver_class" value="org.hsqldb.jdbc.JDBCDriver"/>
+	        <property name="hibernate.connection.url" value="jdbc:hsqldb:mem:com.yourcompany.yourproject.om4jpa.s2r"/>
+	        <property name="hibernate.connection.username" value="sa"/>
+	        <property name="hibernate.connection.password" value="123"/>
+	        <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+	        <property name="hibernate.order_updates" value="true"/>
+			<property name="hibernate.use_identifer_rollback" value="true"/>
+			<property name="hibernate.hbm2ddl.auto" value="create"/>
+			<property name="hibernate.show_sql" value="true"/>
+	        <property name="hibernate.c3p0.min_size" value="5"/>
+	        <property name="hibernate.c3p0.max_size" value="20"/>
+	        <property name="hibernate.c3p0.timeout" value="1800"/>
+	        <property name="hibernate.c3p0.max_statements" value="50"/>
+	    </properties>
+ 	</persistence-unit>
+</persistence>
+       				]]></pre>
+       			</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Test step3: Create test case with JPA environment and initialize database</legend>
+        		<p class="paragraphs">
+        			Actually, this test case needs not invoke the special functionalities of BabyFish-JPA so that
+        			we can still use "javax.persistence.EntityManagerFactory" and "javax.persistence.EntityManager".
+        			but "javax.persistence.EntityManager" of JEE6 has not implemented "java.lang.AutoCloseable" so that
+        			we must close the entity manager manually. "org.babyfish.persistence.XEntityManager" has implemented
+        			that interface so we use "org.babyfish.persistence.XEntityManagerFactory" and 
+        			"org.babyfish.persistence.XEntityManager" to make our test code be slightly simplified.
+        		</p>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.s2r;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+
+import org.babyfish.hibernate.jpa.HibernatePersistenceProvider;
+import org.babyfish.persistence.XEntityManager;
+import org.babyfish.persistence.XEntityManagerFactory;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
+public class ObjectModel4JPAOfSetAndReferenceTest {
+
+	private static XEntityManagerFactory emf;
+	
+	@BeforeClass
+	public static void createEntityManagerFactory() {
+		emf =
+			new HibernatePersistenceProvider(
+					ObjectModel4JPAOfSetAndReferenceTest.class.getPackage().getName().replace('.', '/') + 
+					"/persistence.xml")
+			.createEntityManagerFactory(null, null);
+	}
+	
+	@AfterClass
+	public static void closeEntityManagerFactory() {
+		XEntityManagerFactory f = emf;
+		if (f != null) {
+			emf = null;
+			f.close();
+		}
+	}
+	
+	@Before
+	public void initData() {
+		Department department = new Department();
+		Employee employee = new Employee();
+		department.setName("Market");
+		employee.setName("Jim");	
+		
+		try (XEntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin();
+			try {
+				em.persist(department);
+				em.persist(employee);
+			} catch (RuntimeException | Error ex) {
+				em.getTransaction().rollback();
+				throw ex;
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@After
+	public void destroyData() {
+		CriteriaBuilder cb = emf.getCriteriaBuilder();
+		CriteriaDelete<Department> departmentCD = cb.createCriteriaDelete(Department.class);
+		departmentCD.from(Department.class);
+		CriteriaDelete<Employee> employeeCD = cb.createCriteriaDelete(Employee.class);
+		employeeCD.from(Employee.class);
+		try (XEntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin();
+        	try {
+	            em.createQuery(employeeCD).executeUpdate();
+	            em.createQuery(departmentCD).executeUpdate();
+        	} catch (RuntimeException | Error ex) {
+        		em.getTransaction().rollback();
+        		throw ex;
+        	}
+        	em.getTransaction().commit();
+		}
+	}
+}
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Test step4: Add some private reuseable methods</legend>
+	        	<p class="paragraphs">
+	        		First, change the importing list to be: 
+	        	</p>
+	        	<div class="source-code">
+	        		<pre class="lang-java"><![CDATA[
+import java.util.Set;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import org.babyfish.collection.HashSet;
+import org.babyfish.hibernate.jpa.HibernatePersistenceProvider;
+import org.babyfish.persistence.XEntityManager;
+import org.babyfish.persistence.XEntityManagerFactory;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+	        		]]></pre>
+	        	</div>
+	        	<p class="paragraphs">
+	        		Second, add these private reusesable methods into the test code.
+	        	</p>
+	        	<div class="source-code">
+	        		<pre class="lang-java"><![CDATA[
+private static Department getDepartmentByName(String departmentName, Department__ ... queryPaths) {
+    try (XEntityManager em = emf.createEntityManager()) {
+        return getDepartmentByName(em, departmentName, queryPaths);
+    }
+}
+
+private static Department getDepartmentByName(XEntityManager em, String departmentName, Department__ ... queryPaths) {
+    CriteriaBuilder cb = emf.getCriteriaBuilder();
+    CriteriaQuery<Department> cq = cb.createQuery(Department.class);
+    Root<Department> department = cq.from(Department.class);
+    cq.where(cb.equal(department.get(Department_.name), departmentName));
+    return em.createQuery(cq).setQueryPaths(queryPaths).getSingleResult();
+}
+
+private static Employee getEmployeeByName(String employeeName, Employee__ ... queryPaths) {
+	CriteriaBuilder cb = emf.getCriteriaBuilder();
+	CriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+	Root<Employee> employee = cq.from(Employee.class);
+	cq.where(cb.equal(employee.get(Employee_.name), employeeName));
+	try (XEntityManager em = emf.createEntityManager()) {
+		return em.createQuery(cq).setQueryPaths(queryPaths).getSingleResult();
+	}
+}
+
+private static void assertDepartmentInDatabase(String departmentName, String ... employeeNames) {
+	Department department = getDepartmentByName(departmentName, Department__.begin().employees().end());
+	Assert.assertEquals(employeeNames.length, department.getEmployees().size());
+	Set<String> expectedSet = new HashSet<>((employeeNames.length * 4 + 2) / 3);
+	Set<String> actualSet = new HashSet<>((department.getEmployees().size() * 4 + 2) / 3);
+	for (String employeeName : employeeNames) {
+		expectedSet.add(employeeName);
+	}
+	for (Employee employee : department.getEmployees()) {
+		actualSet.add(employee.getName());
+	}
+}
+
+private static void assertEmployeeInDatabase(String employeeName, String departmentName) {
+	Employee employee = getEmployeeByName(employeeName, Employee__.begin().department().end());
+	if (departmentName == null) {
+		Assert.assertNull(employee.getDepartment());
+	} else {
+		Assert.assertEquals(departmentName, employee.getDepartment().getName());
+	}
+}
+	        		]]></pre>
+	        	</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Test step5: Add test methods</legend>
+        		<p class="paragraphs">
+        			First, change the importing list to be:
+        		</p>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+import java.util.Set;
+
+import javax.persistence.Persistence;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import org.babyfish.collection.HashSet;
+import org.babyfish.hibernate.jpa.HibernatePersistenceProvider;
+import org.babyfish.persistence.XEntityManager;
+import org.babyfish.persistence.XEntityManagerFactory;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+        			]]></pre>
+        		</div>
+        		<p class="paragraphs">
+        			Second, add these test methods into test case.
+        		</p>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+@Test
+public void testChangeNonInverseSide() {
+	assertDepartmentInDatabase("Market");
+	assertEmployeeInDatabase("Jim", null);
+	
+	Department market = getDepartmentByName("Market");
+	Employee jim = getEmployeeByName("Jim");
+	Assert.assertFalse(Persistence.getPersistenceUtil().isLoaded(market.getEmployees()));
+	
+	/*{ <span class="com">&#47;&#42;</span> }*/
+	/*{ <span class="com"> * Change the non-inverse property "department" of Employee,</span> }*/ 
+	/*{ <span class="com"> * set the property "department" of "jim" to be "market".</span> }*/
+	/*{ <span class="com"> * </span> }*/
+	/*{ <span class="com"> * The property "employees" of the market will be </span> }*/
+	/*{ <span class="com"> * changed <span class="important2">automatically and implicitly</span>, but this changed is <span class="important">dummy modification</span>.</span> }*/
+	/*{ <span class="com"> * </span> }*/
+	/*{ <span class="com"> * <span class="important">Dummy Modification</span> means the unloaded lazy collection <span class="ONLY"></span> retains</span> }*/
+	/*{ <span class="com"> * the data of changeset, when dummy modification is executed, lazy collection needs <span class="important">NOT</span></span> }*/
+	/*{ <span class="com"> * to execute SQL to load itself, and it needs <span class="important">NOT</span> to execute a tiny SQL to check </span> }*/
+	/*{ <span class="com"> * whether the collection modification method should return true or false too. </span> }*/
+	/*{ <span class="com"> * </span> }*/
+	/*{ <span class="com"> * When ObjectModel4JPA adds element(s) into a collection into or removes elelement(s)</span> }*/
+	/*{ <span class="com"> * from the connection <span class="important">implicitly</span>, if the collection is <span class="important">unloaded</span> and <span class="important">inverse</span>, </span> }*/
+	/*{ <span class="com"> * ObjectModel4JPA chooses dummy modification. Its distinguishing feature is that the collection</span> }*/
+	/*{ <span class="com"> * is still unloaded after the modification, only the changeset is retained by the collection.</span> }*/
+	/*{ <span class="com"> &#42;&#47;</span> }*/
+	jim.setDepartment(market);
+	try (XEntityManager em = emf.createEntityManager()) {
+		em.getTransaction().begin();
+       	try {
+       		em.merge(jim);
+       	} catch (RuntimeException | Error ex) {
+       		em.getTransaction().rollback();
+       		throw ex;
+       	}
+       	em.getTransaction().commit();
+	}
+	
+	assertDepartmentInDatabase("Market", "Jim");
+	assertEmployeeInDatabase("Jim", "Market");
+	/*
+	 * this "contains(jim)" operation will not load the collection because jim 
+	 * is already retained in the changeset of the collection so that it is unecessary.
+	 */ 
+	Assert.assertTrue(market.getEmployees().contains(jim));
+	Assert.assertFalse(Persistence.getPersistenceUtil().isLoaded(market.getEmployees()));
+}
+
+@Test
+public void testChangeInverseSide() {
+	assertDepartmentInDatabase("Market");
+	assertEmployeeInDatabase("Jim", null);
+	
+	Department market;
+	Employee jim = getEmployeeByName("Jim");
+	try (XEntityManager em = emf.createEntityManager()) {
+		market = getDepartmentByName(em, "Market");
+		Assert.assertFalse(Persistence.getPersistenceUtil().isLoaded(market.getEmployees()));
+		
+		/*{ <span class="com">&#47;&#42; </span> }*/
+		/*{ <span class="com"> * Change the inverse property "employees" of Department, the collection is unloaded</span> }*/
+		/*{ <span class="com"> *</span> }*/
+		/*{ <span class="com"> * ObjectModel4JPA has a smart rule to choose how to change it, the rule is a little </span> }*/
+		/*{ <span class="com"> * complex so that we will not discuss it here. Here, Object4Model4JPA chooses</span> }*/
+		/*{ <span class="com"> * <span class="important">Lazy Modification</span> that will <span class="important">NOT</span> execute SQL to load the collection <span class="important">but</span> will</span> }*/
+		/*{ <span class="com"> * execute a tiny SQL to get the return value of the "add(Employee)" method.</span> }*/
+		/*{ <span class="com"> * The unloaded collection retains the changeset after the modification is executed.</span> }*/
+		/*{ <span class="com"> * Lazy Modification requires the openning EntityManager(or hibernate Session), that is why the</span> }*/
+		/*{ <span class="com"> * statement "market.getEmployees().add(jim)" must be executed during the EntityManager lifecycle</span> }*/
+		/*{ <span class="com"> * </span> }*/
+		/*{ <span class="com"> * Be same with ObjectModel4Java, the property "department" of employee will be changed</span> }*/
+		/*{ <span class="com"> * <span class="important2">automatically and implicitly</span>.</span> }*/
+		/*{ <span class="com"> &#42;&#47;</span> }*/
+		boolean addResult = market.getEmployees().add(jim);
+		Assert.assertTrue(addResult);
+		Assert.assertFalse(Persistence.getPersistenceUtil().isLoaded(market.getEmployees()));
+	}
+	
+	try (XEntityManager em = emf.createEntityManager()) {
+		em.getTransaction().begin();
+		try {
+			/*
+			 * You can change the inverse side but you must merge non-inverse side 
+			 */
+			em.merge(jim);
+		} catch (RuntimeException | Error ex) {
+			em.getTransaction().rollback();
+			throw ex;
+		}
+		em.getTransaction().commit();
+	}
+	
+	assertDepartmentInDatabase("Market", "Jim");
+	assertEmployeeInDatabase("Jim", "Market");
+	/*
+	 * this "contains(jim)" operation will not load the collection because jim 
+	 * is already retained in the changeset of the collection so that it is unecessary.
+	 */ 
+	Assert.assertTrue(market.getEmployees().contains(jim));
+	Assert.assertFalse(Persistence.getPersistenceUtil().isLoaded(market.getEmployees()));
+}
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>Default collection comparator for ObjectModel4JPA</legend>
+        	<p class="paragraphs">
+        		We have discussed how to specify the comparator for the collection property. For all the collection types except java.util.SortedSet&lt;E&gt;,
+        		the default EqualityComparator is used when there is <span class="important">NO</span> annotation @org.babyfish.model.metadata.ComparatorProperties
+        		on association model or object model level, we have also discussed that the default EqualityComparator of ObjectModel4Java is 
+        		org.babyfish.collection.ReferenceEqualityComparator.getInstance(), 
+        		<span class="imporant">but In ObjectModel4JPA, the default EqualityComparator is not that one.</span>. 
+        	</p>
+        	<p class="paragraphs">
+        		The default comparator of ObjectModel4JPA has 3 functionalities:
+        		<ol class="no-paragraphs">
+        			<li>
+        				When the id of the entity is <span class="important">NOT</span> null, ObjectModel4JPA uses the id property of the entity to calculate 
+        				the hashCode of the entity and check whether two entities are equal, because database uses the id property(primary key) to manage 
+        				all the data rows.
+        			</li>
+        			<li>
+        				When the id of the entity is null, that means this entity is not being persisted by the database, ObjectModel4JPA uses 
+        				System.identityHashCode() to calculate the hashCode of the entity, and it uses the reference equality to check whether 
+        				two entity references are equal.
+        			</li>
+        			<li>
+        				<span class="important">This one is very imporant!</span> Both the user code and JPA can change the id the entity, for example
+        				<ul>
+        					<li>
+        						If the id of the entity can be generated by JPA, the id of the entity will be changed from null to non-null automatically 
+        						by JPA when the entity is inserted into database.
+        					</li>
+        					<li>
+        						If the id of the entity can be generated by JPA and the hibernate configration property "hibernate.use_identifer_rollback" is true, 
+        						the id of the inserted entity will be changed from non-null to null automatically by JPA when the current transaction is rollbacked.
+        					</li>
+        				</ul>
+        				Don't worry, be different with jdk collection implementation, babyfish collection supports <span class="important">Mutable Collection Elements,</span>
+        				all the collections contains an element will be adjusted automatically and implicitly when the element is changed whenever.
+        			</li>
+        		</ol>
+        	</p>
+        	<div class="important-section">
+        		There are 2 important points
+        		<ol>
+        			<li>
+		        		The default comparator <span class="important">ONLY</span> depends on the id property of the entity object, Hibernate uses the entity proxy 
+		        		created by javassist to describe the unloaded entity, this unloaded entity proxy will <span class="important">NEVER</span> be loaded if we
+		        		<span class="important">ONLY</span> use the id property of this entity, this is a very cool feature of Hibernate! 
+		        		If you uses @ComparatorProperties to declare a custom comparator for a collection and that comparator depends on other properties of the entity, 
+		        		it will cause the unloaded entities were loaded frequently, so the @ComparatorProperties is <span class="important">NOT</span> suggested to be 
+		        		used in ObjectModel4JPA except the collection whose type is java.util.SortedSet&lt;E&gt; that does not support default comparator.
+	        		</li>
+	        		<li>
+	        			The default comparator is <span class="important">NOT</span> the comparator specified by the annotation @ComparatorProperties that uses 
+	        			the name of the id property of the entity to be its parameter, because
+	        			<ul>
+	        				<li>
+	        					For default comparator, if there are two different entities and both the ids of them are null, 
+	        					these two entities are <span class="important">NOT</span> considered to be equal.
+	        				</li>
+	        				<li>
+	        					For the comparator specified by the annotation @ComparatorProperties that uses the name of the id property of the entity to be 
+	        					its parameter, if there are two different entities and both the ids of them are null, these two entities are considered to be equal.
+	        				</li>
+	        			</ul>
+	        		</li>
+        		</ol>
+        	</div>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>Collection modification</legend>
+        	<p class="paragraphs">
+        		In ObjectModel4Java, the association collection supports 3 modification modes
+        		<ol class="no-paragraphs">
+        			<li>Dummy modification</li>
+        			<li>Lazy modification</li>
+        			<li>Real modification</li>
+        		</ol>
+        	</p>
+        	<fieldset class="chapter">
+        		<legend>Dummy modification</legend>
+        		<p class="paragraphs">
+        			When the association collection is modified, the <span class="important">dummy modification</span> will be applied when all of these conditions are true
+        			<ol class="no-paragraphs">
+        				<li>
+        					This collection is unloaded,
+        					that means "javax.persistence.Persistence.getPersistenceUtil().isLoaded(...)" and "org.hibernate.Hibernate.isInitialized(...)" returns false.
+        				</li>
+        				<li>This collection is java.uitl.Set&lt;E&gt;</li>
+        				<li>
+        					The method of current modification operation is "add", "addAll", "remove" or "removeAll".
+        				</li>
+        				<li>
+        					The target object of current modification operation is the this collection itself
+        					or the set view of this collection if this collection is 
+        					java.util.SortedSet&lt;E&gt;, java.util.NavigableSet&lt;E&gt; or org.babyfish.collection.XOrderedSet&lt;E&gt;.
+        				</li>
+        				<li>
+        					This collection is inverse side, the ObjectModel property is configured by <span class="important">@org.babyfish.persistence.model.metadata.Inverse</span>.  
+        					In JPA, the entity property is configured by @OneToMany(<span class="important">mappedBy</span> = "...") or @ManyToMany(<span class="important">mappedBy</span> = "...");
+        					in hibernate, the entity property is configured by &lt;set <span class="important">inverse="true"</span> ...&gt;...&lt;/set&gt;
+        				</li>
+        				<li>
+        					This collection is modified <span class="important">implicitly</span>,
+        					that means this modification is not caused by the user code, but is caused by ObjectModel4JPA automactially and <span class="important">implicitly</span>.
+        				</li>
+        			</ol>
+        		</p>
+        		<p class="pargraphs">
+        			The last point requires the <span class="important">implicit</span> modification,
+        			let's see an example to understand what is <span class="important">implicit</span> modification, if Department and Employee use ObjectModel4JPA
+        		</p> 
+ 				<div class="source-code">
+ 					<pre class="lang-java"><![CDATA[
+employee.setDepartment(department);
+					]]></pre>
+				</div>
+				<span class="important">Otherwise</span>, if the Department and Employee do <span class="important">NOT</span> use ObjectModel4JPA, the same logic must be implemented by a complex way
+				<div class="source-code">
+					<pre class="lang-java"><![CDATA[
+/*
+ * With ObjectModel4JPA, we need ONLY execute one statement: employee.setDepartment(department);
+ * Without ObjectModel4JPA, we must do it like this complex code
+ */
+Department oldDepartment = employee.getDepartment();
+if (oldDepartment != department) {
+	
+	/*{ <span class="com">// <span class="important">(A)</span> Remove this employee from old department if the old department is existing</span> }*/
+	if (oldDepartment != null) { //If old department is existing
+		oldDepartment.getEmployees().remove(employee);
+	}
+	
+	/*{ <span class="com">// <span class="important">(B)</span> Change the parent object of employee</span> }*/
+	employee.setDepartment(department); //The explicit modification
+	
+	/*{ <span class="com">// <span class="important">(C)</span> Add this employee into new department if the new department is existing</span> }*/
+	if (department != null) { //If new department is existing
+		department.getEmployees().add(employee);
+	}
+}
+   					]]></pre>
+   				</div>
+   				If our entity classes are base on ObjectModel4JPA, we <span class="important">ONLY</span> need to execute <span class="important">(B)</span> because 
+   				<span class="important">(A)</span> and <span class="important">(C)</span> are executed by ObjectModel4JPA automatically and <span class="important">implicitly</span>,
+   				so <span class="important">(A)</span> and <span class="important">(C)</span> are called <span class="important">"implicit-modification"</span>.
+        		<p class="paragraphs">
+        			Dummy modification <span class="important">NEVER</span> load the collection and <span class="important">NEVER</span> execute any SQL,
+        			it <span class="important">ONLY</span> let the collection retain the delta cause by the modifications, if the subsequent code load the collection, 
+        			the cache delta will be merged into the loaded data.
+        		</p>
+        		<p class="paragraphs">
+        			When the method "isEmpty", "contains" or "containsAll" of an unloaded collection is called, 
+        			the collection will do everything possible to return the result directly by its the cache delta.
+        			the SQL will be executed <span class="important">ONLY</span> when this attempt fails.
+        		</p>
+        		<div class="important-section">
+        			<ul>
+        				<li>
+	        				Dummy modification is different with the modification for collection configure by <span class="important">lazy="extra"</span> and <span class="important">inverse="true"</span> 
+	        				of Hibernate, Though the extra-inverse collection of Hibernate will <span class="important">NOT</span> execute SQL to load it when it is modified, but it still needs to execute one SQL to check the 
+	        				existence of the added/removed element to determine the current collection modification method should return true or false. 
+	        				Dummy modification <span class="important">NEVER</span> executes SQL because it can only be used by <span class="important">implicit modification</span>
+	        				so that nobody cares the return value of the modification method.
+        				</li>
+        				<li>
+        					Dummy modification is very suitable for the the <span class="important">DETACHED</span> entities whose EntityManager/Session is lost or not connected, 
+        					because it <span class="important">NEVER</span> execute SQL, so, for the Set-Reference association of ObjectModel4JPA, please let the set-side to be 
+        					the inverse side, and <span class="important">ONLY</span> modify the parent object property of child object when you want to change the association 
+        					so that <span class="important">ONLY</span> dummy modifications can be applies on the child object collection property of parent object. 
+        					In real project, in most cases, the entities in the code out of the data access layer often are detached entities, there is no problem to apply 
+        					dummy modification on detached entities, this will be the popluar desgin style.
+        				</li>
+        			</ul>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Lazy modification</legend>
+        		<p class="paragraphs">
+        			When the association collection is modified, the <span class="important">lazy modification</span> will be applied when all of these conditions are true
+        			<ol class="no-paragraphs">
+        				<li>
+        					This collection is unloaded,
+        					that means "javax.persistence.Persistence.getPersistenceUtil().isLoaded(...)" and "org.hibernate.Hibernate.isInitialized(...)" returns false.
+        				</li>
+        				<li>This collection is java.uitl.Set&lt;E&gt;</li>
+        				<li>
+        					The method of current modification operation is "add", "addAll", "remove" or "removeAll".
+        				</li>
+        				<li>
+        					The target object of current modification operation is the this collection itself
+        					or the set view of this collection if this collection is 
+        					java.util.SortedSet&lt;E&gt;, java.util.NavigableSet&lt;E&gt; or org.babyfish.collection.XOrderedSet&lt;E&gt;.
+        				</li>
+        				<li>
+        					This collection is inverse side, the ObjectModel property is configured by <span class="important">@org.babyfish.persistence.model.metadata.Inverse</span>.  
+        					In JPA, the entity property is configured by @OneToMany(<span class="important">mappedBy</span> = "...") or @ManyToMany(<span class="important">mappedBy</span> = "...");
+        					in hibernate, the entity property is configured by &lt;set <span class="important">inverse="true"</span> ...&gt;...&lt;/set&gt;
+        				</li>
+        				<li>
+        					This collection is modified <span class="important">explicitly</span>.
+        				</li>
+        				<li>
+        					The number of times lazy modification is applied has <span class="important">NOT</span> reached the upper limit, 
+        					this condition will be dicussed in the chapter <a href="#lazyBehaviorChapter">Lazy Behavior chapter</a>.
+        				</li>
+        			</ol>
+        		</p>
+        		<p class="pargrahs">
+        			Be similar to the modification for collection configure by <span class="important">lazy="extra"</span> and <span class="important">inverse="true"</span> 
+	        		of Hibernate. lazy-modification does <span class="important">NOT</span> execute SQL to load the collection when it is modified, but it <span class="important">STILL</span> needs to
+	        		to execute one SQL to check the existence of the added/removed element to determine the current collection modification method should return true or false.
+        		</p>
+        		<div class="important-section">
+        			<ul>
+        				<li>
+		        			Be <span class="important">slightly</span> different with the modification for collection configure by <span class="important">lazy="extra"</span> and <span class="important">inverse="true"</span> 
+			        		of Hibernate, when execute SQL to check the existence of the added/removed element, the extra-inverse collection of Hibernate <span class="important">ONLY</span> checks whether the
+			        		added/removed element is already perisisted in the database, but lazy modification queries the added/removed element and adds it into the level one cache of the EntityManager/Session.
+	        			</li>
+	        			<li>
+	        				Lazy modification requires the opening EntityManager/Session because it executes SQL to check the existence of the added/remove element in the database,
+	        				if the EntityManager/Session is lost or is not connected, the exception "org.hibernate.LazyInitializationException" will be raised.
+	        			</li>
+	        		</ul>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Real modification</legend>
+        		<p class="paragraphs">
+        			When both the dummy modification and lazy modification can not be applied, the real modification will be applied.
+        		</p>
+        		<p class="paragraphs">
+        			Real modification will load the collection if it has not beean loaded, it looks like the collection configured by <span class="important">lazy="true"</span> of Hibernate.
+        		</p>
+        		<div class="important-section">
+        			When collection is unload, lazy modification requires the opening EntityManager/Session because it will load the collection if it is unloaded, 
+        			if the EntityManager/Session is lost or is not connected, the exception "org.hibernate.LazyInitializationException" will be raised.
+        		</div>
+        	</fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend><a name="lazyBehaviorChapter">Lazy Behavior</a></legend>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>The different between List-IndexReference &amp; List-Reference</legend>
+        	<fieldset class="chapter">
+        		<legend><a name="list-indexed-reference-chapter">List-IndexedReference</a></legend>
+        		<p class="paragraphs">
+        			In the List-IndexedReference, the list-side <span class="important">MUST</span> be inverse.
+        		</p>
+        		<div class="important">Department.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.l2ir;
+
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.Inverse;
+
+@Entity
+@Table(name = "l2ir_DEPARTMENT")
+@SequenceGenerator(
+    name = "departmentSequence",
+    sequenceName = "l2ir_DEPARTMENT_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Department {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+        return department.om;
+    }
+    
+    @Id
+    @Column(name = "DEPARTMENT_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "departmentSequence")
+    public Long getId() {
+        return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, unique = true, length = 50)
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    @OneToMany(/*{ <span class="important">mappedBy</span> }*/ = /*{ <a href="#l2ir_department" class="str">"department"</a> }*/) //In List-IndexedReference association, list-side MUST be inverse.
+    /*{ <span class="important">@OrderColumn</span> }*/(name = "INDEX_IN_DEPARTMENT")
+    public List<Employee> getEmployees() {
+        return this.om.getEmployees();
+    }
+
+	@ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+	private interface OM {
+		
+		@EntityId
+		Long getId();
+		void setId(Long id);
+		
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = /*{ <a href="#l2ir_om_departmentReference" class="str">"departmentReference"</a> }*/)
+		/*{ <span class="important">@Inverse</span> }*/ //In List-IndexedReference association, list-side MUST be inverse.
+		List<Employee> /*{ <a name="l2ir_om_employees" class="pln">getEmployees</a> }*/();
+	}
+}
+        			]]></pre>
+        		</div>
+        		<div class="important">Employee.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.l2ir;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.IndexMapping;
+import org.babyfish.reference.IndexedReference;
+
+@Entity
+@Table(name = "l2ir_EMPLOYEE")
+@SequenceGenerator(
+    name = "employeeSequence",
+    sequenceName = "l2ir_EMPLOYEE_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Employee {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+        return employee.om;
+    }
+    
+    @Id
+    @Column(name = "EMPLOYEE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeSequence")
+    public Long getId() {
+        return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, length = 50)
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    @Column(name = "INDEX_IN_DEPARTMENT")
+    public int /*{ <a name="l2ir_index" class="pln">getIndex</a> }*/() {
+    	return this.om.getDepartmentReference().getIndex();
+    }
+    
+    public void setIndex(int index) {
+    	this.om.getDepartmentReference().setIndex(index);
+    }
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public Department /*{ <a name="l2ir_department">getDepartment</a> }*/() {
+        return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+    	this.om.getDepartmentReference().set(department);
+    }
+
+	@ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+	private interface OM {
+		
+		@EntityId
+		Long getId();
+		void setId(Long id);
+		
+		@Scalar
+		String getName();
+		void setName(String name);
+		
+		@Association(opposite = /*{ <a href="#l2ir_om_employees" class="str">"employees"</a> }*/)
+		/*{ <span class="important">@IndexMapping</span> }*/(/*{ <a href="#l2ir_index" class="str">"index"</a> }*/)
+		IndexedReference<Department> /*{ <a name="l2ir_om_departmentReference" class="pln">getDepartmentReference</a> }*/();
+	}
+}
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend><a name="list-reference-chapter">List-Reference</a></legend>
+        		<p class="paragraphs">
+        			In the List-Reference, the reference-side <span class="important">MUST</span> be inverse.
+        		</p>
+        		<div class="important">Department.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.l2r;
+
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+
+@Entity
+@Table(name = "l2r_DEPARTMENT")
+@SequenceGenerator(
+    name = "departmentSequence",
+    sequenceName = "l2r_DEPARTMENT_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Department {
+
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+        return department.om;
+    }
+    
+    @Id
+    @Column(name = "DEPARTMENT_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "departmentSequence")
+    public Long getId() {
+        return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, unique = true, length = 50)
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    @OneToMany
+    @OrderColumn(name = "INDEX_IN_DEPARTMENT")
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public List<Employee> getEmployees() {
+        return this.om.getEmployees();
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+    private interface OM {
+	
+        @EntityId
+        Long getId();
+        void setId(Long id);
+
+        @Scalar
+        String getName();
+        void setName(String name);
+
+        @Association(opposite = /*{ <a href="#l2r_om_departmentReference" class="str">"departmentReference"</a> }*/)
+        List<Employee> /*{ <a name="l2r_om_employees" class="pln">getEmployees</a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        		<div class="important">Employee.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.l2r;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.Inverse;
+import org.babyfish.reference.Reference;
+
+@Entity
+@Table(name = "l2r_EMPLOYEE")
+@SequenceGenerator(
+    name = "employeeSequence",
+    sequenceName = "l2r_EMPLOYEE_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Employee {
+
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+        return employee.om;
+    }
+    
+    @Id
+    @Column(name = "EMPLOYEE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeSequence")
+    public Long getId() {
+        return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, length = 50)
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    /*
+     * In List-Reference side, the reference-side MUST be inverse.
+     * For @ManyToOne, inverse means that the join column can not be inserted or updatable
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTMENT_ID", /*{ <span class="important">insertable = false</span> }*/, /*{ <span class="important">updatable = false</span> }*/)
+    public Department /*{ <a name="l2r_department">getDepartment</a> }*/() {
+        return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+    	this.om.getDepartmentReference().set(department);
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+    private interface OM {
+    
+        @EntityId
+        Long getId();
+        void setId(Long id);
+
+        @Scalar
+        String getName();
+        void setName(String name);
+
+        @Association(opposite = /*{ <a href="#l2r_om_employees" class="str">"employees"</a> }*/)
+        /*{ <span class="important">@Inverse</span> }*/ // In List-Reference side, the reference-side MUST be inverse
+        Reference<Department> /*{ <a name="l2r_om_departmentReference" class="pln">getDepartmentReference</a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>The different between Map-KeyedReference &amp; Map-Reference</legend>
+        	<fieldset class="chapter">
+        		<legend><a name="map-keyed-reference-chapter">Map-KeyedReference</a></legend>
+        		<p class="paragraphs">
+        			In the Map-KeyedReference, the map-side <span class="important">MUST</span> be inverse.
+        		</p>
+        		<div class="important">Department.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.m2kr;
+
+import java.util.Map;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.Inverse;
+
+@Entity
+@Table(name = "m2kr_DEPARTMENT")
+@SequenceGenerator(
+    name = "departmentSequence",
+    sequenceName = "m2kr_DEPARTMENT_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Department {
+
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+        return department.om;
+    }
+    
+    @Id
+    @Column(name = "DEPARTMENT_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "departmentSequence")
+    public Long getId() {
+        return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, unique = true, length = 50)
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    @OneToMany(/*{ <span class="important">mappedBy</span> }*/ = /*{ <a href="#m2kr_department" class="str">"department"</a> }*/) //In Map-KeyedReference association, map-side MUST be inverse.
+    /*{ <span class="important">@MapKeyColumn</span> }*/(name = "KEY_IN_DEPARTMENT")
+    public Map<String, Employee> getEmployees() {
+        return this.om.getEmployees();
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+    private interface OM {
+        
+        @EntityId
+        Long getId();
+        void setId(Long id);
+        
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        @Association(opposite = /*{ <a href="#m2kr_om_departmentReference" class="str">"departmentReference"</a> }*/)
+        /*{ <span class="important">@Inverse</span> }*/ //In Map-KeyedReference association, map-side MUST be inverse.
+        Map<String, Employee> /*{ <a name="m2kr_om_employees" class="pln">getEmployees</a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        		<div class="important">Employee.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.m2kr;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.KeyMapping;
+import org.babyfish.reference.KeyedReference;
+
+@Entity
+@Table(name = "m2kr_EMPLOYEE")
+@SequenceGenerator(
+    name = "employeeSequence",
+    sequenceName = "m2kr_EMPLOYEE_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Employee {
+
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+        return employee.om;
+    }
+    
+    @Id
+    @Column(name = "EMPLOYEE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeSequence")
+    public Long getId() {
+        return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, length = 50)
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    @Column(name = "KEY_IN_DEPARTMENT")
+    public String /*{ <a name="m2kr_key" class="pln">getKey</a> }*/() {
+        return this.om.getDepartmentReference().getKey();
+    }
+    
+    public void setKey(String key) {
+        this.om.getDepartmentReference().setKey(key);
+    }
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public Department /*{ <a name="m2kr_department">getDepartment</a> }*/() {
+        return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+        this.om.getDepartmentReference().set(department);
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+    private interface OM {
+        
+        @EntityId
+        Long getId();
+        void setId(Long id);
+        
+        @Scalar
+        String getName();
+        void setName(String name);
+        
+        @Association(opposite = /*{ <a href="#m2kr_om_employees" class="str">"employees"</a> }*/)
+        /*{ <span class="important">@KeyMapping</span> }*/(/*{ <a href="#m2kr_key" class="str">"key"</a> }*/)
+        KeyedReference<String, Department> /*{ <a name="m2kr_om_departmentReference" class="pln">getDepartmentReference</a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        	<fieldset class="chapter">
+        		<legend>Map-Reference</legend>
+        		<p class="paragraphs">
+        			In the Map-Reference, the reference-side <span class="important">MUST</span> be inverse.
+        		</p>
+        		<div class="important">Department.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.m2r;
+
+import java.util.Map;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+
+@Entity
+@Table(name = "m2r_DEPARTMENT")
+@SequenceGenerator(
+    name = "departmentSequence",
+    sequenceName = "m2r_DEPARTMENT_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Department {
+
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+        return department.om;
+    }
+    
+    @Id
+    @Column(name = "DEPARTMENT_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "departmentSequence")
+    public Long getId() {
+        return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, unique = true, length = 50)
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    @OneToMany
+    @MapKeyColumn(name = "KEY_IN_DEPARTMENT")
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public Map<String, Employee> getEmployees() {
+        return this.om.getEmployees();
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+    private interface OM {
+	
+        @EntityId
+        Long getId();
+        void setId(Long id);
+
+        @Scalar
+        String getName();
+        void setName(String name);
+
+        @Association(opposite = /*{ <a href="#m2r_om_departmentReference" class="str">"departmentReference"</a> }*/)
+        Map<String, Employee> /*{ <a name="m2r_om_employees" class="pln">getEmployees</a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        		<div class="important">Employee.java</div>
+        		<div class="source-code">
+        			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.m2r;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.Inverse;
+import org.babyfish.reference.Reference;
+
+@Entity
+@Table(name = "m2r_EMPLOYEE")
+@SequenceGenerator(
+    name = "employeeSequence",
+    sequenceName = "m2r_EMPLOYEE_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Employee {
+
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+        return employee.om;
+    }
+    
+    @Id
+    @Column(name = "EMPLOYEE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeSequence")
+    public Long getId() {
+        return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, length = 50)
+    public String getName() {
+        return this.om.getName();
+    }
+    
+    public void setName(String name) {
+        this.om.setName(name);
+    }
+    
+    /*
+     * In Map-Reference side, the reference-side MUST be inverse.
+     * For @ManyToOne, inverse means that the join column can not be inserted or updatable
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTMENT_ID", /*{ <span class="important">insertable = false</span> }*/, /*{ <span class="important">updatable = false</span> }*/)
+    public Department /*{ <a name="m2r_department">getDepartment</a> }*/() {
+        return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+    	this.om.getDepartmentReference().set(department);
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+    private interface OM {
+    
+        @EntityId
+        Long getId();
+        void setId(Long id);
+
+        @Scalar
+        String getName();
+        void setName(String name);
+
+        @Association(opposite = /*{ <a href="#m2r_om_employees" class="str">"employees"</a> }*/)
+        /*{ <span class="important">@Inverse</span> }*/ // In Map-Reference side, the reference-side MUST be inverse
+        Reference<Department> /*{ <a name="m2r_om_departmentReference" class="pln">getDepartmentReference</a> }*/();
+    }
+}
+        			]]></pre>
+        		</div>
+        	</fieldset>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>Special behavior of Bag-Reference for ObjectModel4JPA</legend>
+        	<p class="paragraphs">
+        		Hibernate supports bag-reference association, the collection property of parent object can be 
+        		declared as "java.util.Collection&lt;E&gt;" <span class="important">OR</span> "java.util.List&lt;E&gt;". If you uses hibernate
+        		mapping files, you should uses the xml element &lt;bag/&gt;, if you uses JPA annotation or JPA orm 
+        		xml mapping, it should be same with the configuration of set-reference mapping. 
+        	</p>
+        	<p class="paragraphs">
+        		BabyFish ObjectModel4JPA changes the behavior of bag-reference association, if you want to uses
+        		bag-reference association in ObjectModel4JPA, the collection property of parent object <span class="important">MUST</span>
+        		be declared as java.util.Collection&lt;E&gt;, it can <span class="important">NOT</span> be declared as
+        		java.util.List&lt;E&gt;.  
+        	</p>
+        	<p class="paragraphs">
+        		Let's see an example of <span class="important">WRONG</span> code
+        	</p>
+       		<div class="important2">Department.class</div>
+       		<div class="source-code deprecated">
+       			<pre class="lang-java"><![CDATA[
+package ... ...;
+
+import ... ...;
+... ...
+
+public class Department {
+
+	private OM om = ... ...;
+	
+	... ...
+
+	@OneToMany(mappedBy = "department")
+	public /*{ <span class="important">List</span> }*/<Employee> getEmployees() {
+		return this.om.getEmployees();
+	}
+
+	@ObjectModelDeclaration("jpa")
+	private interface OM {
+	
+		... ...
+
+		@Association(opposite = "departmentReference")
+		@Inverse
+		List<Employee> getEmployees();
+	}
+}
+       			]]></pre>
+       		</div>
+       		<div class="important2">Employee.class</div>
+       		<div class="source-code deprecated">
+       			<pre class="lang-java"><![CDATA[
+package ... ...;
+
+import ... ...;
+... ...
+
+public class Employee {
+
+	private OM om = ... ...;
+	
+	... ...
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "DEPARTMENT_ID")
+	public Department getDepartment() {
+		return this.om.getDepartmentReference().get();
+	}
+	
+	public void setDepartment(Department department) {
+		this.om.getDepartmentReference().set(department);
+	}
+
+	@ObjectModelDeclaration("jpa")
+	private interface OM {
+	
+		... ...
+
+		@Association(opposite = "employees")
+		Reference<Department> getDepartmentReference();
+	}
+}
+       			]]></pre>
+       		</div>
+       		<p class="paragrahs">
+       			If you use babyfish-jpa/babyfish-hibernate to create the EntityManagerFactory/SessionFactory,
+       			an exception whose type is "org.hibernate.MappingException" will be raised, 
+       			if your I18N configuration is english, 
+       			its error message is: "TODO".
+       		</p>
+       		<p class="paragraphs">
+       			As the description of that example, you have 2 methods to fix this exception.
+       			<ul class="no-paragraphs">
+       				<li>Change it to list-reference association, please read <a href="#list-reference-chapter">List-Reference</a> to know more.</li>
+       				<li>
+       					If you want to uses bag-reference association, please change the type of collection property "employees" of class "Department" 
+       					from "java.util.List&lt;Employee&gt;" to "java.util.Collection&lt;Employee&gt;", like this:
+       				</li>
+       			</ul>
+       		</p>
+       		<p class="paragraphs">
+       			If you really want to uses Bag-Reference association, please do it like this
+       		</p>
+       		<div class="important">Department.java</div>
+       		<div class="source-code">
+       			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.b2r;
+
+import java.util.Collection;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.Inverse;
+
+@Entity
+@Table(name = "b2r_DEPARTMENT")
+@SequenceGenerator(
+	name = "departmentSequence",
+	sequenceName = "b2r_DEPARTMENT_ID_SEQ",
+	initialValue = 1,
+	allocationSize = 1
+)
+public class Department {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+    	
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+    	return department.om;
+    }
+    
+    @Id
+    @Column(name = "DEPARTMENT_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "departmentSequence")
+    public Long getId() {
+    	return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+	private void setId(Long id) {
+    	this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, unique = true, length = 50)
+    public String getName() {
+    	return this.om.getName();
+    }
+    
+    public void setName(String name) {
+    	this.om.setName(name);
+    }
+    
+    @OneToMany(mappedBy = /*{ <a href="#b2r.4.department"><span class="str">"department"</span></a> }*/)
+    public Collection<Employee> getEmployees() {
+    	return this.om.getEmployees();
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {
+    
+    	/*{ <span class="important">@EntityId</span> }*/
+    	Long getId();
+    	void setId(Long id);
+    	
+    	@Scalar
+    	String getName();
+    	void setName(String name);
+    	
+    	@Association(opposite = /*{ <a href="#b2r.4.departmentReference"><span class="str">"departmentReference"</span></a> }*/)
+    	/*{ <span class="important">@Inverse</span> }*/
+    	Collection<Employee> /*{ <a name="b2r.4.employees"><span class="pln">getEmployees</span></a> }*/();
+    }
+}
+       			]]></pre>
+       		</div>
+       		<div class="important">Employee.java</div>
+       		<div class="source-code">
+       			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.b2r;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.reference.Reference;
+
+@Entity
+@Table(name = "b2r_EMPLOYEE")
+@SequenceGenerator(
+	name = "employeeSequence",
+	sequenceName = "b2r_EMPLOYEE_ID_SEQ",
+	initialValue = 1,
+	allocationSize = 1
+)
+public class Employee {
+
+	private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+    	
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+    	return employee.om;
+    }
+    
+    @Id
+    @Column(name = "EMPLOYEE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeSequence")
+    public Long getId() {
+    	return this.om.getId();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+	private void setId(Long id) {
+    	this.om.setId(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, length = 50)
+    public String getName() {
+    	return this.om.getName();
+    }
+    
+    public void setName(String name) {
+    	this.om.setName(name);
+    }
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public Department /*{ <a name="b2r.4.department"><span class="pln">getDepartment</span></a> }*/() {
+    	return this.om.getDepartmentReference().get();
+    }
+    
+    public void setDepartment(Department department) {
+    	this.om.getDepartmentReference().set(department);
+    }
+
+    @ObjectModelDeclaration(/*{ <span class="important">"jpa"</span>}*/)
+    private interface OM {
+    
+    	/*{ <span class="important">@EntityId</span> }*/
+    	Long getId();
+    	void setId(Long id);
+    	
+    	@Scalar
+    	String getName();
+    	void setName(String name);
+    	
+    	@Association(opposite = /*{ <a href="#b2r.4.employees"><span class="str">"employees"</span></a> }*/)
+    	Reference<Department> /*{ <a name="b2r.4.departmentReference"><span class="pln">getDepartmentReference</span></a> }*/();
+    }
+}
+       			]]></pre>
+       		</div>
+       		<div class="important-section">
+       			In ObjectModel4JPA, though the association properties whose type is java.util.Collection&lt;E&gt; is allowed,
+       			<span class="important">BUT</span> these collections actually are org.babyfish.collection.XOrderedSet&lt;E&gt; 
+       			because ObjectModel4JPA does <span class="important">NOT</span> the collection that is 
+       			<span class="important">neither</span> java.util.Set&lt;E&gt; <span class="important">nor</span> java.util.List&lt;E&gt;. 
+       		</div>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>Special problem of contravariance of ObjectModel4JPA</legend>
+        </fieldset>
+        <fieldset class="chapter">
+        	<legend>Map the properties of entity class</legend>
+        	<p class="paragraphs">
+        		In ObjectModel4JPA, each property declared in the Object Model interface <span class="important">MUST</span>
+        		specify the wrapper property declared in the entity class. ObjectModel4JPA supports three annotations
+        		to map the Object Model interface property and entity class property.
+        		<ul class="no-paragraphs">
+        			<li>
+        				<span class="important2">org.babyfish.persistence.model.metadata.IndexMapping: </span>
+        				When the type of the property declared in the ObjectModel interface is org.babyfish.reference.IndexedReferance&lt;T&gt;,
+        				it is used to map a property of entity class to the index of this reference property, this has <span class="important">already</span> 
+        				been discussed in the chapter <a href="#list-indexed-reference-chapter">List-IndexedReference</a>.
+        			</li>
+        			<li>
+        				<span class="important2">org.babyfish.persistence.model.metadata.KeyMapping: </span>
+        				When the type of the property declared in the ObjectModel interface is org.babyfish.reference.KeyedReferance&lt;K, T&gt;,
+        				it is used to map a property of entity class to the key of this reference property, this has <span class="important">already</span>
+        				been discussed in the chapter <a href="#map-keyed-reference-chapter">Map-KeyedReference</a>.
+        			</li>
+        			<li>
+        				<span class="important2">org.babyfish.persistence.model.metadata.Mapping: </span>
+        				It is used to map a property of entity class to any property of the ObjectModel property except mapping the index
+        				of org.babyfish.reference.IndexedReferance&lt;T&gt; or the key of org.babyfish.reference.IndexedReferance&lt;K, T&gt;.
+        				It has <span class="important">NOT</span> been discussed in the previous chapters because in most cases it can be <span class="important">omitted</span>, 
+        				it will be disucessed in this chapter.
+        			</li>
+        		</ul>
+        	</p>
+        	<p class="paragraphs">
+        		Let's view the example, it shows when the @org.babyfish.persistence.model.metadata.Mapping can <span class="important">NOT</span> be omitted.
+        	</p>
+        	<div class="important">Department.java</div>
+       		<div class="source-code">
+       			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.mapping;
+
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.Mapping;
+import org.babyfish.persistence.model.metadata.Inverse;
+
+@Entity
+@Table(name = "mapping_DEPARTMENT")
+@SequenceGenerator(
+    name = "departmentSequence",
+    sequenceName = "mapping_DEPARTMENT_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Department {
+
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Department department) {
+        return department.om;
+    }
+    
+    @Id
+    @Column(name = "DEPARTMENT_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "departmentSequence")
+    public Long /*{ <a name="mapping_department_id" class="pln">getId</a> }*/() {
+        return this.om.getIdOfObjectModel();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setIdOfObjectModel(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, unique = true, length = 50)
+    public String /*{ <a name="mapping_department_name" class="pln">getName</a> }*/() {
+        return this.om.getNameOfObjectModel();
+    }
+    
+    public void setName(String name) {
+        this.om.setNameOfObjectModel(name);
+    }
+    
+    @OneToMany(/*{ <span class="important">mappedBy</span> }*/ = /*{ <a href="#mapping_department" class="str">"department"</a> }*/) //In List-IndexedReference association, list-side MUST be inverse.
+    @OrderColumn(name = "INDEX_IN_DEPARTMENT")
+    public List<Employee> /*{ <a name="mapping_department_employees" class="pln">getEmployees</a> }*/() {
+        return this.om.getEmployeesOfObjectModel();
+    }
+
+	@ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+	private interface OM {
+		
+		@EntityId
+		/*{ <span class="important2">@Mapping</span> }*/(/*{ <a href="#mapping_department_id" class="str">"id"</a> }*/)
+		Long getIdOfObjectModel();
+		void setIdOfObjectModel(Long id);
+		
+		@Scalar
+		/*{ <span class="important2">@Mapping</span> }*/(/*{ <a href="#mapping_department_name" class="str">"name"</a> }*/)
+		String getNameOfObjectModel();
+		void setNameOfObjectModel(String name);
+		
+		@Association(opposite = /*{ <a href="#mapping_om_departmentReferenceOfObjectModel" class="str">"departmentReferenceOfObjectModel"</a> }*/)
+		@Inverse //In List-IndexedReference association, list-side MUST be inverse.
+		/*{ <span class="important2">@Mapping</span> }*/(/*{ <a href="#mapping_department_employees" class="str">"employees"</a> }*/)
+		List<Employee> /*{ <a name="mapping_om_employeesOfObjectModel" class="pln">getEmployeesOfObjectModel</a> }*/();
+	}
+}
+       			]]></pre>
+       		</div>
+       		<div class="important">Employee.java</div>
+       		<div class="source-code">
+       			<pre class="lang-java"><![CDATA[
+package com.yourcompany.yourproject.om4jpa.mapping;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.babyfish.model.ObjectModelFactory;
+import org.babyfish.model.ObjectModelFactoryFactory;
+import org.babyfish.model.metadata.Association;
+import org.babyfish.model.metadata.ObjectModelDeclaration;
+import org.babyfish.model.metadata.Scalar;
+import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
+import org.babyfish.persistence.model.metadata.EntityId;
+import org.babyfish.persistence.model.metadata.Mapping;
+import org.babyfish.persistence.model.metadata.IndexMapping;
+import org.babyfish.reference.IndexedReference;
+
+@Entity
+@Table(name = "mapping_EMPLOYEE")
+@SequenceGenerator(
+    name = "employeeSequence",
+    sequenceName = "mapping_EMPLOYEE_ID_SEQ",
+    initialValue = 1,
+    allocationSize = 1
+)
+public class Employee {
+
+    private static final ObjectModelFactory<OM> OM_FACTORY = ObjectModelFactoryFactory.factoryOf(OM.class);
+        
+    private OM om = OM_FACTORY.create(this);
+    
+    @StaticMethodToGetObjectModel
+    static OM om(Employee employee) {
+        return employee.om;
+    }
+    
+    @Id
+    @Column(name = "EMPLOYEE_ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employeeSequence")
+    public Long /*{ <a name="mapping_employee_id" class="pln">getId</a> }*/() {
+        return this.om.getIdOfObjectModel();
+    }
+    
+    @SuppressWarnings("unused") //Id is generated automatically, ONLY JPA can set it
+    private void setId(Long id) {
+        this.om.setIdOfObjectModel(id);
+    }
+    
+    @Column(name = "NAME", nullable = false, length = 50)
+    public String /*{ <a name="mapping_employee_name" class="pln">getName</a> }*/() {
+        return this.om.getNameOfObjectModel();
+    }
+    
+    public void setName(String name) {
+        this.om.setNameOfObjectModel(name);
+    }
+    
+    @Column(name = "INDEX_IN_DEPARTMENT")
+    public int /*{ <a name="mapping_employee_index" class="pln">getIndex</a> }*/() {
+    	return this.om.getDepartmentReferenceOfObjectModel().getIndex();
+    }
+    
+    public void setIndex(int index) {
+    	this.om.getDepartmentReferenceOfObjectModel().setIndex(index);
+    }
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public Department /*{ <a name="mapping_employee_department" class="pln">getDepartment</a> }*/() {
+        return this.om.getDepartmentReferenceOfObjectModel().get();
+    }
+    
+    public void setDepartment(Department department) {
+    	this.om.getDepartmentReferenceOfObjectModel().set(department);
+    }
+
+	@ObjectModelDeclaration(/*{ <span class="important">"jpa"</span> }*/)
+	private interface OM {
+		
+		@EntityId
+		/*{ <span class="important">@Mapping</span> }*/(/*{ <a href="#mapping_employee_id" class="str">"id"</a> }*/)
+		Long getIdOfObjectModel();
+		void setIdOfObjectModel(Long idOfObjectModel);
+		
+		@Scalar
+		/*{ <span class="important">@Mapping</span> }*/(/*{ <a href="#mapping_employee_name" class="str">"name"</a> }*/)
+		String getNameOfObjectModel();
+		void setNameOfObjectModel(String nameOfObjectModel);
+		
+		@Association(opposite = /*{ <a href="#mapping_om_employeesOfObjectModel" class="str">"employeesOfObjectModel"</a> }*/)
+		/*{ <span class="important">@IndexMapping</span> }*/(/*{ <a href="#mapping_employee_index" class="str">"index"</a> }*/)
+		/*{ <span class="important">@Mapping</span> }*/(/*{ <a href="#mapping_employee_department" class="str">"department"</a> }*/)
+		IndexedReference<Department> /*{ <a name="mapping_om_departmentReferenceOfObjectModel" class="pln">getDepartmentReferenceOfObjectModel</a> }*/();
+	}
+}
+       			]]></pre>
+       		</div>
+       		<p class="paragraphs">
+       			Why the @org.babyfish.persistence.model.metadata.Mapping can <span class="important">NOT</span> be omitted in this example?
+       			Here list the cases when the @org.babyfish.persistence.model.metadata.Mapping can be omitted.
+       			<ol class="no-paragraphs">
+       				<li>
+       					If the type of the association property declared in the ObjectModel interface is collection and its name is equal
+       					to the name of mapped property of entity class, the annotation @Mapping can be omitted.
+       				</li>
+       				<li>
+       					If the type of the association property declared in the ObjectModel interface is reference and its name is equal
+       					to the concatenate result of the name of mapped property of entity class and "Reference", the annotation @Mapping can be omitted.  
+       				</li>
+       			</ol>
+       		</p>
+       		<div class="important-section">
+       			<ul>
+       				<li>
+       					It is <span class="important">NOT</span> a good idea to use @Mapping explicitly, I mightily suggest you to carefully arrange the property name of 
+       					both entity class and ObjectModel interface so that the annotation @Mapping can be omitted.   
+       				</li>
+       				<li>
+	       				Be different with annotation @Mapping, the annotation @IndexMapping for IndexedReference and the annotation @KeyMapping for KeyedRerference can 
+	       				<span class="important">NOT</span> be omitted <span class="important">absolutely</span>.
+       				</li>
+       			</ul>
+       		</div>
+        </fieldset>
+    </div>
+</body>
+</html>

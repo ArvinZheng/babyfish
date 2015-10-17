@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>BabyFish Introduction</title>
+        <style type="text/css">
+            body {
+                font-family: Arial;
+                margin: 0px;
+            }
+            body {
+                font-size: 14px;
+            }
+            div.title {
+                text-align: center;
+                font-weight: bold;
+                font-size: 40px;
+                padding: 10px;
+                background-color: rgb(0, 0, 100);
+                color: white;
+            }
+            div.content {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 18px;
+                color: rgb(127, 63, 63);
+                font-weight: bold;
+            }
+            h2 {
+                font-size: 16px;
+                color: rgb(127, 63, 63);
+                font-weight: bold;
+            }
+            span.important {
+                color: rgb(0, 127, 0);
+                font-weight: bold;
+            }
+            div.author {
+                font-size: 16px;
+                font-weight: bold;
+                text-align: right;
+            }
+            div.tab {
+                margin: 20px;
+                border-bottom: solid 1px rgb(0, 0, 127);
+                font-size: 18px;
+                font-weight: bold;
+            }
+            div.tab > a, div.tab > span {
+                display: inline-block;
+                border: solid 1px rgb(0, 0, 127);
+                border-bottom: none;
+                padding: 5px;
+                border-radius: 5px 5px 0px 0px;
+                cursor: default;
+                text-decoration: none;
+            }
+            div.tab > a:hover {
+                background-color: rgb(230, 230,255);
+            }
+            div.tab > a:visited {
+                color: black;
+            }
+            div.tab > span {
+                background-color: rgb(0, 0, 127) ! important;
+                color: white ! important;
+            }
+            p.by-the-way {
+                background-color: rgb(230, 230, 230);
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="title">
+            BabyFish Introduction
+        </div>
+        <div class="tab">
+            <span>Introduction</span>
+            <a href="./get-started.html">Get Started</a>
+            <a href="./demo/demo-guide.html">Demo Guide</a>
+            <a href="./to-dotnet-developers.html">To .NET Developers</a>
+        </div>
+        <div class="content">
+            <h1>What is BabyFish?</h1>
+            <ol>
+                <li>
+                    <h2>BabyFish is a Java framework for data model classes.</h2>
+                    <p>
+                        Generally speaking, program can be splitted to three layers: data accessing layer, 
+                        business logic layer and Presentation layer, but there are some data model classes that 
+                        do not belong to none of those layers, they are standalone and shared by every layer. 
+                        Often, people call it "Entity Classes" too.
+                    </p>
+                    <p>
+                        There are many technogies for those threee layers, but unfortunately, the data model
+                        classes that are shared by every layer are often neglected, people often think writing
+                        some C-structure style classes with some getter and setter is engouh. BabyFish tries to
+                        try to change this phenomenon, it is a framework of data model classes.
+                    </p>
+                    <p>
+                        In order to support powerful data model developping, babyfish supports two core functionalities
+                    </p>
+                    <ul>
+                        <li>BabyFish Collection Framework(X Collection Framework + MA Collection Framework).</li>
+                        <li><span class="important">ObjectModel</span>(ObjectModel4Java + ObjectMode4JPA).</li>
+                    </ul>
+                </li>
+                <li>
+                    <h2>BabyFish is an enhancement of JPA/Hibernate.</h2>
+                    <p>
+                        In order to adapt to the new data model technology, of course, every classic layer needs
+                        to be improved. For first version, it only improved the data accessing layer because the
+                        time is not enough.
+                    </p>
+                    <p>
+                        In the first version, JPA/Hibernate is enhanced, let's call it BabyFish-JPA/BabyFish-Hibernate.
+                        it also merges some
+                        advantages of 
+                        <a href="https://msdn.microsoft.com/en-us/data/ee712907.aspx" target="_blank">
+                            ADO.NET Entity Framework
+                        </a>
+                        into JPA/Hibernate.
+                    </p>
+                    <p>BabyFish-JPA/BabyFish-Hibernate supports these three core functionalities</p>
+                    <ul>
+                        <li>BabyFish JPA Criteria</li>
+                        <li>Query Path</li>
+                        <li>Distinct Limit Query</li>
+                    </ul>
+                </li>
+            </ol>
+            <p class="by-the-way">
+                By the way, "BabyFish" is a Chinglish word, it means "Andrias davidianus". 
+                Its voice sounds like the baby's cry, that why Chinese call it "BabyFish". ^&omega;^
+            </p>
+            <h1>Why the first version cost so long time?</h1>
+            <p>
+                I started to develop this framework since Aug, 2008, the first version is coming so late because
+            </p>
+            <ul>
+                <li>
+                    I use my spare time to develop this framework, 
+                    because I have to spend most of my time to engage in some boring works for salary to support myself.
+                </li>
+                <li>
+                    The developping had been suspended for more than 2 years because of private affairs.
+                </li>
+                <li>
+                    After I finished the main projects developping at the end of 2013, I need to create demo and deocument
+                    by english, that cost me so much time because my English is not good.
+                </li>
+            </ul>
+            <h1>license: LPGL3.0</h1>
+            BabyFish uses the LGPL-3.0 license so that it can be used in commercial projects, 
+            please see 
+            <a href="http://opensource.org/licenses/LGPL-3.0" target="_blank">
+                http://opensource.org/licenses/LGPL-3.0
+            </a>
+            to know more.
+            <h1>Thanks</h1>
+            Thank two great frameworks: 
+            <a href="http://asm.ow2.org/" target="_blank">ASM</a> and 
+            <a href="http://www.antlr.org/" target="_blank">ANTLR</a>
+            <div class="author">
+    	        <p>
+    		        Tao Chen(&#38472;&#28059;)
+    		        <a href="mailto:babyfish-ct@163.com">babyfish-ct@163.com</a>
+    	        </p>
+    	        <p>
+    		        2015-10-11, ChengDu, China
+    	        </p>
+            </div>
+        </div>
+    </body>
+</html>
