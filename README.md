@@ -27,19 +27,20 @@ BabyFish-JPA/BabyFish-Hibernate supports these three core functionalities
 > davidianus". Its voice sounds like the baby's cry, that why Chinese
 > call it "BabyFish". ^¦Ø^
 
-###3. Why the first version cost so long time?
+# Why the first version cost so long time(2008-2015)?
 
 I started to develop this framework since Aug, 2008, the first version is coming so late because
 
 * I use my spare time to develop this framework, because I have to spend most of my time to engage in some boring works for salary to support myself.
 * The developping had been suspended for more than 2 years because of private affairs.
 * After I finished the main projects developping at the end of 2013, I need to create demo and deocument by english, that cost me so much time because my English is not good.
-### 4.license: LPGL3.0
+
+# License: LPGL3.0
 
 BabyFish uses the LGPL-3.0 license so that it can be used in commercial projects, please see [http://opensource.org/licenses/LGPL-3.0](http://opensource.org/licenses/LGPL-3.0) to know more.
 
-### 5.Thanks
+# Thanks
 Thank two great frameworks: [ASM](http://asm.ow2.org/) and [ANTLR](http://www.antlr.org)
 
-### 6. About me
-Tao Chen(&#38472;&#28059;); [babyfish-ct@163.com](mailto:babyfish-ct@163.com)
+# About me
+Tao Chen(Chinese Name: &#38472;&#28059;); [babyfish-ct@163.com](mailto:babyfish-ct@163.com)
