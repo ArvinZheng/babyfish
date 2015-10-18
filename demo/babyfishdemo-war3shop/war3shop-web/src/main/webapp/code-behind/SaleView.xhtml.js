@@ -157,10 +157,6 @@ SaleView.prototype.init = function() {
         autoBind: false,
         dataSource: dataSource,
         template: function(e) {
-            // The left parenthesis after "return" tells the JS parser it is not a empty return statement,
-            // In JavaScript, both ";" and "\n" can be used to specify the end of a statement because the 
-            // language creator thinks the design can make the "idiots" who often forget the ";" can also 
-            // use this language easily, but, actually, it's a design solution of idiot.
             return (
                     "<div class='k-sale-list-view-item' product-id='" + 
                     e.product.id + 
@@ -229,10 +225,6 @@ SaleView.prototype.init = function() {
     
     $(this.orderedColumnList).kendoSortable({
         hint:function(element) {
-            // The left parenthesis after "return" tells the JS parser it is not a empty return statement,
-            // In JavaScript, both ";" and "\n" can be used to specify the end of a statement because the 
-            // language creator thinks the design can make the "idiots" who often forget the ";" can also 
-            // use this language easily, but, actually, it's a design solution of idiot.
             return ( 
                 element
                 .clone(false)
@@ -242,10 +234,6 @@ SaleView.prototype.init = function() {
             );
         },
         placeholder:function(element) {
-            // The left parenthesis after "return" tells the JS parser it is not a empty return statement,
-            // In JavaScript, both ";" and "\n" can be used to specify the end of a statement because the 
-            // language creator thinks the design can make the "idiots" who often forget the ";" can also 
-            // use this language easily, but, actually, it's a design solution of idiot.
             return (
                 element
                 .clone()

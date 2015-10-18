@@ -145,10 +145,6 @@ ElementDependenciesTbody.prototype.isEmpty = function() {
             return false;
         }
     }
-    // The left parenthesis after "return" tells the JS parser it is not a empty return statement,
-    // In JavaScript, both ";" and "\n" can be used to specify the end of a statement because the 
-    // language creator thinks the design can make the "idiots" who often forget the ";" can also 
-    // use this language easily, but, actually, it's a design solution of idiot.
     return (
         this
         ._includedElementsDropDown

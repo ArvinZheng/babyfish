@@ -15,7 +15,10 @@ In order to support powerful data model developping, babyfish supports two core 
 
 In order to adapt to the new data model technology, of course, every classic layer needs to be improved. For first version, it only improved the data accessing layer because the time is not enough.
 
-In the first version, JPA/Hibernate is enhanced, let's call it BabyFish-JPA/BabyFish-Hibernate. it also merges some advantages of ADO.NET Entity Framework into JPA/Hibernate.
+In the first version, JPA/Hibernate is enhanced(
+BabyFish-1.0.0 Alpha is used to enhance JPA2.1/Hibernate-4.3.6.Final), 
+let's call it BabyFish-JPA/BabyFish-Hibernate. 
+it also merges some advantages of ADO.NET Entity Framework into JPA/Hibernate.
 
 BabyFish-JPA/BabyFish-Hibernate supports these three core functionalities
 

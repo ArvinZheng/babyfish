@@ -59,10 +59,6 @@ CustomerDropDown.prototype.init = function(param) {
         placeholder: param.placeholder,
         mode: param.mode,
         tagTemplate: function(customer) {
-            // The left parenthesis after "return" tells the JS parser it is not a empty return statement,
-            // In JavaScript, both ";" and "\n" can be used to specify the end of a statement because the 
-            // language creator thinks the design can make the "idiots" who often forget the ";" can also 
-            // use this language easily, but, actually, it's a design solution of idiot.
             return (
                 $("<span></span>")
                 .addClass("tag-with-tooltip")
@@ -76,10 +72,6 @@ CustomerDropDown.prototype.init = function(param) {
             );
         },
         template: function() {
-            // The left parenthesis after "return" tells the JS parser it is not a empty return statement,
-            // In JavaScript, both ";" and "\n" can be used to specify the end of a statement because the 
-            // language creator thinks the design can make the "idiots" who often forget the ";" can also 
-            // use this language easily, but, actually, it's a design solution of idiot.
             return (
                 $("<div></div>")
                 .css("padding", "10px")

@@ -17,10 +17,6 @@ AdministratorGrid.prototype.init = function(param) {
     var detailTemplate = null;
     if (param.showDetail) {
         detailTemplate = function(administrator) {
-            // The left parenthesis after "return" tells the JS parser it is not a empty return statement,
-            // In JavaScript, both ";" and "\n" can be used to specify the end of a statement because the 
-            // language creator thinks the design can make the "idiots" who often forget the ";" can also 
-            // use this language easily, but, actually, it's a design solution of idiot.
             return (
                 "<div>" +
                 "<div style='float:left'>" +
@@ -32,10 +28,6 @@ AdministratorGrid.prototype.init = function(param) {
                 "<fieldset class='k-block'>" +
                 "<legend>Roles</legend>" +
                 administrator.roles.select(function(e) {
-                    // The left parenthesis after "return" tells the JS parser it is not a empty return statement,
-                    // In JavaScript, both ";" and "\n" can be used to specify the end of a statement because the 
-                    // language creator thinks the design can make the "idiots" who often forget the ";" can also 
-                    // use this language easily, but, actually, it's a design solution of idiot.
                     return (
                         "<div>" +
                         "<img src='images/role.png'/>" +
