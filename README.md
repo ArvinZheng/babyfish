@@ -30,6 +30,10 @@ BabyFish-JPA/BabyFish-Hibernate supports these three core functionalities
 > davidianus". Its voice sounds like the baby's cry, that why Chinese
 > call it "BabyFish". ^¦Ø^
 
+# How to learn and use it
+* view "get-started.html" to run it.
+* view "demo/demo-guide.html" to learn it.
+
 # Why did the first version cost so long time(2008-2015)?
 
 I started to develop this framework since Aug, 2008, the first version is coming so late because
