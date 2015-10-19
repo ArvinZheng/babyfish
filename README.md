@@ -50,4 +50,4 @@ BabyFish uses the LGPL-3.0 license so that it can be used in commercial projects
 Thank two great frameworks: [ASM](http://asm.ow2.org/) and [ANTLR](http://www.antlr.org)
 
 # About me
-Tao Chen(Chinese Name: &#38472;&#28059;); [babyfish-ct@163.com](mailto:babyfish-ct@163.com)
+Tao Chen(Chinese Name: &#38472;&#28059;); [30338148@qq.com](mailto:30338148@qq.com)
