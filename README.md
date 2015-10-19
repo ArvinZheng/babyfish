@@ -2,8 +2,8 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>BabyFish Introduction</title>
         <style type="text/css">
+	        <!--
             body {
                 font-family: Arial;
                 margin: 0px;
@@ -74,18 +74,10 @@
 				font-weight: bold;
 				color: rgb(0, 0, 127);
 			}
+			-->
         </style>
     </head>
     <body>
-        <div class="title">
-            BabyFish Introduction
-        </div>
-        <div class="tab">
-            <span>Introduction</span>
-            <a href="./get-started.html">Get Started</a>
-            <a href="./demo/demo-guide.html">Demo Guide</a>
-            <a href="./to-dotnet-developers.html">To .NET Developers</a>
-        </div>
         <div class="content">
             <h1>What is BabyFish?</h1>
             <ol>
