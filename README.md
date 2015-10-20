@@ -25,7 +25,7 @@ BabyFish-JPA/BabyFish-Hibernate supports these three core functionalities
 
 > By the way, "BabyFish" is a Chinglish word, it means "Andrias davidianus". Its voice sounds like the baby's cry, that why Chinese call it "BabyFish". ^ω^
 
-# Functionality tree
+# Functionalities
 #### A. Java Part
 * Event combiner: support .NET style event notification mechanism.
 * Typed-18N: support strong type "18N" which can report the I18N errors at compilation time.
