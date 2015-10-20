@@ -19,10 +19,11 @@ In the first version, JPA/Hibernate is enhanced( BabyFish-1.0.0 Alpha is used to
 
 BabyFish-JPA/BabyFish-Hibernate supports these three core functionalities
 
-BabyFish JPA Criteria
-Query Path
-Distinct Limit Query
-By the way, "BabyFish" is a Chinglish word, it means "Andrias davidianus". Its voice sounds like the baby's cry, that why Chinese call it "BabyFish". ^ω^
+* BabyFish JPA Criteria
+* Query Path
+* Distinct Limit Query
+
+> By the way, "BabyFish" is a Chinglish word, it means "Andrias davidianus". Its voice sounds like the baby's cry, that why Chinese call it "BabyFish". ^ω^
 
 # Functionality tree
 #### A. Java Part
@@ -58,6 +59,6 @@ please see [http://opensource.org/licenses/LGPL-3.0](http://opensource.org/licen
 Thank two great frameworks: [ASM](http://asm.ow2.org) and [ANTLR](http://www.antlr.org)
 
 # About me
-Tao Chen(陈涛), [30338148@qq.com](mailto:30338148@qq.com)
+Tao Chen(陈涛), [babyfish-ct@163.com](mailto:babyfish-ct@163.com)
 
 2015-10-11, ChengDu, China
