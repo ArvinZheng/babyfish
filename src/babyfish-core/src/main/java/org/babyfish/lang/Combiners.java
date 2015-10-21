@@ -69,9 +69,9 @@ public class Combiners {
      * @exception NullArgumentException The parameter "interfaceType" is null
      * @exception IllegalArgumentException
      * <ul>
-     *    <li/> The parameter "interfaceType" is not an interface
-     *    <li/> The parameter "interfaceType" is an interface that extends {@link CanNotBeCombined}
-     *    <li/> The parameter "interfaceType" is an interface that extends {@link HasBeenCombined}
+     *    <li> The parameter "interfaceType" is not an interface</li>
+     *    <li> The parameter "interfaceType" is an interface that extends {@link CanNotBeCombined}</li>
+     *    <li> The parameter "interfaceType" is an interface that extends {@link HasBeenCombined}</li>
      * </ul>
      * @exception IllegalProgramException The parameter 
      * "interfaceType" is an interface that extends from two interfaces, one uses the annotation
@@ -120,9 +120,9 @@ public class Combiners {
      * @exception NullArgumentException The parameter "interfaceType" is null
      * @exception IllegalArgumentException
      * <ul>
-     *    <li/> The parameter "interfaceType" is not an interface
-     *    <li/> The parameter "interfaceType" is an interface that extends {@link CanNotBeCombined}
-     *    <li/> The parameter "interfaceType" is an interface that extends {@link HasBeenCombined}
+     *    <li> The parameter "interfaceType" is not an interface</li>
+     *    <li> The parameter "interfaceType" is an interface that extends {@link CanNotBeCombined}</li>
+     *    <li> The parameter "interfaceType" is an interface that extends {@link HasBeenCombined}</li>
      * </ul>
      * @exception IllegalProgramException This exception will be thrown only when the 
      * parameter "chainInvocationExceptionHandleMode" is null, that means the parameter 

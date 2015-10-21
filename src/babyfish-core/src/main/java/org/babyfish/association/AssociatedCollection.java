@@ -102,11 +102,11 @@ implements AssociatedEndpoint<O, E>, Serializable {
      * @exception {@link #getOppositeEndpointType()} returns invalid value.
      * the valid return value must be one of these values
      * <ul>
-     *    <li/>{@link AssociatedEndpointType#REFERENCE}
-     *  <li/>{@link AssociatedEndpointType#COLLECTION}
-     *  <li/>{@link AssociatedEndpointType#SET}
-     *  <li/>{@link AssociatedEndpointType#LIST}
-     *  <li/>{@link AssociatedEndpointType#MAP}
+     *  <li>{@link AssociatedEndpointType#REFERENCE}</li>
+     *  <li>{@link AssociatedEndpointType#COLLECTION}</li>
+     *  <li>{@link AssociatedEndpointType#SET}</li>
+     *  <li>{@link AssociatedEndpointType#LIST}</li>
+     *  <li>{@link AssociatedEndpointType#MAP}</li>
      * </ul>
      */
     @Override
@@ -236,9 +236,11 @@ implements AssociatedEndpoint<O, E>, Serializable {
         /**
          * @exception IllegalArgumentException 
          * <ul>
-         *    <li/> base is neither instance of {@link MASet} nor instance of {@link MAList}
-         *    <li/> base is XSet and its {@link XSet#replacementRule()} 
+         *    <li> base is neither instance of {@link MASet} nor instance of {@link MAList}</li>
+         *    <li> 
+         *      base is XSet and its {@link XSet#replacementRule()} 
          *      does not return {@link ReplacementRule#NEW_REFERENCE_WIN}
+         *    </li>
          * </ul>
          */
         @Override

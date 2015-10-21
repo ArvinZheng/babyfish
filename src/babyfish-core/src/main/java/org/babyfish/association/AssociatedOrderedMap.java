@@ -100,10 +100,10 @@ implements AssociatedEndpoint<O, V>, Serializable {
      * @exception {@link #getOppositeEndpointType()} returns invalid value.
      * the valid return value must be one of these values
      * <ul>
-     *    <li>{@link AssociatedEndpointType#REFERENCE}
-     *  <li/>{@link AssociatedEndpointType#KEYED_REFERENCE}
-     *  <li/>{@link AssociatedEndpointType#COLLECTION}
-     *  <li/>{@link AssociatedEndpointType#SET}
+     *  <li>{@link AssociatedEndpointType#REFERENCE}</li>
+     *  <li>{@link AssociatedEndpointType#KEYED_REFERENCE}</li>
+     *  <li>{@link AssociatedEndpointType#COLLECTION}</li>
+     *  <li>{@link AssociatedEndpointType#SET}</li>
      * </ul>
      */
     @Override

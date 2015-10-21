@@ -96,9 +96,9 @@ implements AssociatedEndpoint<O, E>, Serializable {
      * the valid return value must be one of these values
      * <ul>
      *    <li>{@link AssociatedEndpointType#REFERENCE}
-     *  <li/>{@link AssociatedEndpointType#INDEXED_REFERENCE}
-     *  <li/>{@link AssociatedEndpointType#COLLECTION}
-     *  <li/>{@link AssociatedEndpointType#SET}
+     *  <li>{@link AssociatedEndpointType#INDEXED_REFERENCE}</li>
+     *  <li>{@link AssociatedEndpointType#COLLECTION}</li>
+     *  <li>{@link AssociatedEndpointType#SET}</li>
      * </ul>
      */
     @Override

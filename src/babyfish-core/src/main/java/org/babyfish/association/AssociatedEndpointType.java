@@ -148,13 +148,13 @@ public enum AssociatedEndpointType {
      * @exception IllegalArgumentException
      * This parameter is not instance of any one of these types:
      * <ul>
-     *    <li/>{@link Map}
-     *    <li/>{@link Set}
-     *    <li/>{@link List}
-     *    <li/>{@link Collection}
-     *    <li/>{@link KeyedReference}
-     *    <li/>{@link IndexedReference}
-     *    <li/>{@link KeyedReference}
+     *    <li>{@link Map}</li>
+     *    <li>{@link Set}</li>
+     *    <li>{@link List}</li>
+     *    <li>{@link Collection}</li>
+     *    <li>{@link KeyedReference}</li>
+     *    <li>{@link IndexedReference}</li>
+     *    <li>{@link KeyedReference}</li>
      * </ul>
      */
     public static AssociatedEndpointType of(Class<?> associatedEndpointJavaType) {
