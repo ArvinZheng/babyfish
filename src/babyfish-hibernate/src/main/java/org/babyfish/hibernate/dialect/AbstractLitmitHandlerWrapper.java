@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import org.hibernate.dialect.pagination.LimitHandler;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 abstract class AbstractLitmitHandlerWrapper implements LimitHandler {
 

@@ -28,7 +28,7 @@ import org.babyfish.view.View;
 import org.babyfish.view.ViewInfo;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractLazyXNavigableSet<E> extends AbstractLazyXSet<E> implements XNavigableSet<E> {
     

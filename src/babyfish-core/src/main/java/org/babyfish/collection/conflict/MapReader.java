@@ -17,7 +17,7 @@
 package org.babyfish.collection.conflict;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MapReader<K, V> {
 

@@ -28,7 +28,7 @@ import org.babyfish.collection.spi.base.RedBlackTreeEntries;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class TreeMap<K, V> extends AbstractXNavigableMap<K, V> implements Serializable {
     

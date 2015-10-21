@@ -21,7 +21,7 @@ import org.babyfish.collection.event.MapElementListener;
 import org.babyfish.lang.Arguments;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractMapElementEventDispatcher<K, V> implements MapElementListener<K, V> {
 

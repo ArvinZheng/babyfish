@@ -20,7 +20,7 @@ import org.junit.Test;
  * This test case does NOT show the DistinctLimitQuery, 
  * please see DistinctLimitQueryTest to know more.
  * 
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class AllRowsTest extends AbstractDAOTest {
     

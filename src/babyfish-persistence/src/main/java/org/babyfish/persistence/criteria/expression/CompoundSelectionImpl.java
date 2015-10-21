@@ -31,7 +31,7 @@ import org.babyfish.persistence.criteria.spi.AbstractSelection;
 import org.babyfish.persistence.criteria.spi.Visitor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class CompoundSelectionImpl<X> extends AbstractSelection<X> implements CompoundSelection<X> {
 

@@ -39,7 +39,7 @@ import org.babyfish.persistence.criteria.XRoot;
 import org.babyfish.persistence.criteria.XSubquery;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class CriteriaQueryImpl<T> extends AbstractNode implements XCriteriaQuery<T> {
     

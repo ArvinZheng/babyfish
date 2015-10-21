@@ -2,7 +2,7 @@ package org.babyfishdemo.foundation.equality.clazz;
 
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Point2DReadOnlyProxy extends Point2D {
 

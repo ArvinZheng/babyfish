@@ -36,7 +36,7 @@ import org.babyfish.org.objectweb.asm.Opcodes;
 import org.babyfish.util.Joins;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Modifications extends ImmutableObjects {
     

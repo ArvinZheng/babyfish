@@ -28,7 +28,7 @@ import org.babyfish.persistence.criteria.XJoin;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractJoin<Z, X> extends AbstractFrom<Z, X> implements XJoin<Z, X> {
 

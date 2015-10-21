@@ -62,7 +62,7 @@ import org.babyfish.persistence.criteria.expression.TrimExpression;
 import org.babyfish.persistence.criteria.expression.UnaryArithmeticExpression;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractVisitor implements Visitor {
 

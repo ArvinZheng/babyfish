@@ -59,7 +59,7 @@ import org.babyfish.org.objectweb.asm.Opcodes;
 //so the it used java.util..., not org.babyfish.collection...
 //It can not use XMethodVisitor, Arguments too
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Resources {
     

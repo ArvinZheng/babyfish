@@ -38,7 +38,7 @@ import org.junit.Test;
  * "org.babyfishdemo.om4java.dom.Attribute" is changed will be triggered. 
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class UnstableMapKeyTest {
 

@@ -29,7 +29,7 @@ import org.babyfish.lang.Equality;
 import org.babyfish.lang.OverrideEquality;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class MemberInfo implements AnnotatedElement {
     

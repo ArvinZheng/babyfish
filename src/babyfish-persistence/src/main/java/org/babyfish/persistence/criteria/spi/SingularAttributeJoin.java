@@ -25,7 +25,7 @@ import org.babyfish.persistence.criteria.JoinMode;
 import org.babyfish.persistence.criteria.XJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class SingularAttributeJoin<Z, X> extends AbstractJoin<Z, X> implements XJoin<Z, X> {
 

@@ -29,7 +29,7 @@ import org.babyfish.model.ObjectModelFactory;
 import org.hibernate.proxy.HibernateProxy;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class HibernateObjectModelProxyWritingReplacment implements Serializable {
 

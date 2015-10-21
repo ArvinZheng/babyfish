@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface Property extends Serializable {
     

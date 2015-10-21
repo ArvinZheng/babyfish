@@ -26,7 +26,7 @@ import org.babyfish.persistence.criteria.XCriteriaBuilder;
 import org.babyfish.persistence.criteria.expression.AsExpression;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractExpression<T> extends AbstractSelection<T> implements Expression<T> {
 

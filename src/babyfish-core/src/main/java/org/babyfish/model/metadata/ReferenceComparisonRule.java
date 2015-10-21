@@ -27,7 +27,7 @@ import org.babyfish.association.AssociatedEndpointType;
 import org.babyfish.model.metadata.spi.AssociationOnly;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

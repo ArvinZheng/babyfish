@@ -135,9 +135,6 @@ public final class Handle {
         return desc;
     }
 
-/**
- * @author Tao Chen(&#38472;&#28059;)
- */
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {

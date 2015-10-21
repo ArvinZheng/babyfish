@@ -41,7 +41,7 @@ import org.babyfish.persistence.criteria.ext.SelfGetterFromRestrictedTarget;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class DependencyPredicateBuilderImpl<S, T> implements DependencyPredicateBuilder<S, T> {
     

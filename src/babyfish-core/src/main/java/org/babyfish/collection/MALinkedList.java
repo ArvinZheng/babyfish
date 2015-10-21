@@ -28,7 +28,7 @@ import org.babyfish.collection.spi.base.LinkedElements;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MALinkedList<E> extends AbstractMAList<E> implements Serializable {
 

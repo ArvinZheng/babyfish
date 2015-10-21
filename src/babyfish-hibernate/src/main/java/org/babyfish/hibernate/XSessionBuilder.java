@@ -23,7 +23,7 @@ import org.hibernate.Interceptor;
 import org.hibernate.SessionBuilder;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XSessionBuilder extends SessionBuilder {
 

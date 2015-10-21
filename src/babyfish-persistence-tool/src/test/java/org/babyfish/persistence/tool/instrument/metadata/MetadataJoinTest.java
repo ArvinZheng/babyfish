@@ -25,7 +25,7 @@ import org.babyfish.persistence.tool.instrument.metadata.MetadataJoin;
 import org.junit.Test;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MetadataJoinTest {
     

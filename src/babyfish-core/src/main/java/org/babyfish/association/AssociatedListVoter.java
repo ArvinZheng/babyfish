@@ -22,7 +22,7 @@ import org.babyfish.collection.conflict.ListConflictVoterArgs;
 import org.babyfish.collection.conflict.ListReader;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 final class AssociatedListConflictVoter<E> implements ListConflictVoter<E> {
     

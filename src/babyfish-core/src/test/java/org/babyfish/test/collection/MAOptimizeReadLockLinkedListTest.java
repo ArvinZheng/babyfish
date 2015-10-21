@@ -21,7 +21,7 @@ import org.babyfish.collection.MAList;
 import org.babyfish.collection.ReaderOptimizationType;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAOptimizeReadLockLinkedListTest extends MAListTest {
 

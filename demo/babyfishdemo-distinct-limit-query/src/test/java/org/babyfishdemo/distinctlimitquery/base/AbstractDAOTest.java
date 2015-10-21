@@ -9,7 +9,7 @@ import org.babyfishdemo.distinctlimitquery.entities.Department;
 import org.babyfishdemo.distinctlimitquery.entities.Department__;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class AbstractDAOTest extends AbstractTest {
 

@@ -46,7 +46,7 @@ import org.hibernate.jpa.boot.internal.SettingsImpl;
 import org.hibernate.jpa.internal.EntityManagerFactoryImpl;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class XEntityManagerFactoryImpl extends EntityManagerFactoryImpl implements HibernateXEntityManagerFactory {
 

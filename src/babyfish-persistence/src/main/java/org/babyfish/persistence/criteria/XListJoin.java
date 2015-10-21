@@ -23,7 +23,7 @@ import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Predicate;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XListJoin<Z, E> extends ListJoin<Z, E>, XPluralJoin<Z, List<E>, E> {
 

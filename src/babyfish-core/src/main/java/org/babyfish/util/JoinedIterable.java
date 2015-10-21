@@ -22,7 +22,7 @@ import java.util.Iterator;
 import org.babyfish.collection.MACollections;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class JoinedIterable<E> implements Iterable<E> {
 

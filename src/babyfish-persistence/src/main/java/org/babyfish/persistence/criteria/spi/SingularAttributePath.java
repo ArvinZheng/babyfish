@@ -26,7 +26,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.babyfish.lang.Arguments;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class SingularAttributePath<X> extends AbstractPath<X> {
 

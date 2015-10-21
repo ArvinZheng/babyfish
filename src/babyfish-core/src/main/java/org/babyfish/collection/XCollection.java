@@ -25,7 +25,7 @@ import org.babyfish.view.View;
 import org.babyfish.view.ViewInfo;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XCollection<E> extends Collection<E>, LockDescriptor {
     

@@ -37,7 +37,7 @@ import org.babyfish.model.spi.ObjectModelScalarLoader;
 import org.junit.Test;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class DeferralTest {
     

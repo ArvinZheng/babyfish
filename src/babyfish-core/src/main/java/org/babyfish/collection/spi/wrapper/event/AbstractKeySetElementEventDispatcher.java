@@ -20,7 +20,7 @@ import org.babyfish.collection.event.ElementEvent;
 import org.babyfish.collection.event.KeySetElementEvent;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractKeySetElementEventDispatcher<K, V> extends AbstractElementEventDispatcher<K> {
 

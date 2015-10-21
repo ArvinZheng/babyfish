@@ -5,7 +5,7 @@ import javax.xml.XMLConstants;
 import org.xml.sax.Attributes;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Column {
 	

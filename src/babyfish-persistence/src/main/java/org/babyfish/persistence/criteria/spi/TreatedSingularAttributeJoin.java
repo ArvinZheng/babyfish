@@ -22,7 +22,7 @@ import org.babyfish.lang.Arguments;
 import org.babyfish.persistence.criteria.XJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class TreatedSingularAttributeJoin<Z, X> extends SingularAttributeJoin<Z, X> {
     

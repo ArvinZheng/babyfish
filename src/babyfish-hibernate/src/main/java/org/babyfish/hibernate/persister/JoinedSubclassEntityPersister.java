@@ -30,7 +30,7 @@ import org.hibernate.metamodel.binding.EntityBinding;
 import org.hibernate.persister.entity.EntityPersister;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class JoinedSubclassEntityPersister extends org.hibernate.persister.entity.JoinedSubclassEntityPersister {
 

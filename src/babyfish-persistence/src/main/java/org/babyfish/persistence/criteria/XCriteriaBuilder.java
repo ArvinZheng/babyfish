@@ -35,7 +35,7 @@ import org.babyfish.persistence.XEntityManagerFactory;
 import org.babyfish.persistence.criteria.ext.DependencyPredicateBuilder;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XCriteriaBuilder extends CriteriaBuilder {
     

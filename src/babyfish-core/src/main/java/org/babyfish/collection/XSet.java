@@ -19,7 +19,7 @@ package org.babyfish.collection;
 import java.util.Set;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XSet<E> extends Set<E>, XCollection<E> {
     

@@ -26,7 +26,7 @@ import org.babyfish.test.model.embedded.entities.SalesSpecialist;
 import org.junit.Test;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class SalesSpecialistTest {
     

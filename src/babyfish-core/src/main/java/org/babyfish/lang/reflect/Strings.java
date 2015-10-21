@@ -19,7 +19,7 @@ package org.babyfish.lang.reflect;
 import org.babyfish.lang.Nulls;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Strings {
 

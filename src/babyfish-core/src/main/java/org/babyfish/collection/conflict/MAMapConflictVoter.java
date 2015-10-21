@@ -19,7 +19,7 @@ package org.babyfish.collection.conflict;
 import org.babyfish.collection.conflict.spi.MapSource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class MAMapConflictVoter<K, V> implements MapConflictVoter<K, V> {
 

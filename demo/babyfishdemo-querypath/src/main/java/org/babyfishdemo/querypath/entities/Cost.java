@@ -11,7 +11,7 @@ import org.babyfish.persistence.instrument.JPAObjectModelInstrument;
  * But in ObjectModel4JPA, the hashCode and equals
  * must NOT be supported.
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @JPAObjectModelInstrument(declaredPropertiesOrder = "mineral, gas")
 @Embeddable

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import org.babyfish.lang.Arguments;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class SqlAwareDriver implements Driver {
     

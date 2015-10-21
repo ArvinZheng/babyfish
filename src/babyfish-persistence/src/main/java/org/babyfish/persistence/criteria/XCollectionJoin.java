@@ -23,7 +23,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XCollectionJoin<Z, E> extends CollectionJoin<Z, E>, XPluralJoin<Z, Collection<E>, E> {
 

@@ -23,7 +23,7 @@ import org.babyfish.modificationaware.event.spi.InAllChainAttributeContext;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class EventAttributeContext extends AttributeContext {
     

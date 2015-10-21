@@ -21,7 +21,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class FieldInfo extends MemberInfo {
     

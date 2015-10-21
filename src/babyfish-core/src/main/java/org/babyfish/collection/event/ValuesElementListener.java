@@ -22,7 +22,7 @@ import org.babyfish.lang.ChainInvocationExceptionHandleMode;
 import org.babyfish.lang.DefaultChainInvocationExceptionHandleMode;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @DefaultChainInvocationExceptionHandleMode(ChainInvocationExceptionHandleMode.CONTINUE)
 public interface ValuesElementListener<K, V> extends EventListener {

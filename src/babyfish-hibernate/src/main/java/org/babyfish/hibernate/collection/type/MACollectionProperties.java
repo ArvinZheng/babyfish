@@ -24,7 +24,7 @@ import org.babyfish.lang.Arguments;
 import org.babyfish.persistence.model.metadata.JPAAssociationProperty;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MACollectionProperties extends Properties {
 

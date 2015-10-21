@@ -21,7 +21,7 @@ import javax.persistence.metamodel.ListAttribute;
 import org.babyfish.persistence.criteria.XListJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class TreatedListAttributeJoin<Z, E> extends ListAttributeJoin<Z, E> {
 

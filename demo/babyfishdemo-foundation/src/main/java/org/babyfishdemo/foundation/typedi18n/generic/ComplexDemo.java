@@ -5,7 +5,7 @@ import org.babyfish.util.Resources;
 /**
  * Shows how to use "org.babyfish.util.Resources"
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ComplexDemo {
     

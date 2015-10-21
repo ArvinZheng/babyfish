@@ -27,7 +27,7 @@ import org.babyfish.reference.event.ValueEvent;
 import org.babyfish.reference.event.modification.IndexedReferenceModifications;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAIndexedReferenceImpl<T> extends MAReferenceImpl<T> implements MAIndexedReference<T> {
     

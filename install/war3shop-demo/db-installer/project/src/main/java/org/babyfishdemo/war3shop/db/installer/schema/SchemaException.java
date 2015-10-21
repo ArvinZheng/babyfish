@@ -1,7 +1,7 @@
 package org.babyfishdemo.war3shop.db.installer.schema;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class SchemaException extends RuntimeException {
 

@@ -28,7 +28,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.babyfish.collection.XOrderedSet;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @SuppressWarnings("hiding")
 public interface XFrom<Z, X> extends From<Z, X>, XFetchParent<Z, X> {

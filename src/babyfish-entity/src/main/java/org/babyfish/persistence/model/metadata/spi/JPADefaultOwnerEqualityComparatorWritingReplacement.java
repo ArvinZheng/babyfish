@@ -21,7 +21,7 @@ import org.babyfish.model.metadata.spi.OwnerEqualityComparatorWritingReplacement
 import org.babyfish.persistence.model.metadata.JPAMetadatas;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class JPADefaultOwnerEqualityComparatorWritingReplacement extends OwnerEqualityComparatorWritingReplacement {
 

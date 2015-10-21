@@ -103,7 +103,7 @@ import org.slf4j.LoggerFactory;
 import antlr.collections.AST;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class XQueryTranslatorImpl 
 extends QueryTranslatorImpl 

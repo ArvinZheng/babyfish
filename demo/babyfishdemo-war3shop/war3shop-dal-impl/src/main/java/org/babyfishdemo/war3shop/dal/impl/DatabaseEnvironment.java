@@ -5,7 +5,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.orm.jpa.vendor.Database;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class DatabaseEnvironment {
 

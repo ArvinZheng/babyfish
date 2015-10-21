@@ -3,7 +3,7 @@ package org.babyfishdemo.distinctlimitquery.base;
 import org.babyfish.junit.Filter;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class OracleFilter implements Filter {
 

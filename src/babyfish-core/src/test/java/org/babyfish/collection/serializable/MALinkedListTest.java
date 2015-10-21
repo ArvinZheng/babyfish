@@ -20,7 +20,7 @@ import org.babyfish.collection.MALinkedList;
 import org.babyfish.collection.XList;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MALinkedListTest extends AbstractXListTest {
 

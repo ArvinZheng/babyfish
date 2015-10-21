@@ -7,7 +7,7 @@ import org.babyfishdemo.querypath.entities.Employee;
 import org.babyfishdemo.querypath.entities.Employee__;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class EmployeeRepository {
 

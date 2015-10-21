@@ -19,7 +19,7 @@ package org.babyfish.test.collection.equalitycomparator;
 import org.babyfish.collection.XCollection;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface PrepareXCollectionHandler<E> {
     

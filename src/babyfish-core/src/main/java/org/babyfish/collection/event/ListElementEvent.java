@@ -28,7 +28,7 @@ import org.babyfish.modificationaware.event.EventProperty;
 import org.babyfish.modificationaware.event.PropertyVersion;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @EventDeclaration(properties = @EventProperty(name = "index"))
 public abstract class ListElementEvent<E> extends ElementEvent<E> {

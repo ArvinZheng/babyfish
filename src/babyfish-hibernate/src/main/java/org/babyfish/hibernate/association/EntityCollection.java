@@ -48,7 +48,7 @@ import org.hibernate.type.Type;
 
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class EntityCollection<O, E> 
 extends AssociatedCollection<O, E>

@@ -31,7 +31,7 @@ import org.babyfish.model.metadata.ObjectModelDeclaration;
 import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Entity
 @Table(name = "CONTAINER")

@@ -21,7 +21,7 @@ import javax.persistence.metamodel.MapAttribute;
 import org.babyfish.persistence.criteria.XMapJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class TreatedMapAttributeJoin<Z, K, V> extends MapAttributeJoin<Z, K, V> {
 

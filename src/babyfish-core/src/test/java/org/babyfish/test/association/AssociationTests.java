@@ -34,7 +34,7 @@ import org.babyfish.collection.XOrderedMap;
 import org.babyfish.collection.XOrderedSet;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class AssociationTests {
     

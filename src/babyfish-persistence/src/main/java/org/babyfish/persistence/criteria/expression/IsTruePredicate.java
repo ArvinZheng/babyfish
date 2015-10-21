@@ -25,7 +25,7 @@ import org.babyfish.persistence.criteria.spi.AbstractSimplePredicate;
 import org.babyfish.persistence.criteria.spi.Visitor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class IsTruePredicate extends AbstractSimplePredicate {
     

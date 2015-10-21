@@ -3,7 +3,7 @@ package org.babyfishdemo.distinctlimitquery.base;
 import java.util.List;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class LimitedResult<T> {
 

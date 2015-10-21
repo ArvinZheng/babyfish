@@ -11,7 +11,7 @@ import org.babyfishdemo.war3shop.db.installer.schema.Table;
 import org.babyfishdemo.war3shop.db.installer.schema.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class OracleExecutor extends Executor {
 	

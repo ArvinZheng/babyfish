@@ -28,7 +28,7 @@ import org.babyfish.persistence.criteria.XListJoin;
 import org.babyfish.persistence.criteria.expression.ListIndexExpression;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ListAttributeJoin<Z, E> 
 extends AbstractPluralAttributeJoin<Z, List<E>,E>

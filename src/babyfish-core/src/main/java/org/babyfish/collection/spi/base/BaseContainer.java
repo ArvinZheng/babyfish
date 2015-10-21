@@ -19,7 +19,7 @@ package org.babyfish.collection.spi.base;
 import org.babyfish.lang.LockDescriptor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface BaseContainer extends LockDescriptor {
     

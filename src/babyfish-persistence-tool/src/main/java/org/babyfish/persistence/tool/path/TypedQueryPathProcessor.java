@@ -85,7 +85,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @SupportedAnnotationTypes({ "javax.persistence.Entity", "javax.persistence.MappedSuperclass", "javax.persistence.Embeddable" })
 @SupportedSourceVersion(SourceVersion.RELEASE_7)

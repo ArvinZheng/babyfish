@@ -32,7 +32,7 @@ import org.babyfish.persistence.path.spi.EntityManagerFactoryConfigurable;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class InPredicate<T> extends AbstractSimplePredicate implements In<T> {
 

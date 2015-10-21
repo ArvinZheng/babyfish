@@ -19,7 +19,7 @@ package org.babyfish.reference;
 import org.babyfish.reference.event.IndexedValueModificationAware;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MAIndexedReference<T> 
 extends MAReference<T>, IndexedReference<T>, IndexedValueModificationAware<T> {

@@ -4,7 +4,7 @@ import org.babyfishdemo.om4jpa.disablity.entities.Book;
 import org.babyfishdemo.om4jpa.disablity.entities.Book__;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class BookRepository {
     

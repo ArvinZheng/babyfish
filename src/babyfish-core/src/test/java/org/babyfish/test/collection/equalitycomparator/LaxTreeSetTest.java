@@ -21,7 +21,7 @@ import org.babyfish.collection.TreeSet;
 import org.babyfish.collection.XSet;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class LaxTreeSetTest extends AbstractLaxXSetTest {
 

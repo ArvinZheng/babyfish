@@ -42,7 +42,7 @@ import org.hibernate.pretty.MessageHelper;
 import org.hibernate.type.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractBasePersistence<E> implements PersistentCollection<E> {
 

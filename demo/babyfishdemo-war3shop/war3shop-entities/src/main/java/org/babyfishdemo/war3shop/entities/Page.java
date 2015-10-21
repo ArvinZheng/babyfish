@@ -3,7 +3,7 @@ package org.babyfishdemo.war3shop.entities;
 import java.util.List;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface Page<T> {
 

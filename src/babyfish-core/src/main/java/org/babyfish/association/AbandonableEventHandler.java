@@ -17,7 +17,7 @@
 package org.babyfish.association;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 abstract class AbandonableEventHandler<O, T> extends EventHandler<O, T> {
     

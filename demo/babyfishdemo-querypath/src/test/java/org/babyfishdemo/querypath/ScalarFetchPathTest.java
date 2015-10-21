@@ -40,7 +40,7 @@ import org.junit.Test;
  * mechanism of lazy fields, by using Scalar FetchPath, you can load some of 
  * the lazy scalar fields, not all.
  * 
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ScalarFetchPathTest extends AbstractTest {
 

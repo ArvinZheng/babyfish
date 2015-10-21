@@ -20,7 +20,7 @@ import org.babyfish.immutable.Autonomy;
 import org.babyfish.immutable.Prototype;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Prototype
 public interface Modification {

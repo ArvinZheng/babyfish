@@ -26,7 +26,7 @@ import org.babyfish.collection.spi.AbstractMASet;
 import org.babyfish.collection.spi.base.HashEntries;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAHashSet<E> extends AbstractMASet<E> implements Serializable {
 

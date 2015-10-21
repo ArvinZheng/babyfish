@@ -27,7 +27,7 @@ import org.babyfish.persistence.criteria.JoinMode;
 import org.babyfish.persistence.criteria.XCollectionJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class CollectionAttributeJoin<Z, E> 
 extends AbstractPluralAttributeJoin<Z, Collection<E>, E>

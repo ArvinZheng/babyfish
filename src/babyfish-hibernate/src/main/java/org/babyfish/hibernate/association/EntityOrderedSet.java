@@ -35,7 +35,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class EntityOrderedSet<O, E> extends AssociatedOrderedSet<O, E> implements PersistentCollection<E> {
 

@@ -17,7 +17,7 @@
 package org.babyfish.persistence.tool.instrument;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class InstrumentException extends RuntimeException {
 

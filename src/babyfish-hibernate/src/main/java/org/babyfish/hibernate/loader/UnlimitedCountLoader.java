@@ -30,7 +30,7 @@ import org.hibernate.loader.hql.QueryLoader;
 import org.hibernate.transform.ResultTransformer;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class UnlimitedCountLoader extends QueryLoader {
 

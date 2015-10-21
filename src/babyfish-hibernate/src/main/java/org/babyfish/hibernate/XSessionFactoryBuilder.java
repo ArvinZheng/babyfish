@@ -21,7 +21,7 @@ import org.hibernate.metamodel.SessionFactoryBuilder;
 import org.hibernate.proxy.EntityNotFoundDelegate;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XSessionFactoryBuilder extends SessionFactoryBuilder {
 

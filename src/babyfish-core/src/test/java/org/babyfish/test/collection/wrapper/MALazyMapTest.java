@@ -22,7 +22,7 @@ import org.babyfish.collection.spi.laziness.AbstractLazyMAMap;
 import org.babyfish.test.collection.MAMapTest;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MALazyMapTest extends MAMapTest {
 

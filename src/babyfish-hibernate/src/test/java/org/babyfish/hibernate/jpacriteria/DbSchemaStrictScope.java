@@ -22,7 +22,7 @@ import org.babyfish.hibernate.jpa.internal.XEntityManagerFactoryImpl;
 import org.babyfish.persistence.XEntityManagerFactory;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class DbSchemaStrictScope implements AutoCloseable {
 

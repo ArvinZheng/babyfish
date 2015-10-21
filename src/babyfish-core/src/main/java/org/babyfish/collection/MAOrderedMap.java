@@ -20,7 +20,7 @@ import org.babyfish.collection.MAOrderedSet.MAOrderedSetView;
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MAOrderedMap<K, V> extends MAMap<K, V>, XOrderedMap<K, V> {
 

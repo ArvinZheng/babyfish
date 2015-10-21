@@ -23,7 +23,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.jpa.HibernateEntityManagerFactory;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface HibernateXEntityManagerFactory 
 extends XEntityManagerFactory, HibernateEntityManagerFactory, EntityManagerFactoryConfigurable {

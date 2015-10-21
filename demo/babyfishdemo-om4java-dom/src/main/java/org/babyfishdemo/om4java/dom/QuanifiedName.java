@@ -13,7 +13,7 @@ import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
  * It is used to be scalar properties of other classes, 
  * not association properties.
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class QuanifiedName {
     

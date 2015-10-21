@@ -27,7 +27,7 @@ import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
  * at first, then the deserialization work will enable the properties
  * that appear in JSON text.
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class JPAObjectModelJSONParser {
     

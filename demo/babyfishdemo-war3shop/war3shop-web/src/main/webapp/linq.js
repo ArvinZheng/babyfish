@@ -1,5 +1,5 @@
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 Array.prototype.where = function(predicate) {
     if (typeof(predicate) != "function") {

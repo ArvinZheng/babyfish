@@ -74,7 +74,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.LazyInitializer;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class HibernateObjectModelFactoryProvider extends JPAObjectModelFactoryProvider {
 

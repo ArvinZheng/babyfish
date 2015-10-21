@@ -21,7 +21,7 @@ import org.babyfish.collection.conflict.ListConflictVoter;
 import org.babyfish.collection.conflict.ListConflictVoterArgs;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class TemporaryListConflictVoterManager<E> extends AbstractListConflictVoterManager<E> {
 

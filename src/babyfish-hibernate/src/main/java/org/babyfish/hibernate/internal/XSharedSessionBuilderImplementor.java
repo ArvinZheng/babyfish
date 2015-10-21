@@ -24,7 +24,7 @@ import org.hibernate.Interceptor;
 import org.hibernate.engine.spi.SessionBuilderImplementor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XSharedSessionBuilderImplementor extends SessionBuilderImplementor, XSharedSessionBuilder {
 

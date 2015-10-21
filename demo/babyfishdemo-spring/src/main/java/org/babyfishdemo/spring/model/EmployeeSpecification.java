@@ -6,7 +6,7 @@ import java.util.Date;
 import org.babyfishdemo.spring.entities.Employee.Gender;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class EmployeeSpecification {
 

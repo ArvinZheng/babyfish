@@ -22,7 +22,7 @@ import org.babyfish.springframework.test.entities.Product;
 import org.babyfish.springframework.test.entities.Product__;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface ProductRepository {
 

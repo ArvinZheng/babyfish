@@ -45,7 +45,7 @@ import org.babyfish.org.objectweb.asm.tree.MethodNode;
 import org.babyfish.persistence.instrument.JPAObjectModelInstrument;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 class Context {
     

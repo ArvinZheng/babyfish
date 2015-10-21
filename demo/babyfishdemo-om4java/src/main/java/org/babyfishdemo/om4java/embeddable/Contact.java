@@ -8,7 +8,7 @@ import org.babyfish.model.metadata.Scalar;
 import org.babyfish.model.metadata.StaticMethodToGetObjectModel;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Contact {
     

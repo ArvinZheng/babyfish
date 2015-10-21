@@ -8,7 +8,7 @@ import org.babyfishdemo.war3shop.entities.Product__;
 import org.babyfishdemo.war3shop.entities.specification.ProductSpecification;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface ProductRepository extends AbstractRepository<Product, Long> {
 

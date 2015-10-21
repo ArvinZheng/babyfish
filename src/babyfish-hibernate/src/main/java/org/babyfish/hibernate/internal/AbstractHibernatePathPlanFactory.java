@@ -24,7 +24,7 @@ import org.hibernate.type.AssociationType;
 import org.hibernate.type.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractHibernatePathPlanFactory extends AbstractPathPlanFactory {
 

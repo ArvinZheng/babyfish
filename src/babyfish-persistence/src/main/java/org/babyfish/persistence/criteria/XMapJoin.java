@@ -23,7 +23,7 @@ import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XMapJoin<Z, K, V> extends MapJoin<Z, K, V>, XPluralJoin<Z, Map<K, V>, V> {
 

@@ -11,7 +11,7 @@ import org.babyfish.persistence.XEntityManager;
 import org.babyfishdemo.war3shop.dal.AbstractRepository;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractRepositoryImpl<E, I> implements AbstractRepository<E, I> {
 

@@ -49,7 +49,7 @@ import org.hibernate.proxy.LazyInitializer;
 import org.hibernate.proxy.pojo.BasicLazyInitializer;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class FrozenLazyInitializerImpl implements FrozenLazyInitializer, MethodHandler, Serializable {
     

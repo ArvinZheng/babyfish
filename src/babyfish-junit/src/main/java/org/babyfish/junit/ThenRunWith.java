@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import org.junit.runner.Runner;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

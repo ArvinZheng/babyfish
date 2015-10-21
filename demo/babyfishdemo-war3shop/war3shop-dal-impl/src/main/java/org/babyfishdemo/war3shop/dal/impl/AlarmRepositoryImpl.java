@@ -19,7 +19,7 @@ import org.babyfishdemo.war3shop.entities.specification.AlarmSpecification;
 import org.springframework.stereotype.Repository;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Repository
 public class AlarmRepositoryImpl 

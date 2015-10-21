@@ -38,7 +38,7 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class LocalXSessionFactoryBean extends HibernateExceptionTranslator
         implements FactoryBean<XSessionFactory>, ResourceLoaderAware, InitializingBean, DisposableBean {

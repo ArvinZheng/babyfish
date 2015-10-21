@@ -19,7 +19,7 @@ package org.babyfish.persistence.criteria;
 import javax.persistence.criteria.CommonAbstractCriteria;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XCommonAbstractCriteria extends CommonAbstractCriteria {
     

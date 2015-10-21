@@ -27,7 +27,7 @@ import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface HibernateObjectModelMetadata extends JPAObjectModelMetadata {
     

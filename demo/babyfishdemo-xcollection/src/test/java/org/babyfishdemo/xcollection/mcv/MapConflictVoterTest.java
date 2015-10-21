@@ -8,7 +8,7 @@ import org.babyfish.collection.conflict.MapConflictVoterArgs;
 import org.babyfish.collection.conflict.MapReader;
  
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MapConflictVoterTest extends AbstractMapConflictVoterTest {
  

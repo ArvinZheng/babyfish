@@ -29,7 +29,7 @@ import javax.persistence.TemporalType;
 import org.babyfish.persistence.path.QueryPath;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XQuery extends Query {
     

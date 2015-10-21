@@ -19,7 +19,7 @@ package org.babyfish.persistence.path.spi;
 import java.util.Map;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface PathPlan {
 

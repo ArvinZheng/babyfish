@@ -16,7 +16,7 @@ import com.github.bingoohuang.patchca.filter.predefined.RandomFilterFactory;
 import com.github.bingoohuang.patchca.filter.predefined.WobbleRippleFilterFactory;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class RandomFilterFactoryFactoryBean implements FactoryBean<FilterFactory>{
     

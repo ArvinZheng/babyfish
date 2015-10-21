@@ -46,7 +46,7 @@ import org.babyfish.state.DisablityManageable;
 import org.babyfish.state.LazinessManageable;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class AppendingContext {
     

@@ -21,7 +21,7 @@ import javax.persistence.metamodel.CollectionAttribute;
 import org.babyfish.persistence.criteria.XCollectionJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class TreatedCollectionAttributeJoin<Z, E> extends CollectionAttributeJoin<Z, E> {
 

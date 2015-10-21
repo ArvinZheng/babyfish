@@ -21,7 +21,7 @@ import org.babyfish.view.ViewInfo;
 import org.babyfish.view.ViewInfos;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MapViewInfos extends ViewInfos {
 

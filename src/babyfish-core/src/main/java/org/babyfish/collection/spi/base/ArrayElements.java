@@ -27,7 +27,7 @@ import org.babyfish.collection.spi.base.AbstractBaseElementsImpl.Trigger.History
 import org.babyfish.lang.Arguments;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ArrayElements<E> extends AbstractBaseElementsImpl<E> {
     

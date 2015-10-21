@@ -19,7 +19,7 @@ package org.babyfish.reference;
 import org.babyfish.collection.UnifiedComparator;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface KeyedReference<K, T> extends Reference<T> {
     

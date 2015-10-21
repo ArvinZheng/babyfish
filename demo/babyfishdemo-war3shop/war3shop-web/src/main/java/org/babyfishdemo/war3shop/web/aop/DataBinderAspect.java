@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @ControllerAdvice(basePackages = "org.babyfishdemo.war3shop.web")
 @EnableWebMvc

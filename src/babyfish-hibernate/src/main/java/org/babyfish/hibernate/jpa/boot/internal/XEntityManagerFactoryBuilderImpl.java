@@ -46,7 +46,7 @@ import org.hibernate.jpa.internal.schemagen.JpaSchemaGenerator;
 import org.hibernate.service.ServiceRegistry;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class XEntityManagerFactoryBuilderImpl extends EntityManagerFactoryBuilderImpl {
     

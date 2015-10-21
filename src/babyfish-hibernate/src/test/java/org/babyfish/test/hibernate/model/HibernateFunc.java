@@ -19,7 +19,7 @@ package org.babyfish.test.hibernate.model;
 import org.hibernate.Session;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface HibernateFunc<T> {
 

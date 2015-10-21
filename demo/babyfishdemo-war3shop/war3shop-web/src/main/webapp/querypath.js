@@ -1,5 +1,5 @@
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 function parameterMap(map, queryPath) {
     if (typeof(map.page) != "undefined") {

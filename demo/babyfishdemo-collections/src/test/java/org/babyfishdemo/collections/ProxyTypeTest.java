@@ -66,7 +66,7 @@ import org.babyfish.collection.XSet;
 import org.junit.Test;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ProxyTypeTest {
     

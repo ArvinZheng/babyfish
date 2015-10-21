@@ -23,7 +23,7 @@ import org.babyfish.modificationaware.event.EventFactory;
 import org.babyfish.modificationaware.event.EventProperty;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @EventDeclaration(properties = {
         @EventProperty(name = "key", shared = true)

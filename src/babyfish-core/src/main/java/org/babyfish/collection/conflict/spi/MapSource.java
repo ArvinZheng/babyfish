@@ -21,7 +21,7 @@ import java.io.Serializable;
 import org.babyfish.collection.XMap;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MapSource<K, V> extends Serializable {
 

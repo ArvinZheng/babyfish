@@ -19,7 +19,7 @@ package org.babyfish.persistence.path;
 import java.io.Serializable;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface QueryPath extends Serializable {
 

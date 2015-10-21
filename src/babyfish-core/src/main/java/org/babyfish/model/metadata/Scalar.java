@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.babyfish.model.metadata.spi.ScalarOnly;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

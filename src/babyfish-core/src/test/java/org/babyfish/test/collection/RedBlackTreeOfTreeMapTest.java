@@ -22,7 +22,7 @@ import org.babyfish.collection.TreeMap;
 import org.babyfish.collection.XNavigableMap;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class RedBlackTreeOfTreeMapTest extends AbstractRedBlackTreeTest {
 

@@ -18,7 +18,7 @@ package org.babyfish.test.collection.equalitycomparator;
 
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Element {
     

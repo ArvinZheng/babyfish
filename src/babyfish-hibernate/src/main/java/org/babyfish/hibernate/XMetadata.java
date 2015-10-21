@@ -19,7 +19,7 @@ package org.babyfish.hibernate;
 import org.hibernate.metamodel.Metadata;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XMetadata extends Metadata {
 

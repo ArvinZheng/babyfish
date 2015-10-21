@@ -24,7 +24,7 @@ import org.babyfish.model.metadata.Metadatas;
 import org.babyfish.model.metadata.ObjectModelMetadata;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class OwnerEqualityComparatorWritingReplacement implements Serializable {
     

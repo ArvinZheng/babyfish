@@ -19,7 +19,7 @@ import org.babyfish.validator.Validator;
  * But, for this demo, in order to make the code to be more simple, Node ONLY 
  * has 4 non-abstract derived classes: Element, Attribute, Text and Comment
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class Node {
     

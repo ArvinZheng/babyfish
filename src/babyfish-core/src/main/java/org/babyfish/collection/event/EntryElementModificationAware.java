@@ -17,7 +17,7 @@
 package org.babyfish.collection.event;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface EntryElementModificationAware<K, V> extends ElementModificationAware<V> {
 

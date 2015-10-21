@@ -8,7 +8,7 @@ import org.babyfishdemo.war3shop.entities.Preferential__;
 import org.babyfishdemo.war3shop.entities.specification.PreferentialSpecification;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface PreferentialRepository extends AbstractRepository<Preferential, Long> {
     

@@ -23,7 +23,7 @@ import javax.persistence.AccessType;
 import javax.persistence.FetchType;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MetadataProperty {
 

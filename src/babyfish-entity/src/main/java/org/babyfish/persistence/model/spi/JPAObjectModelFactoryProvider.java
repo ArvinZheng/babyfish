@@ -19,7 +19,7 @@ package org.babyfish.persistence.model.spi;
 import org.babyfish.model.spi.ObjectModelFactoryProvider;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class JPAObjectModelFactoryProvider extends ObjectModelFactoryProvider {
     

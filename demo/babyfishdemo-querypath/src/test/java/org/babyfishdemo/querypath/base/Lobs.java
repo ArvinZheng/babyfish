@@ -23,7 +23,7 @@ import org.babyfish.collection.MACollections;
  * MACollections.toXXXArray(List<{{primitiveBoxType}}>) can get the cloned primitiveArray 
  * from the read-only list.
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Lobs {
 

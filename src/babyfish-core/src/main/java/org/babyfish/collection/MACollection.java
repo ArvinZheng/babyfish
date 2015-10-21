@@ -19,7 +19,7 @@ package org.babyfish.collection;
 import org.babyfish.collection.event.ElementModificationAware;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MACollection<E> extends org.babyfish.collection.XCollection<E>, ElementModificationAware<E> {
     

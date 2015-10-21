@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <task:annotation-drivern proxy-target-class="true"/>
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Component
 public class GarbageCollector {

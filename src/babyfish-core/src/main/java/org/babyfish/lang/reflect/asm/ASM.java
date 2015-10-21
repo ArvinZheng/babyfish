@@ -63,7 +63,7 @@ import org.babyfish.org.objectweb.asm.tree.TypeInsnNode;
  * org.babyfish.util.Resources that depends on this class
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class ASM {
     

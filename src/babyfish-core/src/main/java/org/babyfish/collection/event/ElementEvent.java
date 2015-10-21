@@ -25,7 +25,7 @@ import org.babyfish.modificationaware.event.ModificationEvent;
 import org.babyfish.modificationaware.event.PropertyVersion;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @EventDeclaration(
         properties = @EventProperty(name = "element", shared = false))

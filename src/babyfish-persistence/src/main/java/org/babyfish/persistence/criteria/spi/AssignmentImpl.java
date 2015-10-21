@@ -23,7 +23,7 @@ import org.babyfish.persistence.criteria.Assignment;
 import org.babyfish.persistence.criteria.XCriteriaBuilder;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class AssignmentImpl extends AbstractNode implements Assignment {
 

@@ -44,7 +44,7 @@ import org.babyfish.persistence.criteria.XSubquery;
 import org.babyfish.persistence.criteria.expression.PriorityConstants;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class CriteriaSubqueryImpl<T> extends AbstractExpression<T> implements XSubquery<T> {
 

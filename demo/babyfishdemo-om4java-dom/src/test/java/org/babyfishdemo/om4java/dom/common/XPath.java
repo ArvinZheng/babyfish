@@ -26,7 +26,7 @@ import org.babyfishdemo.om4java.dom.QuanifiedName;
  * keep the simple code and let's focus on ObjectModel4Java :)
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class XPath {
     

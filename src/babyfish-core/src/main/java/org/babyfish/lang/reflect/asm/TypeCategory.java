@@ -21,7 +21,7 @@ import org.babyfish.org.objectweb.asm.Opcodes;
 import org.babyfish.org.objectweb.asm.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public enum TypeCategory {
 

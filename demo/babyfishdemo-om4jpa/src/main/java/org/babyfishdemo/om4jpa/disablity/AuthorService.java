@@ -12,7 +12,7 @@ import org.babyfishdemo.om4jpa.disablity.entities.Author;
  * even if AuthorService has NO business logic.
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class AuthorService {
 

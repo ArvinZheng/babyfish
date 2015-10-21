@@ -30,7 +30,7 @@ import org.hibernate.Transaction;
 import org.hibernate.procedure.ProcedureCall;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @SuppressWarnings("rawtypes")
 public class XStatelessSessionImpl implements StatelessSession {

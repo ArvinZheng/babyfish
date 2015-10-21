@@ -19,7 +19,7 @@ package org.babyfish.hibernate.internal;
 import org.hibernate.metadata.ClassMetadata;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 class HbmReference {
     

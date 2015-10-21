@@ -22,7 +22,7 @@ import org.babyfish.collection.spi.wrapper.AbstractWrapperMANavigableMap;
 import org.babyfish.test.collection.MAMapTest;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAWrappedNavigableMapTest extends MAMapTest {
 

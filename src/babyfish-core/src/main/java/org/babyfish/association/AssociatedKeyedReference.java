@@ -22,7 +22,7 @@ import org.babyfish.reference.event.KeyedValueEvent;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AssociatedKeyedReference<O, K, T> 
 extends MAKeyedReferenceImpl<K, T> 

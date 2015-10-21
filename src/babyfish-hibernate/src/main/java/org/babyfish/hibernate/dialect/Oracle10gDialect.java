@@ -22,7 +22,7 @@ import org.hibernate.engine.spi.RowSelection;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Oracle10gDialect 
 extends org.hibernate.dialect.Oracle10gDialect 

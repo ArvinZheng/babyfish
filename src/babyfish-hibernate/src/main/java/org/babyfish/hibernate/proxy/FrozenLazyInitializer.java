@@ -21,7 +21,7 @@ import org.babyfish.model.event.ScalarModificationAware;
 import org.hibernate.proxy.LazyInitializer;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface FrozenLazyInitializer extends LazyInitializer, ScalarModificationAware {
 

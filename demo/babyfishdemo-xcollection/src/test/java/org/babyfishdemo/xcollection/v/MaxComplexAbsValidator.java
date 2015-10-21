@@ -13,7 +13,7 @@ import org.babyfish.validator.Validator;
  * this class choose to implement "SuppressibleValidator<T>"
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MaxComplexAbsValidator implements SuppressibleValidator<Complex> {
     

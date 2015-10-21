@@ -17,7 +17,7 @@ import org.babyfishdemo.war3shop.bll.Constants;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Aspect
 @Component

@@ -59,7 +59,7 @@ import org.babyfish.validator.Validators;
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractBaseEntriesImpl<K, V> implements BaseEntries<K, V> {
     

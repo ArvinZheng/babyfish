@@ -21,7 +21,7 @@ import javax.persistence.criteria.Path;
 import org.babyfish.persistence.criteria.XRoot;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface SelfGetter<S, T> {
         

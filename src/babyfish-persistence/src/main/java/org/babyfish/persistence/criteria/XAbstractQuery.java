@@ -27,7 +27,7 @@ import javax.persistence.metamodel.EntityType;
 import org.babyfish.collection.XOrderedSet;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XAbstractQuery<T> extends XCommonAbstractCriteria, AbstractQuery<T> {
 

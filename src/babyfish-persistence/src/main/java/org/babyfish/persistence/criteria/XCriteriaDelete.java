@@ -22,7 +22,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.metamodel.EntityType;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XCriteriaDelete<T> extends XCommonAbstractCriteria, CriteriaDelete<T> {
 

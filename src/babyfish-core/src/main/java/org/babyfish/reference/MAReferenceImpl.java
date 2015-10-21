@@ -28,7 +28,7 @@ import org.babyfish.reference.event.ValueListener;
 import org.babyfish.reference.event.modification.ReferenceModifications;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAReferenceImpl<T> extends ReferenceImpl<T> implements MAReference<T> {
     

@@ -33,7 +33,7 @@ import org.babyfish.persistence.criteria.expression.PriorityConstants;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractPath<X> extends AbstractExpression<X> implements Path<X> {
 

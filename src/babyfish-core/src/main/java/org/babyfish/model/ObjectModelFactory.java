@@ -19,7 +19,7 @@ package org.babyfish.model;
 import org.babyfish.model.metadata.ObjectModelMetadata;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface ObjectModelFactory<M> {
     

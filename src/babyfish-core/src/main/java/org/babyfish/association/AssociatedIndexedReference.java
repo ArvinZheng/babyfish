@@ -22,7 +22,7 @@ import org.babyfish.reference.event.IndexedValueEvent;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AssociatedIndexedReference<O, T>
 extends MAIndexedReferenceImpl<T>

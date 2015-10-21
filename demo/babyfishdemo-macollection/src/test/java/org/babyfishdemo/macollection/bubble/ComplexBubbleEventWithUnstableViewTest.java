@@ -23,7 +23,7 @@ import org.junit.Test;
  * Before learn this case, please learn SimpleBubbleEvent at first.
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ComplexBubbleEventWithUnstableViewTest {
         

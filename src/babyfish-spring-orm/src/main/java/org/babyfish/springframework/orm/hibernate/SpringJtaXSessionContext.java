@@ -23,7 +23,7 @@ import org.hibernate.HibernateException;
 import org.springframework.orm.hibernate4.SpringJtaSessionContext;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class SpringJtaXSessionContext extends SpringJtaSessionContext implements CurrentXSessionContext {
 

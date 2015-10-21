@@ -19,7 +19,7 @@ package org.babyfish.model.spi;
 import java.io.IOException;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface ObjectModelAppender {
 

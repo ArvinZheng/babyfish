@@ -28,7 +28,7 @@ import org.babyfish.persistence.criteria.XCriteriaQuery;
 import org.babyfish.persistence.criteria.XCriteriaUpdate;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XEntityManagerFactory extends EntityManagerFactory, AutoCloseable {
 

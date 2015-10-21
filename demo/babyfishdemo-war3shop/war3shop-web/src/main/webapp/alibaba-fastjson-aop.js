@@ -1,5 +1,5 @@
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 /**
  * Be careful, this js file must be included before the js files of kendo UI!

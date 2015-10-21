@@ -9,7 +9,7 @@ import org.babyfish.persistence.XTypedQuery;
 import org.babyfishdemo.war3shop.entities.Page;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class PageBuilder<T> {
     

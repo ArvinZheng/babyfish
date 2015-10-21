@@ -14,7 +14,7 @@ import org.babyfishdemo.war3shop.entities.specification.AdministratorSpecificati
 import org.babyfishdemo.war3shop.entities.specification.CustomerSpecification;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface UserRepository extends AbstractRepository<User, Long> {
     

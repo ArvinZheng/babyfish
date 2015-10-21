@@ -27,7 +27,7 @@ import org.babyfish.persistence.criteria.spi.AbstractExpression;
 import org.babyfish.persistence.criteria.spi.Visitor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class ConvertExpression<T, S> extends AbstractExpression<T> {
     

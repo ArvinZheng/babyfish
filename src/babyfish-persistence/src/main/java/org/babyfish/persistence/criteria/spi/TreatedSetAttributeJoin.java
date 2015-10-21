@@ -21,7 +21,7 @@ import javax.persistence.metamodel.SetAttribute;
 import org.babyfish.persistence.criteria.XSetJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class TreatedSetAttributeJoin<Z, E> extends SetAttributeJoin<Z, E> {
 

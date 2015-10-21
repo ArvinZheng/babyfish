@@ -19,7 +19,7 @@ package org.babyfish.reference;
 import org.babyfish.reference.event.KeyedValueModificationAware;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MAKeyedReference<K, T> 
 extends MAReference<T>, KeyedReference<K, T>, KeyedValueModificationAware<K, T> {

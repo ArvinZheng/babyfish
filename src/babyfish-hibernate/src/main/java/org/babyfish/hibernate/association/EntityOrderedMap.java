@@ -35,7 +35,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class EntityOrderedMap<O, K, V> extends AssociatedOrderedMap<O, K, V> implements PersistentCollection<V> {
 

@@ -34,7 +34,7 @@ import org.babyfish.org.objectweb.asm.MethodVisitor;
 import org.babyfish.org.objectweb.asm.Opcodes;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 final class GenericResolver {
     

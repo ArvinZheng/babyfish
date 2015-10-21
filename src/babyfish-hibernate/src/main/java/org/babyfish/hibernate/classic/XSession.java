@@ -19,7 +19,7 @@ package org.babyfish.hibernate.classic;
 import org.hibernate.Session;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XSession extends org.babyfish.hibernate.XSession, Session {
 

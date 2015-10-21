@@ -32,7 +32,7 @@ import org.babyfish.state.LazinessManageable;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AssociatedOrderedMap<O, K, V> 
 extends AbstractWrapperMAOrderedMap<K, V> 

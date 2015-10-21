@@ -25,7 +25,7 @@ import java.io.Serializable;
 import org.babyfish.collection.conflict.ListConflictVoter;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractListConflictVoterManager<E> implements Serializable {
 

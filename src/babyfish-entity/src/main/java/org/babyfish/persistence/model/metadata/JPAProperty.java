@@ -20,7 +20,7 @@ import org.babyfish.lang.reflect.PropertyInfo;
 import org.babyfish.model.metadata.Property;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface JPAProperty extends Property {
     

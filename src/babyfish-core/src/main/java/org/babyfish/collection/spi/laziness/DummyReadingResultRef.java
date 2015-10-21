@@ -19,7 +19,7 @@ package org.babyfish.collection.spi.laziness;
 import org.babyfish.lang.Ref;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class DummyReadingResultRef<E> extends Ref<E> {
 

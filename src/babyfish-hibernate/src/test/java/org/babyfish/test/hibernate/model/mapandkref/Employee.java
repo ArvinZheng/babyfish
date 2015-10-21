@@ -27,7 +27,7 @@ import org.babyfish.persistence.model.metadata.KeyMapping;
 import org.babyfish.reference.KeyedReference;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Employee {
 

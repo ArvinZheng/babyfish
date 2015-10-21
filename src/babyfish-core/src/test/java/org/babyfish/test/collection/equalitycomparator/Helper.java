@@ -38,7 +38,7 @@ import org.babyfish.collection.XOrderedSet;
 import org.babyfish.collection.XSet;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 class Helper {
     

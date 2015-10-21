@@ -26,7 +26,7 @@ import org.babyfish.validator.Validator;
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XMap<K, V> extends Map<K, V>, LockDescriptor {
     

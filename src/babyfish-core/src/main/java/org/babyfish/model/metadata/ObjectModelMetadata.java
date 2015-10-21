@@ -25,7 +25,7 @@ import org.babyfish.model.ObjectModelFactory;
 import org.babyfish.model.spi.ObjectModelFactoryProvider;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface ObjectModelMetadata extends Serializable {
 

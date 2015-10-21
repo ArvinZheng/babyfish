@@ -21,7 +21,7 @@ import java.util.SortedSet;
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XSortedSet<E> extends SortedSet<E>, XSet<E> {
 

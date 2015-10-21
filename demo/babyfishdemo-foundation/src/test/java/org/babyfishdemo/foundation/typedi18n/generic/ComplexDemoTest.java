@@ -23,7 +23,7 @@ import org.junit.Test;
  * 
  * <div>"-javaagent:C:/MavenLocal/org/aspectj/aspectjweaver/1.8.5/aspectjweaver-1.8.5.jar"</div>
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ComplexDemoTest {
 

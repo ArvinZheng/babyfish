@@ -19,7 +19,7 @@ package org.babyfish.reference;
 import org.babyfish.reference.event.ValueModificationAware;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MAReference<T> extends Reference<T>, ValueModificationAware<T> {
 

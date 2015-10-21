@@ -37,7 +37,7 @@ import org.babyfish.persistence.instrument.NavigableInstrument;
 import org.babyfish.persistence.instrument.ReferenceComparisonRuleInstrument;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @JPAObjectModelInstrument
 @Entity

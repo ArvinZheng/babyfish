@@ -27,7 +27,7 @@ import org.babyfish.persistence.criteria.XCriteriaBuilder;
 import org.babyfish.persistence.criteria.expression.PriorityConstants;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractFunction<T> extends AbstractExpression<T> {
     

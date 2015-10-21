@@ -20,7 +20,7 @@ import org.babyfish.collection.event.ElementEvent;
 import org.babyfish.collection.event.ListElementEvent;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractListElementEventDispatcher<E> extends AbstractElementEventDispatcher<E> {
 

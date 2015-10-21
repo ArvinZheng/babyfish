@@ -34,7 +34,7 @@ import org.babyfish.collection.viewinfo.OrderedSetViewInfos.DescendingSet;
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractXOrderedMap<K, V> extends AbstractXMap<K, V> implements XOrderedMap<K, V> {
 

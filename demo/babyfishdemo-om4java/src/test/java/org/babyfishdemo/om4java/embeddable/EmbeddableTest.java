@@ -10,7 +10,7 @@ import org.babyfishdemo.om4java.embeddable.Name;
 import org.junit.Test;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class EmbeddableTest {
     

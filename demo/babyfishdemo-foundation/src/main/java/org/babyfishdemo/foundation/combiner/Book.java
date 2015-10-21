@@ -10,7 +10,7 @@ import org.babyfishdemo.foundation.combiner.event.PropertyChanagedEvent;
 import org.babyfishdemo.foundation.combiner.event.PropertyChangedListener;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Book {
     

@@ -17,7 +17,7 @@
 package org.babyfish.collection;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MASortedSet<E> extends XSortedSet<E>, MASet<E> {
     

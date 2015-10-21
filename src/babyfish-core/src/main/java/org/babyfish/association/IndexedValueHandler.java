@@ -23,7 +23,7 @@ import org.babyfish.reference.IndexedReference;
 import org.babyfish.reference.event.IndexedValueEvent;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 abstract class IndexedValueEventHandler<O, T> extends EventHandler<O, T> {
     

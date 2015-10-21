@@ -19,7 +19,7 @@ package org.babyfish.hibernate.dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface InstallableDialect {
 

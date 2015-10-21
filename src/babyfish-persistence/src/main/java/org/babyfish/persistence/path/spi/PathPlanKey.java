@@ -25,7 +25,7 @@ import org.babyfish.lang.Nulls;
 import org.babyfish.persistence.path.QueryPath;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class PathPlanKey implements Serializable {
 

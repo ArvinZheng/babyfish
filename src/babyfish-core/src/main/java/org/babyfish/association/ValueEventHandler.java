@@ -24,7 +24,7 @@ import org.babyfish.reference.Reference;
 import org.babyfish.reference.event.ValueEvent;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 abstract class ValueEventHandler<O, T> extends AbandonableEventHandler<O, T> {
     

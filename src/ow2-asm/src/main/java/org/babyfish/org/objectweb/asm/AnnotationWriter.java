@@ -116,9 +116,6 @@ final class AnnotationWriter extends AnnotationVisitor {
     // Implementation of the AnnotationVisitor abstract class
     // ------------------------------------------------------------------------
 
-/**
- * @author Tao Chen(&#38472;&#28059;)
- */
     @Override
     public void visit(final String name, final Object value) {
         ++size;

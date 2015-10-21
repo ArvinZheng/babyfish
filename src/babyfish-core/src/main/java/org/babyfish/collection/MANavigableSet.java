@@ -17,7 +17,7 @@
 package org.babyfish.collection;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MANavigableSet<E> extends XNavigableSet<E>, MASortedSet<E> {
 

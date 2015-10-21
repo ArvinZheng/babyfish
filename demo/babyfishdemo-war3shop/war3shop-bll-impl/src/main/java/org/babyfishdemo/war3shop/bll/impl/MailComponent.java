@@ -20,7 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * No interface, requires <task:annotation-driven proxy-target-class="true"/>
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MailComponent {
     

@@ -62,7 +62,7 @@ import org.babyfish.validator.Validator;
 import org.babyfish.view.ViewInfo;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MACollections {
     

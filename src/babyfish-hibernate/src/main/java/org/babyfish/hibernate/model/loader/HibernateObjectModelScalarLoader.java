@@ -49,7 +49,7 @@ import org.hibernate.internal.CriteriaImpl;
 import org.hibernate.transform.ResultTransformer;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class HibernateObjectModelScalarLoader implements 
     ObjectModelScalarLoader, 

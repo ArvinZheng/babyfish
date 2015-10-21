@@ -49,7 +49,7 @@ import org.babyfish.persistence.path.CollectionFetchType;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractFrom<Z, X> extends AbstractPath<X> implements XFrom<Z, X> {
 

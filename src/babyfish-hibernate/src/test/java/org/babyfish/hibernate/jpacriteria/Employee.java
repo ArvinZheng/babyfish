@@ -36,7 +36,7 @@ import javax.persistence.TemporalType;
 import org.babyfish.collection.HashSet;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Entity
 @Table(name = "EMPLOYEE")

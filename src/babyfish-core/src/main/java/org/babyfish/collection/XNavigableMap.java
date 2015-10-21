@@ -21,7 +21,7 @@ import java.util.NavigableMap;
 import org.babyfish.collection.XNavigableSet.XNavigableSetView;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XNavigableMap<K, V> extends NavigableMap<K, V>, XSortedMap<K, V> {
     

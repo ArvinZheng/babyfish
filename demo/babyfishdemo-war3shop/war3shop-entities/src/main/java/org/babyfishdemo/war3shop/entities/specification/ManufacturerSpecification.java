@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.babyfishdemo.war3shop.entities.Race;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ManufacturerSpecification {
 

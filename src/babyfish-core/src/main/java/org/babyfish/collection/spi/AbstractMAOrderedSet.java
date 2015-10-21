@@ -30,7 +30,7 @@ import org.babyfish.modificationaware.event.Cause;
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractMAOrderedSet<E> 
 extends AbstractMASet<E> 

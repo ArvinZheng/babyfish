@@ -37,7 +37,7 @@ import org.hibernate.transform.ResultTransformer;
 import org.hibernate.type.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XQuery extends Query {
     

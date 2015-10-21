@@ -24,7 +24,7 @@ import org.babyfish.collection.MACollections;
 import org.babyfish.lang.Arguments;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Stack<E> {
 

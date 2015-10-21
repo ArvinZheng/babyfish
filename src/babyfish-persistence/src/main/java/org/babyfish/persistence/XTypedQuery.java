@@ -29,7 +29,7 @@ import javax.persistence.TypedQuery;
 import org.babyfish.persistence.path.QueryPath;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XTypedQuery<X> extends TypedQuery<X>, XQuery {
     

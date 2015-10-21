@@ -21,7 +21,7 @@ import org.babyfish.collection.MAMap;
 import org.babyfish.hibernate.collection.type.MAOrderedMapType;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAPersistenceMapTest extends MAMapTest {
 

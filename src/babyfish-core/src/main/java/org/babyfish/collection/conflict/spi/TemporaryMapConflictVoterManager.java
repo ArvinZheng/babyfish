@@ -21,7 +21,7 @@ import org.babyfish.collection.conflict.MapConflictVoter;
 import org.babyfish.collection.conflict.MapConflictVoterArgs;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class TemporaryMapConflictVoterManager<K, V> extends AbstractMapConflictVoterManager<K, V> {
 

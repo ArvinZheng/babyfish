@@ -18,7 +18,7 @@ import org.babyfishdemo.war3shop.db.installer.executor.OracleExecutor;
 import org.babyfishdemo.war3shop.db.installer.executor.SimplestDataSource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Shell {
 	

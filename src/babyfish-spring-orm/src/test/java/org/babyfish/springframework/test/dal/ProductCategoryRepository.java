@@ -19,7 +19,7 @@ package org.babyfish.springframework.test.dal;
 import org.babyfish.springframework.test.entities.ProductCategory;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface ProductCategoryRepository {
 

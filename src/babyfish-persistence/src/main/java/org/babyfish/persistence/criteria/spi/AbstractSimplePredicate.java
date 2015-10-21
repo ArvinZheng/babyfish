@@ -24,7 +24,7 @@ import org.babyfish.collection.MACollections;
 import org.babyfish.persistence.criteria.XCriteriaBuilder;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractSimplePredicate extends AbstractPredicate {
 

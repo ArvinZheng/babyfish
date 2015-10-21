@@ -27,7 +27,7 @@ import org.babyfish.collection.spi.AbstractXNavigableSet;
 import org.babyfish.collection.spi.base.RedBlackTreeEntries;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class TreeSet<E> extends AbstractXNavigableSet<E> implements Serializable {
     

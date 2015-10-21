@@ -26,7 +26,7 @@ import org.babyfish.junit.FilterRunner;
 import org.junit.runner.RunWith;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @RunWith(FilterRunner.class)
 @FilterDeclaration(filterClass = OracleFilter.class)

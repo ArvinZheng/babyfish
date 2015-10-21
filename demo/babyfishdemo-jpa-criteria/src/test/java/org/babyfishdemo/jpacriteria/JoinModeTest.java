@@ -25,7 +25,7 @@ import org.junit.Test;
  * JPA standard API "EntityManager.createQuery(CriteriaQuery<T>)" and 
  * "org.babyfish.persistence.criteria.QueryTemplate" should be consider as internal interface
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class JoinModeTest extends AbstractTest {
 

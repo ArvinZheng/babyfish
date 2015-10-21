@@ -19,7 +19,7 @@ package org.babyfish.lang;
 import java.io.Serializable;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Ref<T> implements Serializable {
 

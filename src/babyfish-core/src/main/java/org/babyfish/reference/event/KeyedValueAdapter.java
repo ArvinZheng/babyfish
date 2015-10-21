@@ -17,7 +17,7 @@
 package org.babyfish.reference.event;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class KeyedValueAdapter<K, T> implements KeyedValueListener<K, T> {
 

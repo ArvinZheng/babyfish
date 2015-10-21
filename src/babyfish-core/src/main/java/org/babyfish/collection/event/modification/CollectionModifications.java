@@ -23,7 +23,7 @@ import org.babyfish.immutable.Parameters;
 import org.babyfish.modificationaware.event.Modifications;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class CollectionModifications extends Modifications {
     

@@ -5,7 +5,7 @@ import org.babyfishdemo.war3shop.entities.PurchasingItem;
 import org.babyfishdemo.war3shop.entities.PurchasingItem__;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface PurchasingItemRepository {
 

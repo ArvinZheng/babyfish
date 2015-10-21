@@ -21,7 +21,7 @@ import org.junit.Test;
  * (2) For attached element, 
  * ListElementEvent.getIndex(PropertyVersion.ATTACH) means the index after insertion
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ListElementListenerTest {
  

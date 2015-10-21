@@ -32,7 +32,7 @@ import org.babyfish.util.LazyResource;
 import org.babyfish.validator.Validator;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AssociatedList<O, E> 
 extends AbstractWrapperMAList<E> 

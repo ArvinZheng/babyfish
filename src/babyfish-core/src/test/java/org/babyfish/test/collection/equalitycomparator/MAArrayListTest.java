@@ -21,7 +21,7 @@ import org.babyfish.collection.MAArrayList;
 import org.babyfish.collection.XList;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAArrayListTest extends AbstractXListTest {
 

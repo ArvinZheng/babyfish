@@ -19,7 +19,7 @@ package org.babyfish.hibernate.jpacriteria;
 import org.babyfish.hibernate.dialect.LimitedListDialect;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class BadHSQLDialect extends org.hibernate.dialect.HSQLDialect implements LimitedListDialect {
 

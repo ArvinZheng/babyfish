@@ -50,7 +50,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class LocalXSessionFactoryBuilder extends org.babyfish.hibernate.cfg.Configuration {
 

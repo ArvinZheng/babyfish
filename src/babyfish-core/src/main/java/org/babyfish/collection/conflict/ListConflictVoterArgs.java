@@ -21,7 +21,7 @@ import java.util.Collection;
 import org.babyfish.collection.UnifiedComparator;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface ListConflictVoterArgs<E> {
 

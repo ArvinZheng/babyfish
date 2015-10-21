@@ -7,7 +7,7 @@ import org.babyfishdemo.war3shop.entities.PreferentialActionType;
 import org.babyfishdemo.war3shop.entities.PreferentialThresholdType;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class PreferentialSpecification {
     

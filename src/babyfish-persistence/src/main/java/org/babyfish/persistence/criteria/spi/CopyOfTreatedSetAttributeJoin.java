@@ -19,7 +19,7 @@ package org.babyfish.persistence.criteria.spi;
 import javax.persistence.metamodel.CollectionAttribute;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class CopyOfTreatedSetAttributeJoin<Z, E> extends CollectionAttributeJoin<Z, E> {
 

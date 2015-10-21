@@ -69,7 +69,7 @@ import org.babyfish.org.objectweb.asm.Opcodes;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class ModificationEvent extends EventObject {
 

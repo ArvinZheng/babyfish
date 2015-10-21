@@ -27,7 +27,7 @@ import org.babyfish.reference.KeyedReference;
 import org.babyfish.reference.Reference;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 abstract class MapElementEventHandler<O, K, V> extends AbandonableEventHandler<O, V> {
     

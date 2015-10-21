@@ -33,7 +33,7 @@ import org.babyfish.persistence.criteria.XCommonAbstractCriteria;
 import org.babyfish.persistence.criteria.XCriteriaQuery;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractQueryTemplate<T> implements QueryTemplate<T> {
     

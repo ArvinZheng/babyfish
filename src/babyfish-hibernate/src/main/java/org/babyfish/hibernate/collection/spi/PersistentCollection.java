@@ -27,7 +27,7 @@ import org.hibernate.loader.CollectionAliases;
 import org.hibernate.persister.collection.CollectionPersister;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface PersistentCollection<E> extends org.hibernate.collection.spi.PersistentCollection, Serializable {
     

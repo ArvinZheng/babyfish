@@ -3,7 +3,7 @@ package org.babyfishdemo.foundation.typedi18n.generic;
 import org.babyfish.lang.Arguments;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class Complex {
     
@@ -58,7 +58,7 @@ public final class Complex {
     }
     
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
     @Override
     public int hashCode() {

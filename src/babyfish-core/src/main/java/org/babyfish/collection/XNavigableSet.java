@@ -19,7 +19,7 @@ package org.babyfish.collection;
 import java.util.NavigableSet;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XNavigableSet<E> extends NavigableSet<E>, XSortedSet<E> {
     

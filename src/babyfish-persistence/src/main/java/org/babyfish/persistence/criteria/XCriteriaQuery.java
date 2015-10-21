@@ -28,7 +28,7 @@ import javax.persistence.criteria.Selection;
 import org.babyfish.collection.XOrderedSet;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XCriteriaQuery<T> extends CriteriaQuery<T>, XAbstractQuery<T> {
     

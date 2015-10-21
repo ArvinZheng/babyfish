@@ -20,7 +20,7 @@ import org.babyfish.collection.MALinkedHashMap;
 import org.babyfish.collection.XMap;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MALinkedHashMapTest extends AbstractXMapTest {
 

@@ -50,7 +50,7 @@ import org.babyfish.persistence.path.spi.QueryPathParser.SimpleOrderPathContext;
 import org.babyfish.persistence.path.spi.QueryPathParser.SingleOrderPathContext;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class QueryPaths {
     

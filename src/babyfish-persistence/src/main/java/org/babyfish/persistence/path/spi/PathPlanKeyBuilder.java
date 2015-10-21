@@ -27,7 +27,7 @@ import org.babyfish.persistence.path.QueryPath;
 import org.babyfish.persistence.path.QueryPaths;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class PathPlanKeyBuilder {
     

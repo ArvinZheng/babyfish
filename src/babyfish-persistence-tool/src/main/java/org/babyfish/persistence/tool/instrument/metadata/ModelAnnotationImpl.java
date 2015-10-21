@@ -27,7 +27,7 @@ import org.babyfish.lang.Nulls;
 import org.babyfish.org.objectweb.asm.tree.AnnotationNode;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 class ModelAnnotationImpl implements MetadataAnnotation {
     

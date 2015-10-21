@@ -26,7 +26,7 @@ import org.babyfish.collection.spi.AbstractMAOrderedSet;
 import org.babyfish.collection.spi.base.LinkedHashEntries;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MALinkedHashSet<E> extends AbstractMAOrderedSet<E> implements Serializable {
     

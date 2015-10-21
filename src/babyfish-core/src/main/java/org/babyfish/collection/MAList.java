@@ -20,7 +20,7 @@ import org.babyfish.collection.event.ListElementModificationAware;
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MAList<E> extends XList<E>, MACollection<E>, ListElementModificationAware<E> {
     

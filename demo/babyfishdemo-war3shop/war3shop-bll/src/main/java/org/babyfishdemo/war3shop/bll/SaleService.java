@@ -10,7 +10,7 @@ import org.babyfishdemo.war3shop.entities.specification.OrderSpecification;
 import org.babyfishdemo.war3shop.entities.specification.ProductSpecification;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface SaleService {
 

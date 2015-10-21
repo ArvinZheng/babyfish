@@ -55,7 +55,7 @@ import org.hibernate.persister.entity.OuterJoinLoadable;
 import org.hibernate.type.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class SetBasePersistence<E> extends AbstractBasePersistence<E> {
     

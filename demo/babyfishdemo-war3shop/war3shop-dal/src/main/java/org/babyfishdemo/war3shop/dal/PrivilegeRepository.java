@@ -7,7 +7,7 @@ import org.babyfishdemo.war3shop.entities.Privilege;
 import org.babyfishdemo.war3shop.entities.Privilege__;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface PrivilegeRepository {
     

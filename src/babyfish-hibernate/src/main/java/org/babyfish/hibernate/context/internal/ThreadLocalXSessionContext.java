@@ -37,7 +37,7 @@ import org.hibernate.engine.transaction.spi.TransactionContext;
 import org.hibernate.event.spi.EventSource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ThreadLocalXSessionContext implements CurrentXSessionContext {
     

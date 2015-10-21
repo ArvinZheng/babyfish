@@ -98,7 +98,7 @@ import org.hibernate.transform.ResultTransformer;
 import org.hibernate.type.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class QueryTemplateImpl<T> extends AbstractQueryTemplate<T> {
     

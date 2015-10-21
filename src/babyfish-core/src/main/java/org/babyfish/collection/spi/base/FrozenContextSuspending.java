@@ -20,7 +20,7 @@ import org.babyfish.lang.Arguments;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class FrozenContextSuspending<K, V> {
     

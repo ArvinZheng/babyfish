@@ -72,7 +72,7 @@ import org.babyfish.persistence.criteria.expression.UnaryArithmeticExpression;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractNode implements Serializable {
 

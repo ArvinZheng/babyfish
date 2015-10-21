@@ -28,7 +28,7 @@ import org.babyfish.model.ObjectModel;
 import org.babyfish.model.ObjectModelFactory;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class AssociatedEndpointWritingReplacement implements Serializable {
 

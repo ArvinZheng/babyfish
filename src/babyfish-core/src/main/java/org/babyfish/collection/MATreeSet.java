@@ -27,7 +27,7 @@ import org.babyfish.collection.spi.AbstractMANavigableSet;
 import org.babyfish.collection.spi.base.RedBlackTreeEntries;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MATreeSet<E> extends AbstractMANavigableSet<E> implements Serializable {
 

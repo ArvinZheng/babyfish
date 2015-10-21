@@ -19,7 +19,7 @@ import org.babyfishdemo.om4jpa.instrument.s2r.Employee;
 import org.junit.Test;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class InstrumentTest {
     

@@ -30,7 +30,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @SuppressWarnings("deprecation")
 public class AbstractHibernateTest {

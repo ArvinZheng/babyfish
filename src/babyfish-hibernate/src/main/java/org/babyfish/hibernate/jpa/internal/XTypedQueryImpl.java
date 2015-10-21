@@ -35,7 +35,7 @@ import org.hibernate.jpa.internal.QueryImpl;
 import org.hibernate.jpa.spi.AbstractEntityManagerImpl;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class XTypedQueryImpl<X> extends QueryImpl<X> implements XTypedQuery<X> {
 

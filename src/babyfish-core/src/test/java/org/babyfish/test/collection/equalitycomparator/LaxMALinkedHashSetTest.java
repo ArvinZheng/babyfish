@@ -21,7 +21,7 @@ import org.babyfish.collection.ReplacementRule;
 import org.babyfish.collection.XSet;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class LaxMALinkedHashSetTest extends AbstractLaxXSetTest {
 

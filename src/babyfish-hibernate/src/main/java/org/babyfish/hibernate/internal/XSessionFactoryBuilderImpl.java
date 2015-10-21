@@ -35,7 +35,7 @@ import org.hibernate.metamodel.source.MetadataImplementor;
 import org.hibernate.proxy.EntityNotFoundDelegate;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class XSessionFactoryBuilderImpl implements XSessionFactoryBuilder {
     

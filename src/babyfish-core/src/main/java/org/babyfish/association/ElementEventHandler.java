@@ -27,7 +27,7 @@ import org.babyfish.modificationaware.event.PropertyVersion;
 import org.babyfish.reference.Reference;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 abstract class ElementEventHandler<O, E> extends AbandonableEventHandler<O, E> {
     

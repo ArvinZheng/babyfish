@@ -23,7 +23,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.SetJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XSetJoin<Z, E> extends SetJoin<Z, E>, XPluralJoin<Z, Set<E>, E> {
 

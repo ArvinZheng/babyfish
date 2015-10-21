@@ -20,7 +20,7 @@ import org.babyfish.persistence.path.spi.PathPlanKey;
 import org.hibernate.hql.spi.FilterTranslator;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XFilterTranslator extends FilterTranslator {
 

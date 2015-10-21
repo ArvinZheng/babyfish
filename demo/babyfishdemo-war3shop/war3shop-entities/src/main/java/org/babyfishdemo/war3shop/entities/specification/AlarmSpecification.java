@@ -3,7 +3,7 @@ package org.babyfishdemo.war3shop.entities.specification;
 import java.util.Date;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class AlarmSpecification {
 

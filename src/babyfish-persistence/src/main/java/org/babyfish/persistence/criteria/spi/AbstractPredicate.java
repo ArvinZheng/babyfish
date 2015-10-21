@@ -23,7 +23,7 @@ import org.babyfish.persistence.criteria.XCriteriaBuilder;
 import org.babyfish.persistence.criteria.expression.CompoundPredicate;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractPredicate 
 extends AbstractExpression<Boolean> 

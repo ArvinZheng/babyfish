@@ -22,7 +22,7 @@ import org.babyfish.persistence.XEntityManager;
 import org.babyfish.persistence.XTypedQuery;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface QueryTemplate<T> {
 

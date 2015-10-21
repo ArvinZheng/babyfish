@@ -35,7 +35,7 @@ import org.babyfish.test.model.entities.Employee;
 import org.junit.Test;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MetadataTest {
     

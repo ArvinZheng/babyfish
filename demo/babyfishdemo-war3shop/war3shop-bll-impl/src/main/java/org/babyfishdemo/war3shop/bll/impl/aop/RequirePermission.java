@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import org.babyfishdemo.war3shop.bll.Constants;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

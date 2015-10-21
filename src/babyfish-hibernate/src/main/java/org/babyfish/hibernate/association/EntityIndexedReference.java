@@ -20,7 +20,7 @@ import org.babyfish.association.AssociatedIndexedReference;
 import org.hibernate.proxy.HibernateProxy;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class EntityIndexedReference<O, T> extends AssociatedIndexedReference<O, T> {
 

@@ -40,7 +40,7 @@ import org.babyfish.persistence.model.metadata.Inverse;
 import org.babyfish.persistence.model.metadata.Mapping;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Entity
 @Table(name = "nmkr_COMPANY")

@@ -28,7 +28,7 @@ import org.babyfish.collection.spi.base.HashEntries;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAHashMap<K, V> extends AbstractMAMap<K, V> implements Serializable {
 

@@ -7,7 +7,7 @@ import org.babyfishdemo.war3shop.entities.User;
 import org.babyfishdemo.war3shop.entities.specification.AlarmSpecification;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface AlarmService {
 

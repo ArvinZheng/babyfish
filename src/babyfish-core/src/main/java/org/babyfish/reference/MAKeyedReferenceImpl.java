@@ -28,7 +28,7 @@ import org.babyfish.reference.event.ValueEvent;
 import org.babyfish.reference.event.modification.KeyedReferenceModifications;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAKeyedReferenceImpl<K, T> extends MAReferenceImpl<T> implements MAKeyedReference<K, T> {
     

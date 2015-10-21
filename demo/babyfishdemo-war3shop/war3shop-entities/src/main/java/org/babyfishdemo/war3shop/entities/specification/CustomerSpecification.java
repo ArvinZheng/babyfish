@@ -1,7 +1,7 @@
 package org.babyfishdemo.war3shop.entities.specification;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class CustomerSpecification extends UserSpecification {
 

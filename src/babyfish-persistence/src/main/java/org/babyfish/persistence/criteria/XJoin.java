@@ -21,7 +21,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XJoin<Z, X> extends Join<Z, X>, XFrom<Z, X> {
     

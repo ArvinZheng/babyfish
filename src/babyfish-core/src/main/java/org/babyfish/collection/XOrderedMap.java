@@ -22,7 +22,7 @@ import org.babyfish.collection.XOrderedSet.XOrderedSetView;
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XOrderedMap<K, V> extends XMap<K, V> {
     

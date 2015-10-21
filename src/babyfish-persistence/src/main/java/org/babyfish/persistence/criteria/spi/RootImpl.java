@@ -23,7 +23,7 @@ import org.babyfish.persistence.criteria.XCommonAbstractCriteria;
 import org.babyfish.persistence.criteria.XRoot;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class RootImpl<X> extends AbstractFrom<X, X> implements XRoot<X> {
 

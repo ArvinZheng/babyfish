@@ -19,7 +19,7 @@ package org.babyfish.association;
 import java.util.Iterator;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface DescendingIterable<T> extends Iterable<T> {
 

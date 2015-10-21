@@ -19,7 +19,7 @@ package org.babyfish.persistence.model.metadata;
 import org.babyfish.model.metadata.ScalarProperty;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface JPAScalarProperty extends ScalarProperty, JPAProperty {
     

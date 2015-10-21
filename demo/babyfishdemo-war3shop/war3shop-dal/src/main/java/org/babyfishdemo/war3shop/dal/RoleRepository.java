@@ -6,7 +6,7 @@ import org.babyfishdemo.war3shop.entities.Role;
 import org.babyfishdemo.war3shop.entities.Role__;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface RoleRepository extends AbstractRepository<Role, Long> {
 

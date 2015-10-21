@@ -16,7 +16,7 @@ import org.babyfishdemo.om4java.dom.Text;
 import org.babyfishdemo.om4java.dom.Visitor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class XmlBuilder {
 

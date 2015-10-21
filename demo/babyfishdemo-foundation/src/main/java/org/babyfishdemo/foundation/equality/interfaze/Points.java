@@ -3,7 +3,7 @@ package org.babyfishdemo.foundation.equality.interfaze;
 import org.babyfish.lang.Equality;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Points {
 

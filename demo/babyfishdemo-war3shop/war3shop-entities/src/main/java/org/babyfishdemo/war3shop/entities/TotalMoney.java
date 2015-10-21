@@ -13,7 +13,7 @@ import org.babyfish.persistence.instrument.JPAObjectModelInstrument;
  * but Hiberante does not support it when the class is mared by @Embeddable
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @JPAObjectModelInstrument
 @Embeddable

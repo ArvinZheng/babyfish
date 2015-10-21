@@ -132,7 +132,7 @@ import org.babyfish.validator.Validators;
 import org.babyfish.view.ViewInfo;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ObjectModelFactoryProvider extends Singleton implements Serializable {
     

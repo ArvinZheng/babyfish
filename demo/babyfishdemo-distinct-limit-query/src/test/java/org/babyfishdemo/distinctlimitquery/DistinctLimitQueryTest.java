@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
  * If the VM argument "-Ddatabase = oracle" is NOT specified
  * this case will be ignored.
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @RunWith(FilterRunner.class)
 @FilterDeclaration(filterClass = OracleFilter.class)

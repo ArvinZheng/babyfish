@@ -17,7 +17,7 @@
 package org.babyfish.lang.reflect.asm;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface SlotAllocator {
 

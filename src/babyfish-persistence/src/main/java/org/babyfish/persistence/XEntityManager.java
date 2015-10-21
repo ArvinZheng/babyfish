@@ -30,7 +30,7 @@ import org.babyfish.persistence.criteria.XCriteriaUpdate;
 import org.babyfish.persistence.path.TypedQueryPath;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XEntityManager extends EntityManager, AutoCloseable {
     

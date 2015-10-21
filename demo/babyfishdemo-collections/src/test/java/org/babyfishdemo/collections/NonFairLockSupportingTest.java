@@ -41,7 +41,7 @@ import org.junit.Test;
  * it supports the non-pair-lock
  * (2) Otherwise, consider it does NOT support non-pair-lock.
  * 
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class NonFairLockSupportingTest {
 

@@ -26,7 +26,7 @@ import org.babyfish.collection.event.ValuesElementModificationAware;
 import org.babyfish.validator.Validator;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface MAMap<K, V> 
 extends 

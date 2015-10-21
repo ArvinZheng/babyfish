@@ -23,7 +23,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.List;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class MethodInfo extends MethodBase {
     

@@ -63,7 +63,7 @@ import org.babyfish.view.View;
 import org.babyfish.view.ViewInfo;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractLazyMAMap<K, V> extends AbstractLazyXMap<K, V> implements MAMap<K, V> {
     

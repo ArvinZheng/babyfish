@@ -21,7 +21,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.context.spi.CurrentSessionContext;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface CurrentXSessionContext extends CurrentSessionContext {
 

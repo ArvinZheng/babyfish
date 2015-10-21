@@ -21,7 +21,7 @@ import javax.persistence.criteria.Fetch;
 import org.babyfish.persistence.path.CollectionFetchType;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XFetch<Z, X> extends Fetch<Z, X>, XFetchParent<Z, X> {
 

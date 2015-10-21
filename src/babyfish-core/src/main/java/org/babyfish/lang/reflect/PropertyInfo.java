@@ -22,7 +22,7 @@ import java.util.List;
 import org.babyfish.collection.MACollections;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class PropertyInfo extends MemberInfo {
     

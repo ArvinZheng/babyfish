@@ -27,7 +27,7 @@ import org.babyfish.persistence.criteria.JoinMode;
 import org.babyfish.persistence.criteria.XSetJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class SetAttributeJoin<Z, E> 
 extends AbstractPluralAttributeJoin<Z, Set<E>,E>

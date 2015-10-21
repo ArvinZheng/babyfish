@@ -22,7 +22,7 @@ import java.io.Serializable;
 import org.babyfish.lang.Arguments;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class ObjectModelFactoryWritingReplacement implements Serializable {
     

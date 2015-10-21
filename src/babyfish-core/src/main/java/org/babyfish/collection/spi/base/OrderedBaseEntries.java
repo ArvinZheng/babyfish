@@ -19,7 +19,7 @@ package org.babyfish.collection.spi.base;
 import org.babyfish.collection.OrderAdjustMode;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface OrderedBaseEntries<K, V> extends DescendingBaseEntries<K, V> {
     

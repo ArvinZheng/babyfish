@@ -3,7 +3,7 @@ package org.babyfishdemo.spring.dal;
 import org.babyfishdemo.spring.entities.Department;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface DepartmentRepository {
 

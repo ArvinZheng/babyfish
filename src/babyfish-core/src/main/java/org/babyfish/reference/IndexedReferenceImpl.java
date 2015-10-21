@@ -19,7 +19,7 @@ package org.babyfish.reference;
 import org.babyfish.lang.Arguments;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class IndexedReferenceImpl<T> extends ReferenceImpl<T> implements IndexedReference<T> {
     

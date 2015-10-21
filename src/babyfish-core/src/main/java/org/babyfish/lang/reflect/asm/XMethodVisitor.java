@@ -20,7 +20,7 @@ import org.babyfish.lang.Action;
 import org.babyfish.org.objectweb.asm.MethodVisitor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class XMethodVisitor extends MethodVisitor implements SlotAllocator {
     

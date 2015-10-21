@@ -27,7 +27,7 @@ import org.babyfish.persistence.criteria.spi.PluralAttributePath;
 import org.babyfish.persistence.criteria.spi.Visitor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class IsMemberPredicate<E, C extends Collection<E>> extends AbstractSimplePredicate {
     

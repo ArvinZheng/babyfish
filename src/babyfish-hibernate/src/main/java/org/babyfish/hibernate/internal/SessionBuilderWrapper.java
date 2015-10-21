@@ -31,7 +31,7 @@ import org.hibernate.SessionBuilder;
 import org.hibernate.engine.spi.SessionBuilderImplementor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class SessionBuilderWrapper extends ClassWrapper {
     

@@ -19,7 +19,7 @@ package org.babyfish.collection;
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XOrderedSet<E> extends XSet<E> {
     

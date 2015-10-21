@@ -1,5 +1,5 @@
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 if (!Array.prototype.where) {
     throw new Error("\"linq.js\" must be included before \"kendo-linq.js\"");

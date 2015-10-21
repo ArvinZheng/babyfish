@@ -21,7 +21,7 @@ import java.io.Serializable;
 import org.babyfish.lang.Singleton;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class ReferenceEqualityComparator<T> extends Singleton implements EqualityComparator<T>, Serializable {
     

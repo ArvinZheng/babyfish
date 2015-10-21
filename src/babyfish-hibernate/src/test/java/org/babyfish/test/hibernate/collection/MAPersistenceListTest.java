@@ -21,7 +21,7 @@ import org.babyfish.collection.MAList;
 import org.babyfish.hibernate.collection.type.MAListType;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAPersistenceListTest extends MAListTest {
 

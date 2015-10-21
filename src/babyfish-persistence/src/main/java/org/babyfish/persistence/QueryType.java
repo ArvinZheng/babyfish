@@ -17,7 +17,7 @@
 package org.babyfish.persistence;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public enum QueryType {
     

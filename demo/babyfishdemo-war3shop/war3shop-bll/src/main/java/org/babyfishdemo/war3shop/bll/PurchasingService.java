@@ -16,7 +16,7 @@ import org.babyfishdemo.war3shop.entities.specification.ProductSpecification;
 import org.babyfishdemo.war3shop.entities.specification.PurchasingSpecification;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface PurchasingService {
 

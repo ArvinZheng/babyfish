@@ -61,7 +61,7 @@ import org.hibernate.type.Type;
 import org.jboss.logging.Logger;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public final class SessionFactoryImplWrapper extends ClassWrapper {
     

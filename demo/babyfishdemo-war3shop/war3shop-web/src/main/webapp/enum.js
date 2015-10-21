@@ -1,5 +1,5 @@
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 (function() {
     var regexp = /^[\$A-Za-z]([\$A-Za-z0-9])*(\.[\$A-Za-z]([\$A-Za-z0-9])*)*$/;

@@ -33,7 +33,7 @@ import org.babyfish.lang.Combiners;
 import org.babyfish.lang.Nulls;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class GraphTraveler<N> {
     

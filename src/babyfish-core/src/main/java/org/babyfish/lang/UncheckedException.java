@@ -19,7 +19,7 @@ package org.babyfish.lang;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class UncheckedException extends UndeclaredThrowableException {
 

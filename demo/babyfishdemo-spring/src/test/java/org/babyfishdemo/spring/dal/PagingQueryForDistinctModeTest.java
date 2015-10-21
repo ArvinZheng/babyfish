@@ -15,7 +15,7 @@ import org.junit.Test;
  * This test shows the paging query for the default query type
  * (org.babyfish.persistence.QueryType.DISTINCT)
  *
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class PagingQueryForDistinctModeTest extends AbstractRepositoryTest {
 

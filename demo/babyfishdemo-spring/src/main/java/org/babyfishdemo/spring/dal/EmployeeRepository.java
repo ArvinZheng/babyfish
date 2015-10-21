@@ -8,7 +8,7 @@ import org.babyfishdemo.spring.model.EmployeeSpecification;
 import org.babyfishdemo.spring.model.Page;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface EmployeeRepository {
     

@@ -1,7 +1,7 @@
 package org.babyfishdemo.xcollection.v;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Complex {
     

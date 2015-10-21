@@ -141,9 +141,6 @@ final class FieldWriter extends FieldVisitor {
     // Implementation of the FieldVisitor abstract class
     // ------------------------------------------------------------------------
 
-/**
- * @author Tao Chen(&#38472;&#28059;)
- */
     @Override
     public AnnotationVisitor visitAnnotation(final String desc,
             final boolean visible) {

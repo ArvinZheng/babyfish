@@ -30,7 +30,7 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XSubquery<T> extends Subquery<T>, XAbstractQuery<T> {
 

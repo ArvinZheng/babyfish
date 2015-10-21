@@ -13,7 +13,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.babyfishdemo.war3shop.web.json.JsonpModelAndView;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Aspect
 public class JsonAspect {

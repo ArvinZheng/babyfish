@@ -20,7 +20,7 @@ import org.babyfish.lang.Arguments;
 import org.babyfish.lang.BinaryFunc;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface TypedSimpleOrderPath<R> extends TypedQueryPath<R>, SimpleOrderPath {
 

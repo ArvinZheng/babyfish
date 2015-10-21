@@ -42,7 +42,7 @@ import org.babyfish.persistence.model.metadata.Inverse;
 import org.babyfish.reference.Reference;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Entity
 @Table(name = "SITE")

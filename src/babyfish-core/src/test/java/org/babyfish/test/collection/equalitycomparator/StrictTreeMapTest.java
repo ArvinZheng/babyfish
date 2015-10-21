@@ -21,7 +21,7 @@ import org.babyfish.collection.TreeMap;
 import org.babyfish.collection.XMap;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class StrictTreeMapTest extends AbstractStrictXMapTest {
 

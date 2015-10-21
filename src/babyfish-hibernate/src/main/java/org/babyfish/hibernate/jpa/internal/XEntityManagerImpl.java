@@ -65,7 +65,7 @@ import org.hibernate.jpa.internal.EntityManagerImpl;
 import org.hibernate.persister.entity.EntityPersister;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class XEntityManagerImpl extends EntityManagerImpl implements XEntityManager {
 

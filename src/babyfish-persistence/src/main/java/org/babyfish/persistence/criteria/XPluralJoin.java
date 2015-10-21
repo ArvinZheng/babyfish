@@ -19,7 +19,7 @@ package org.babyfish.persistence.criteria;
 import javax.persistence.criteria.PluralJoin;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XPluralJoin<X, C, E> extends PluralJoin<X, C, E>, XJoin<X, E> {
 

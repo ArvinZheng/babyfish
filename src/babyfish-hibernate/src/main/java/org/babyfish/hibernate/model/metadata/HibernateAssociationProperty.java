@@ -19,7 +19,7 @@ package org.babyfish.hibernate.model.metadata;
 import org.babyfish.persistence.model.metadata.JPAAssociationProperty;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface HibernateAssociationProperty extends JPAAssociationProperty ,HibernateProperty {
 

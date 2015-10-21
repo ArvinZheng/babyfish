@@ -20,7 +20,7 @@ import org.babyfish.immutable.ImmutableObjects;
 import org.babyfish.lang.Arguments;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ViewInfos extends ImmutableObjects {
 

@@ -21,7 +21,7 @@ import org.babyfish.collection.spi.base.ArrayElements;
 import org.babyfish.collection.spi.base.BaseElements;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ArrayElementsSerializableTest extends AbstractBaseElementsSerializableTest {
 

@@ -32,7 +32,7 @@ import org.hibernate.hql.internal.ast.tree.Node;
 import antlr.collections.AST;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 class HqlASTHelper implements HqlTokenTypes {
 

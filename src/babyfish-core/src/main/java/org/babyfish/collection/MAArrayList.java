@@ -29,7 +29,7 @@ import org.babyfish.collection.spi.base.ArrayElements;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MAArrayList<E> extends AbstractMAList<E> implements RandomAccess, Serializable {
     

@@ -22,7 +22,7 @@ import org.babyfish.hibernate.internal.XSessionFactoryImplementor;
 import org.hibernate.context.internal.ManagedSessionContext;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class ManagedXSessionContext extends ManagedSessionContext implements CurrentXSessionContext {
 

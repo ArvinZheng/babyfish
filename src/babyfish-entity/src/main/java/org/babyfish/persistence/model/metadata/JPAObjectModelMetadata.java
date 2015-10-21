@@ -21,7 +21,7 @@ import java.util.Map;
 import org.babyfish.model.metadata.ObjectModelMetadata;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface JPAObjectModelMetadata extends ObjectModelMetadata {
     

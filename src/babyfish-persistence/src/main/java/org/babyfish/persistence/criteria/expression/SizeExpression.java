@@ -25,7 +25,7 @@ import org.babyfish.persistence.criteria.spi.PluralAttributePath;
 import org.babyfish.persistence.criteria.spi.Visitor;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class SizeExpression<C extends Collection<?>> extends AbstractExpression<Integer> {
 

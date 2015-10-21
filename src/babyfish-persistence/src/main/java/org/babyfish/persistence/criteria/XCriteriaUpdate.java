@@ -26,7 +26,7 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.SingularAttribute;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public interface XCriteriaUpdate<T> extends XCommonAbstractCriteria, CriteriaUpdate<T> {
 

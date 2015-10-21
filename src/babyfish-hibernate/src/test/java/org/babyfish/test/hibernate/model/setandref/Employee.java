@@ -27,7 +27,7 @@ import org.babyfish.persistence.model.metadata.EntityId;
 import org.babyfish.reference.MAReference;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class Employee {
     

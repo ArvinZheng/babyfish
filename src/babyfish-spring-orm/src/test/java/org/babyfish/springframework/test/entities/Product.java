@@ -34,7 +34,7 @@ import javax.persistence.Table;
 import org.babyfish.persistence.instrument.JPAObjectModelInstrument;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @JPAObjectModelInstrument
 @Entity

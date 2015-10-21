@@ -19,7 +19,7 @@ package org.babyfish.persistence.tool.instrument;
 import org.babyfish.persistence.tool.instrument.metadata.MetadataClass;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class InstrumentedResult {
     

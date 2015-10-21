@@ -49,7 +49,7 @@ import org.hibernate.persister.collection.CollectionPersister;
 import org.hibernate.type.Type;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class PersistentMAOrderedMap<K, V> 
 extends AbstractLazyMAOrderedMap<K, V>

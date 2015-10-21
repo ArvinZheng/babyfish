@@ -19,7 +19,7 @@ package org.babyfish.hibernate.association;
 import org.hibernate.collection.spi.PersistentCollection;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 interface CommonResource {
     String persistentCollectionBehaviorIsInvalid(

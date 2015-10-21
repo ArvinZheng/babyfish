@@ -9,7 +9,7 @@ package org.babyfishdemo.foundation.typedi18n.lazy;
  *  \----------/   \-------------->CANCELLED
  */
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public enum AnnualLeaveRequestState {
 

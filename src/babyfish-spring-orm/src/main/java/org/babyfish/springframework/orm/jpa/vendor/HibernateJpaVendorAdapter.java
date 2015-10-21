@@ -41,7 +41,7 @@ import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @SuppressWarnings("deprecation")
 public class HibernateJpaVendorAdapter extends AbstractJpaVendorAdapter {

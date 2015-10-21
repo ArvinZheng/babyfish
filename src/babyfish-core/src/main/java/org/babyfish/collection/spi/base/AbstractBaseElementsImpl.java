@@ -41,7 +41,7 @@ import org.babyfish.validator.Validator;
 import org.babyfish.validator.Validators;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public abstract class AbstractBaseElementsImpl<E> implements BaseElements<E>, Serializable {
 

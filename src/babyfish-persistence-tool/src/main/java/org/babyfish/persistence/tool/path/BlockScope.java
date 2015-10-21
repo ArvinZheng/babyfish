@@ -17,7 +17,7 @@
 package org.babyfish.persistence.tool.path;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class BlockScope implements AutoCloseable {
     

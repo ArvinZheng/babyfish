@@ -30,7 +30,7 @@ import org.babyfish.persistence.criteria.XMapJoin;
 import org.babyfish.persistence.criteria.expression.MapEntryExpression;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class MapAttributeJoin<Z, K, V> 
 extends AbstractPluralAttributeJoin<Z, Map<K, V>, V>

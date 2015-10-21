@@ -35,7 +35,7 @@ import org.babyfish.persistence.criteria.XSubquery;
 import org.babyfish.util.LazyResource;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class CriteriaUpdateImpl<T> extends AbstractNode implements XCriteriaUpdate<T> {
     

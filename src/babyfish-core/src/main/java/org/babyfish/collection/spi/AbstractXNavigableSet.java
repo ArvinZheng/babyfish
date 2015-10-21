@@ -29,7 +29,7 @@ import org.babyfish.collection.viewinfo.NavigableSetViewInfos.TailSetByFromEleme
 import org.babyfish.view.View;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 public class AbstractXNavigableSet<E> extends AbstractXSet<E> implements XNavigableSet<E> {
 

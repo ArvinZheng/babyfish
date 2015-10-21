@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Tao Chen(&#38472;&#28059;)
+ * @author Tao Chen
  */
 @Transactional(propagation = Propagation.REQUIRED)
 public class ProductCategoryRepositoryImpl implements ProductCategoryRepository {
