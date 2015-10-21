@@ -19,7 +19,7 @@ A sub project of BabyFish, supports simple filter for JUnit.
     <license>
       <name>LGPL-3.0</name>
       <url>http://opensource.org/licenses/LGPL-3.0</url>
-	  </license>
+    </license>
   </licenses>
   
   <developers>

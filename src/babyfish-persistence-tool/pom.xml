@@ -20,7 +20,7 @@ it should not used by the user directly.
     <license>
       <name>LGPL-3.0</name>
       <url>http://opensource.org/licenses/LGPL-3.0</url>
-	  </license>
+    </license>
   </licenses>
   
   <developers>

@@ -24,7 +24,7 @@ BabyFish has to copy some source of it and change its package name to avoid the 
     <license>
       <name>LGPL-3.0</name>
       <url>http://opensource.org/licenses/LGPL-3.0</url>
-	  </license>
+    </license>
   </licenses>
   
   <developers>
