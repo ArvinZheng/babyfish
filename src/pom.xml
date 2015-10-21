@@ -7,7 +7,37 @@
     <artifactId>babyfish-parent</artifactId>
     <version>1.0.0.Alpha</version>
     <packaging>pom</packaging>
+	
+    <name>babyfish</name>
+    <description>
+An object model framework for Java and JPA.
+It contains
+(1) BabyFish Collection Framework(X Collection Framework + MA Collection Framework)
+(2) ObjectModel(ObjectModel4Java + ObjectModel4JPA)
+(3) An enhancement of JPA/Hibernate, merge the advantages of "ADO.NET Entity Framework" into JPA/Hibernate
+    </description>
+    <url>https://github.com/babyfish-ct/babyfish</url>
 
+    <licenses>
+        <license>
+            <name>LGPL-3.0</name>
+            <url>http://opensource.org/licenses/LGPL-3.0</url>
+		    </license>
+    </licenses>
+  
+    <developers>
+        <developer>
+            <name>Tao Chen(Chinese Name: &#38472;&#28059;)</name>
+            <email>babyfish-ct@163.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+      <connection>scm:git@github.com/babyfish-ct/babyfish.git</connection>
+      <developerConnection>scm:git@github.com/babyfish-ct/babyfish.git</developerConnection>
+      <url>https://github.com/babyfish-ct/babyfish</url>
+    </scm>
+	
     <properties>
         <slf4j.version>1.5.0</slf4j.version>
         <spring.version>4.0.0.RELEASE</spring.version>
@@ -145,4 +175,63 @@
         </plugins>
     </build>
 
+    <profiles>
+		<profile>
+			<id>release</id>
+		    <distributionManagement>
+		        <snapshotRepository>
+		            <id>oss</id>
+			    	<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			  	</snapshotRepository>
+		  		<repository>
+		    	    <id>oss</id>
+		    	    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		  		</repository>
+			</distributionManagement>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.4</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+						    </execution>
+						</executions>
+					</plugin>
+					<plugin>
+					    <groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.10.3</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+							        <goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+				    </plugin>
+				    <plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+							    <id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+								    <goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
