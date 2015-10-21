@@ -203,6 +203,8 @@ It contains
                             </execution>
                         </executions>
                     </plugin>
+					<!--
+					The javadoc plugin can't work normally on linux temporarily.
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
@@ -219,6 +221,7 @@ It contains
                             </execution>
                         </executions>
                     </plugin>
+					-->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
