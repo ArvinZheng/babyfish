@@ -8,8 +8,8 @@ There are many technologies for those three layers, but unfortunately, the data 
 
 In order to support powerful data model developing, babyfish supports two core functionalities
 
-BabyFish Collection Framework(X Collection Framework + MA Collection Framework).
-ObjectModel(ObjectModel4Java + ObjectMode4JPA).
+* BabyFish Collection Framework(X Collection Framework + MA Collection Framework).
+* ObjectModel(ObjectModel4Java + ObjectMode4JPA).
 
 ### 2. BabyFish is an enhancement of JPA/Hibernate.
 
