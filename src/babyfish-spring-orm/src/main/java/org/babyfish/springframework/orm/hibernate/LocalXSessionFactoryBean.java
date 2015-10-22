@@ -1,5 +1,6 @@
 /*
  * BabyFish, Object Model Framework for Java and JPA.
+ * https://github.com/babyfish-ct/babyfish
  *
  * Copyright (c) 2008-2015, Tao Chen
  *
@@ -77,135 +78,50 @@ public class LocalXSessionFactoryBean extends HibernateExceptionTranslator
 
     private XSessionFactory sessionFactory;
 
-
-    /**
-     * Set the DataSource to be used by the SessionFactory.
-     * If set, this will override corresponding settings in Hibernate properties.
-     * <p>If this is set, the Hibernate settings should not define
-     * a connection provider to avoid meaningless double configuration.
-     */
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    /**
-     * Set the location of a single Hibernate XML config file, for example as
-     * classpath resource "classpath:hibernate.cfg.xml".
-     * <p>Note: Can be omitted when all necessary properties and mapping
-     * resources are specified locally via this bean.
-     * @see org.hibernate.cfg.Configuration#configure(java.net.URL)
-     */
     public void setConfigLocation(Resource configLocation) {
         this.configLocations = new Resource[] {configLocation};
     }
 
-    /**
-     * Set the locations of multiple Hibernate XML config files, for example as
-     * classpath resources "classpath:hibernate.cfg.xml,classpath:extension.cfg.xml".
-     * <p>Note: Can be omitted when all necessary properties and mapping
-     * resources are specified locally via this bean.
-     * @see org.hibernate.cfg.Configuration#configure(java.net.URL)
-     */
     public void setConfigLocations(Resource[] configLocations) {
         this.configLocations = configLocations;
     }
 
-    /**
-     * Set Hibernate mapping resources to be found in the class path,
-     * like "example.hbm.xml" or "mypackage/example.hbm.xml".
-     * Analogous to mapping entries in a Hibernate XML config file.
-     * Alternative to the more generic setMappingLocations method.
-     * <p>Can be used to add to mappings from a Hibernate XML config file,
-     * or to specify all mappings locally.
-     * @see #setMappingLocations
-     * @see org.hibernate.cfg.Configuration#addResource
-     */
     public void setMappingResources(String[] mappingResources) {
         this.mappingResources = mappingResources;
     }
 
-    /**
-     * Set locations of Hibernate mapping files, for example as classpath
-     * resource "classpath:example.hbm.xml". Supports any resource location
-     * via Spring's resource abstraction, for example relative paths like
-     * "WEB-INF/mappings/example.hbm.xml" when running in an application context.
-     * <p>Can be used to add to mappings from a Hibernate XML config file,
-     * or to specify all mappings locally.
-     * @see org.hibernate.cfg.Configuration#addInputStream
-     */
     public void setMappingLocations(Resource[] mappingLocations) {
         this.mappingLocations = mappingLocations;
     }
 
-    /**
-     * Set locations of cacheable Hibernate mapping files, for example as web app
-     * resource "/WEB-INF/mapping/example.hbm.xml". Supports any resource location
-     * via Spring's resource abstraction, as long as the resource can be resolved
-     * in the file system.
-     * <p>Can be used to add to mappings from a Hibernate XML config file,
-     * or to specify all mappings locally.
-     * @see org.hibernate.cfg.Configuration#addCacheableFile(java.io.File)
-     */
     public void setCacheableMappingLocations(Resource[] cacheableMappingLocations) {
         this.cacheableMappingLocations = cacheableMappingLocations;
     }
 
-    /**
-     * Set locations of jar files that contain Hibernate mapping resources,
-     * like "WEB-INF/lib/example.hbm.jar".
-     * <p>Can be used to add to mappings from a Hibernate XML config file,
-     * or to specify all mappings locally.
-     * @see org.hibernate.cfg.Configuration#addJar(java.io.File)
-     */
     public void setMappingJarLocations(Resource[] mappingJarLocations) {
         this.mappingJarLocations = mappingJarLocations;
     }
 
-    /**
-     * Set locations of directories that contain Hibernate mapping resources,
-     * like "WEB-INF/mappings".
-     * <p>Can be used to add to mappings from a Hibernate XML config file,
-     * or to specify all mappings locally.
-     * @see org.hibernate.cfg.Configuration#addDirectory(java.io.File)
-     */
     public void setMappingDirectoryLocations(Resource[] mappingDirectoryLocations) {
         this.mappingDirectoryLocations = mappingDirectoryLocations;
     }
 
-    /**
-     * Set a Hibernate entity interceptor that allows to inspect and change
-     * property values before writing to and reading from the database.
-     * Will get applied to any new Session created by this factory.
-     * @see org.hibernate.cfg.Configuration#setInterceptor
-     */
     public void setEntityInterceptor(Interceptor entityInterceptor) {
         this.entityInterceptor = entityInterceptor;
     }
 
-    /**
-     * Set a Hibernate NamingStrategy for the SessionFactory, determining the
-     * physical column and table names given the info in the mapping document.
-     * @see org.hibernate.cfg.Configuration#setNamingStrategy
-     */
     public void setNamingStrategy(NamingStrategy namingStrategy) {
         this.namingStrategy = namingStrategy;
     }
 
-    /**
-     * Set Hibernate properties, such as "hibernate.dialect".
-     * <p>Note: Do not specify a transaction provider here when using
-     * Spring-driven transactions. It is also advisable to omit connection
-     * provider settings and use a Spring-set DataSource instead.
-     * @see #setDataSource
-     */
     public void setHibernateProperties(Properties hibernateProperties) {
         this.hibernateProperties = hibernateProperties;
     }
 
-    /**
-     * Return the Hibernate properties, if any. Mainly available for
-     * configuration through property paths that specify individual keys.
-     */
     public Properties getHibernateProperties() {
         if (this.hibernateProperties == null) {
             this.hibernateProperties = new Properties();
@@ -213,38 +129,18 @@ public class LocalXSessionFactoryBean extends HibernateExceptionTranslator
         return this.hibernateProperties;
     }
 
-    /**
-     * Specify annotated entity classes to register with this Hibernate SessionFactory.
-     * @see org.hibernate.cfg.Configuration#addAnnotatedClass(Class)
-     */
     public void setAnnotatedClasses(Class<?>[] annotatedClasses) {
         this.annotatedClasses = annotatedClasses;
     }
 
-    /**
-     * Specify the names of annotated packages, for which package-level
-     * annotation metadata will be read.
-     * @see org.hibernate.cfg.Configuration#addPackage(String)
-     */
     public void setAnnotatedPackages(String[] annotatedPackages) {
         this.annotatedPackages = annotatedPackages;
     }
 
-    /**
-     * Specify packages to search for autodetection of your entity classes in the
-     * classpath. This is analogous to Spring's component-scan feature
-     * ({@link org.springframework.context.annotation.ClassPathBeanDefinitionScanner}).
-     */
     public void setPackagesToScan(String... packagesToScan) {
         this.packagesToScan = packagesToScan;
     }
 
-    /**
-     * Set the Spring {@link org.springframework.transaction.jta.JtaTransactionManager}
-     * or the JTA {@link javax.transaction.TransactionManager} to be used with Hibernate,
-     * if any.
-     * @see org.babyfish.springframework.orm.hibernate.HibernateSessionFactoryBuilder#setJtaTransactionManager(Object)
-     */
     public void setJtaTransactionManager(Object jtaTransactionManager) {
         this.jtaTransactionManager = jtaTransactionManager;
     }
@@ -252,8 +148,7 @@ public class LocalXSessionFactoryBean extends HibernateExceptionTranslator
     public void setResourceLoader(ResourceLoader resourceLoader) {
         this.resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(resourceLoader);
     }
-
-
+    
     public void afterPropertiesSet() throws IOException {
         LocalXSessionFactoryBuilder sfb = new LocalXSessionFactoryBuilder(this.dataSource, this.resourcePatternResolver);
 
@@ -338,26 +233,10 @@ public class LocalXSessionFactoryBean extends HibernateExceptionTranslator
         this.sessionFactory = buildSessionFactory(sfb);
     }
 
-    /**
-     * Subclasses can override this method to perform custom initialization
-     * of the SessionFactory instance, creating it via the given Configuration
-     * object that got prepared by this LocalSessionFactoryBean.
-     * <p>The default implementation invokes org.babyfish.springframework.orm.hibernate.LocalSessionFactoryBuilder's buildSessionFactory.
-     * A custom implementation could prepare the instance in a specific way (e.g. applying
-     * a custom ServiceRegistry) or use a custom SessionFactoryImpl subclass.
-     * @param sfb org.babyfish.springframework.orm.hibernate.LocalSessionFactoryBuilder prepared by this LocalSessionFactoryBean
-     * @return the SessionFactory instance
-     * @see LocalXSessionFactoryBuilder#buildSessionFactory
-     */
     protected XSessionFactory buildSessionFactory(LocalXSessionFactoryBuilder sfb) {
         return sfb.buildSessionFactory();
     }
 
-    /**
-     * Return the Hibernate Configuration object used to build the SessionFactory.
-     * Allows for access to configuration metadata stored there (rarely needed).
-     * @throws IllegalStateException if the Configuration object has not been initialized yet
-     */
     public final org.babyfish.hibernate.cfg.Configuration getConfiguration() {
         if (this.configuration == null) {
             throw new IllegalStateException("Configuration not initialized yet");
@@ -380,6 +259,5 @@ public class LocalXSessionFactoryBean extends HibernateExceptionTranslator
     public void destroy() {
         this.sessionFactory.close();
     }
-
 }
 

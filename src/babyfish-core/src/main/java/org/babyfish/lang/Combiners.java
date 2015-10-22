@@ -1,5 +1,6 @@
 /*
  * BabyFish, Object Model Framework for Java and JPA.
+ * https://github.com/babyfish-ct/babyfish
  *
  * Copyright (c) 2008-2015, Tao Chen
  *
@@ -60,12 +61,13 @@ public class Combiners {
     
     /**
      * <p>
-     *    This invocation of this method is same with the 
+     *  This invocation of this method is same with the 
      *  the invocation of the other method {@link #of(Class, ChainInvocationExceptionHandleMode)}
-     *    using null to its second parameter.
+     *  using null to its second parameter.
      * </p>
-     * @param interfaceType
-     * @return
+     * @param <I> The interface Type
+     * @param interfaceType The interface type
+     * @return The combiner of the specified interface.
      * @exception NullArgumentException The parameter "interfaceType" is null
      * @exception IllegalArgumentException
      * <ul>
@@ -114,9 +116,10 @@ public class Combiners {
      *    When the parameter "chainInvocationExceptionHandleMode" is null,
      *  This method is same to {@link #of(Class)}
      * </p>
-     * @param interfaceType
-     * @param chainInvocationExceptionHandleMode
-     * @return
+     * @param <I> The interface Type
+     * @param interfaceType The interface Type
+     * @param mode Decide should continue to execute when one sub interface raise exception or not.
+     * @return The combiner of the specified interface.
      * @exception NullArgumentException The parameter "interfaceType" is null
      * @exception IllegalArgumentException
      * <ul>

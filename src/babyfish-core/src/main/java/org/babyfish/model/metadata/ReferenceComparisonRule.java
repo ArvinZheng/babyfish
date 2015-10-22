@@ -1,5 +1,6 @@
 /*
  * BabyFish, Object Model Framework for Java and JPA.
+ * https://github.com/babyfish-ct/babyfish
  *
  * Copyright (c) 2008-2015, Tao Chen
  *
@@ -42,13 +43,15 @@ import org.babyfish.model.metadata.spi.AssociationOnly;
 public @interface ReferenceComparisonRule {
 
     /**
+     * @return The ObjectModel interface property names to compare the owner model objects.
+     * 
      * Tow ways to use it.
      * 
      * (1) Strict, but need more characters
-     * @ReferenceComparisonRule({ "property1", "property2", "property3" })
+     * &#64;ReferenceComparisonRule({ "property1", "property2", "property3" })
      * 
      * (2) Less characters, but lax
-     * @ReferenceComparisonRule("property1, property2, property3")
+     * &#64;ReferenceComparisonRule("property1, property2, property3".
      */
     String[] value();
 }

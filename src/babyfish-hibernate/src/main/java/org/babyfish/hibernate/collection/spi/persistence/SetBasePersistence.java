@@ -1,5 +1,6 @@
 /*
  * BabyFish, Object Model Framework for Java and JPA.
+ * https://github.com/babyfish-ct/babyfish
  *
  * Copyright (c) 2008-2015, Tao Chen
  *
@@ -370,9 +371,12 @@ public abstract class SetBasePersistence<E> extends AbstractBasePersistence<E> {
     /**
      * This method is used to replace 
      * "org.hibernate.collection.AbstractPersistentCollection#readElementExistence(Object element)"
-     * @param element
-     * @param session
-     * @return
+     * @param element The example element to be read
+     * @return The ref or readed element
+     * <ul>
+     *  <li>NonNull: Read successfully, check the value of ref to check the read value is null or not</li>
+     *  <li>Null: Read failed</li>
+     * </ul>
      */
     @SuppressWarnings("unchecked")
     public Ref<E> visionallyRead(E element) {

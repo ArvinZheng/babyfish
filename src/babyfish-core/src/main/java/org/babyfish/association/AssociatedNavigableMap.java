@@ -1,5 +1,6 @@
 /*
  * BabyFish, Object Model Framework for Java and JPA.
+ * https://github.com/babyfish-ct/babyfish
  *
  * Copyright (c) 2008-2015, Tao Chen
  *
@@ -97,7 +98,7 @@ implements AssociatedEndpoint<O, V>, Serializable {
     }
     
     /**
-     * @exception {@link #getOppositeEndpointType()} returns invalid value.
+     * @exception IllegalProgramException {@link #getOppositeEndpointType()} returns invalid value.
      * the valid return value must be one of these values
      * <ul>
      *  <li>{@link AssociatedEndpointType#REFERENCE}</li>
@@ -236,7 +237,6 @@ implements AssociatedEndpoint<O, V>, Serializable {
         /**
          * @exception IllegalArgumentException The parameter base's 
          * {@link MANavigableMap#keyReplacementRule()} does not return {@link ReplacementRule#NEW_REFERENCE_WIN}
-         * </ul>
          */
         @Override
         protected void setBase(MANavigableMap<K, V> base) {

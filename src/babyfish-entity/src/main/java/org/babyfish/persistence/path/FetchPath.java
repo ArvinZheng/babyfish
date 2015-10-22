@@ -1,5 +1,6 @@
 /*
  * BabyFish, Object Model Framework for Java and JPA.
+ * https://github.com/babyfish-ct/babyfish
  *
  * Copyright (c) 2008-2015, Tao Chen
  *
@@ -21,11 +22,6 @@ package org.babyfish.persistence.path;
  */
 public interface FetchPath extends QueryPath {
     
-    /**
-     * Get the first fetch node of the path.
-     * @return The first fetch node of the path, it may be null and
-     * it always be same with {@link #getRootNode()}.{@link Node#getNextNode() getNextNode()}
-     */
     Node getFirstNode();
 
     public interface Node {

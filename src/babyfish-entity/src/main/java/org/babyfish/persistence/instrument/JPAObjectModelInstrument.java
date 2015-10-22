@@ -1,5 +1,6 @@
 /*
  * BabyFish, Object Model Framework for Java and JPA.
+ * https://github.com/babyfish-ct/babyfish
  *
  * Copyright (c) 2008-2015, Tao Chen
  *
@@ -33,11 +34,13 @@ import java.lang.annotation.Target;
 public @interface JPAObjectModelInstrument {
     
     /**
+     * @return The order of properities
+     * 
      * Two ways to use it
      * 
      * <ul>
-     *    <li>JPAObjectModelInstrument(declaredPropertiesOrder = "a, b, c")</li>
-     *  <li>JPAObjectModelInstrument(declaredPropertiesOrder = { "a", "b", "c" })</li>
+     *  <li>&#64;JPAObjectModelInstrument(declaredPropertiesOrder = "a, b, c")</li>
+     *  <li>&#64;JPAObjectModelInstrument(declaredPropertiesOrder = { "a", "b", "c" })</li>
      * </ul>
      * 
      * Generically, it's unnecessary to specify this argument,

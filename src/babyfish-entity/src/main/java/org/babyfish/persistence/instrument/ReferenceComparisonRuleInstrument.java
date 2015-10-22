@@ -1,5 +1,6 @@
 /*
  * BabyFish, Object Model Framework for Java and JPA.
+ * https://github.com/babyfish-ct/babyfish
  *
  * Copyright (c) 2008-2015, Tao Chen
  *
@@ -30,14 +31,16 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 public @interface ReferenceComparisonRuleInstrument {
 
-    /*
+    /**
+     * @return The order of properties
+     * 
      * Tow ways to use it.
      * 
      * (1) Strict, but need more characters
-     * @ReferenceComparisonRuleInstrument({ "property1", "property2", "property3" })
+     * &#64;ReferenceComparisonRuleInstrument({ "property1", "property2", "property3" })
      * 
      * (2) Less characters, but lax
-     * @ReferenceComparisonRuleInstrument("property1, property2, property3")
+     * &#64;ReferenceComparisonRuleInstrument("property1, property2, property3")
      */
     String[] value();
 }

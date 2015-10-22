@@ -133,9 +133,6 @@ public abstract class AbstractInsnNode {
      * only used for real instructions (i.e. not for labels, frames, or line
      * number nodes). This list is a list of {@link TypeAnnotationNode} objects.
      * May be <tt>null</tt>.
-     * 
-     * @associates org.objectweb.asm.tree.TypeAnnotationNode
-     * @label visible
      */
     public List<TypeAnnotationNode> visibleTypeAnnotations;
 
@@ -144,9 +141,6 @@ public abstract class AbstractInsnNode {
      * only used for real instructions (i.e. not for labels, frames, or line
      * number nodes). This list is a list of {@link TypeAnnotationNode} objects.
      * May be <tt>null</tt>.
-     * 
-     * @associates org.objectweb.asm.tree.TypeAnnotationNode
-     * @label invisible
      */
     public List<TypeAnnotationNode> invisibleTypeAnnotations;
 

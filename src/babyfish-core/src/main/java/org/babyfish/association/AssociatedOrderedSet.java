@@ -1,5 +1,6 @@
 /*
  * BabyFish, Object Model Framework for Java and JPA.
+ * https://github.com/babyfish-ct/babyfish
  *
  * Copyright (c) 2008-2015, Tao Chen
  *
@@ -223,7 +224,6 @@ implements AssociatedEndpoint<O, E>, Serializable {
         /**
          * @exception IllegalArgumentException The parameter base's 
          * {@link MAOrderedSet#replacementRule()} does not return {@link ReplacementRule#NEW_REFERENCE_WIN}
-         * </ul>
          */
         @Override
         protected void setBase(MAOrderedSet<E> base) {
