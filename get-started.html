@@ -67,6 +67,14 @@
             div.wrong-code {
                 text-decoration:line-through;
             }
+            div.important-info {
+                padding: 10px;
+                font-size: 18px;
+                font-style: italic;
+                font-weight: bold;
+                color: rgb(127, 63, 0);
+                background-color: rgb(230, 255, 255);
+            }
             div.warning {
                 background-color: rgb(255, 230, 230);
                 border: solid 1px gray;
@@ -248,6 +256,11 @@
             </ol>
 
             <h1>Install the babyfish framework</h1>
+            <div class="important-info">
+                You can also skip the "babyfish framework installation" and
+                do <a href="#runDemo">Run Demo</a> directly,
+                because babyfish has been uploaded to Maven Central Repository on 2015-10-23
+            </div>
             <p>
                 There are two ways to test the babyfish framework
             </p>
@@ -285,7 +298,7 @@ mvn clean install -Doracle=jdbc:oracle:thin:@<span class="variable">${oracle-hos
                 </li>
             </ol>
 
-            <h1>Run demo</h1>
+            <h1><a id="runDemo" name="runDemo">Run demo</a></h1>
             <div class="sub-content">
                 <h2>Part-I: Compile and test all the demos</h2>
                 <p>
