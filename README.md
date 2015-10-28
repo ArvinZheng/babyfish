@@ -1,8 +1,12 @@
 # What is BabyFish?
 
-### 1. BabyFish is a Java framework for data model classes.
+BabyFish is an Object Association Management framework(Let's call it OAM), it can be split to 2 parts. 
+
+### 1. A Java framework for data model classes.
 
 Generally speaking, program can be split to three layers: data accessing layer, business logic layer and Presentation layer, but there are some data model classes that do not belong to none of those layers, they are standalone and shared by every layer. Often, people call it "Entity Classes" too.
+
+It's easy for developer to create a simple class without associations, but it's hard for developer to create complex object graph with bidirectional associations. BabyFish help developer to to create powerful object graph with auto synchroization bidirectional associations fastly with a little code. 
 
 There are many technologies for those three layers, but unfortunately, the data model classes that are shared by every layer are often neglected, people often think writing some C-structure style classes with some getter and setter is enough. BabyFish tries to try to change this phenomenon, it is a framework of data model classes.
 
@@ -11,7 +15,7 @@ In order to support powerful data model developing, babyfish supports two core f
 * BabyFish Collection Framework(X Collection Framework + MA Collection Framework).
 * ObjectModel(ObjectModel4Java + ObjectMode4JPA).
 
-### 2. BabyFish is an enhancement of JPA/Hibernate.
+### 2. An enhancement of JPA/Hibernate.
 
 In order to adapt to the new data model technology, of course, every classic layer needs to be improved. For first version, it only improved the data accessing layer because the time is not enough.
 
@@ -46,6 +50,16 @@ BabyFish-JPA/BabyFish-Hibernate supports these three core functionalities
 
 * DistinctLimiQuery: Enhance the Oracle Dialect of Hibernate to resolve a problem of Hibernate, In hibernate, when paging query(with firstResult/maxResults) contains collection fetches, hibernate has to query all the data and do the paging filter in memory. This functionality can resolve this problem when database is Oracle.
 
+# How to run and learn it
+* Please view get-started.html to install and run it. 
+* Please view demo/demo-guide.html to learn it, that document describe every demo and give a suggestion for learning order. 
+> Fastest way to learn it
+> This framework is big so it need some time to know all the functionalities. If the time or interest is not enough so that you want to know only the most important functionalities of BabyFish in least possible time. You can learn 4 UnitTest classes 
+> * ${babyfish-dir}/demo/babyfishdemo-om4java/src/test/java/org/babyfishdemo/om4java/l2ir/ObjectModelOfListAndIndexedReferenceTest
+> * ${babyfish-dir}/demo/babyfishdemo-spring/src/test/java/org/babyfishdemo/spring/dal/QueryPathTest.java
+> * ${babyfish-dir}/demo/babyfishdemo-xcollection/src/test/java/org/babyfishdemo/xcollection/uce/UnstableCollectionElementsTest.java
+> * ${babyfish-dir}/demo/babyfishdemo-macollection/src/test/java/org/babyfishdemo/macollection/bubble/SimpleBubbleEventTest.java
+
 # Why did the first version cost so long time(2008-2015)?
 I started to develop this framework since Aug, 2008, the first version is coming so late because
 * I use my spare time to develop this framework, because I have to spend most of my time to engage in some boring works for salary to support myself.
@@ -55,6 +69,7 @@ I started to develop this framework since Aug, 2008, the first version is coming
 # license: LPGL3.0
 BabyFish uses the LGPL-3.0 license so that it can be used in commercial projects, 
 please see [http://opensource.org/licenses/LGPL-3.0](http://opensource.org/licenses/LGPL-3.0) to know more.
+
 # Thanks
 Thank two great frameworks: [ASM](http://asm.ow2.org) and [ANTLR](http://www.antlr.org)
 
