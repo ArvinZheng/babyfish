@@ -55,10 +55,10 @@ BabyFish-JPA/BabyFish-Hibernate supports these three core functionalities
 * Please view demo/demo-guide.html to learn it, that document describe every demo and give a suggestion for learning order. 
 > Fastest way to learn it
 > This framework is big so it need some time to know all the functionalities. If the time or interest is not enough so that you want to know only the most important functionalities of BabyFish in least possible time. You can learn 4 UnitTest classes 
-> * ${babyfish-dir}/demo/babyfishdemo-om4java/src/test/java/org/babyfishdemo/om4java/l2ir/ObjectModelOfListAndIndexedReferenceTest
-> * ${babyfish-dir}/demo/babyfishdemo-spring/src/test/java/org/babyfishdemo/spring/dal/QueryPathTest.java
-> * ${babyfish-dir}/demo/babyfishdemo-xcollection/src/test/java/org/babyfishdemo/xcollection/uce/UnstableCollectionElementsTest.java
-> * ${babyfish-dir}/demo/babyfishdemo-macollection/src/test/java/org/babyfishdemo/macollection/bubble/SimpleBubbleEventTest.java
+>* ${babyfish-dir}/demo/babyfishdemo-om4java/src/test/java/org/babyfishdemo/om4java/l2ir/ObjectModelOfListAndIndexedReferenceTest
+>* ${babyfish-dir}/demo/babyfishdemo-spring/src/test/java/org/babyfishdemo/spring/dal/QueryPathTest.java
+>* ${babyfish-dir}/demo/babyfishdemo-xcollection/src/test/java/org/babyfishdemo/xcollection/uce/UnstableCollectionElementsTest.java
+>* ${babyfish-dir}/demo/babyfishdemo-macollection/src/test/java/org/babyfishdemo/macollection/bubble/SimpleBubbleEventTest.java
 
 # Why did the first version cost so long time(2008-2015)?
 I started to develop this framework since Aug, 2008, the first version is coming so late because
