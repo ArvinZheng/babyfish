@@ -75,6 +75,14 @@ please see [http://opensource.org/licenses/LGPL-3.0](http://opensource.org/licen
 # Thanks
 Thank two great frameworks: [ASM](http://asm.ow2.org) and [ANTLR](http://www.antlr.org)
 
+# Video resources
+
+> Chinsese videos:
+>* [http://v.youku.com/v_show/id_XMTM3MjEyNDExNg==](http://v.youku.com/v_show/id_XMTM3MjEyNDExNg==)  
+>* To be continue.
+
+> English videos: Will be added soon. 
+
 # About me
 Tao Chen(陈涛), [babyfish-ct@163.com](mailto:babyfish-ct@163.com)
 
