@@ -77,12 +77,13 @@ Thank two great frameworks: [ASM](http://asm.ow2.org) and [ANTLR](http://www.ant
 
 # Video resources
 
-> Chinsese videos:
+> Chinese videos:
 >* Introduction and QueryPath: [http://v.youku.com/v_show/id_XMTM3MjEyNDExNg==](http://v.youku.com/v_show/id_XMTM3MjEyNDExNg==)  
 >* To be continue.
 
 > English videos: 
 >* Introduction and QueryPath: [https://youtu.be/DBDdQkBLrLU](https://youtu.be/DBDdQkBLrLU)
+>* To be continue.
 
 # About me
 Tao Chen(Chinese Name: 陈涛), [babyfish-ct@163.com](mailto:babyfish-ct@163.com)
