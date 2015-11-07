@@ -7,10 +7,10 @@
     <artifactId>babyfish-parent</artifactId>
     <version>1.0.0.Alpha</version>
   </parent>
-  <artifactId>babyfish-hibernate</artifactId>
+  <artifactId>babyfish-hibernate5</artifactId>
   
   <name>babyfish-hibernate</name>
-  <description>The hibernate enhancement project of BabyFish.</description>
+  <description>The hibernate5 enhancement project of BabyFish.</description>
   <url>https://github.com/babyfish-ct/babyfish</url>
 
   <licenses>
@@ -76,6 +76,7 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
+      <version>${hibernate5.version}</version>
     </dependency>
     <dependency>
         <groupId>org.jboss</groupId>
@@ -146,7 +147,7 @@
           <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
-            <version>${hibernate.version}</version>
+            <version>${hibernate5.version}</version>
           </dependency>
           <dependency>
             <groupId>org.babyfish</groupId>

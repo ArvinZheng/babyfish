@@ -74,7 +74,7 @@
     </dependency>
     <dependency>
       <groupId>org.babyfish</groupId>
-      <artifactId>babyfish-hibernate</artifactId>
+      <artifactId>babyfish-hibernate4</artifactId>
       <version>${babyfish.version}</version>
     </dependency>
     <dependency>

@@ -42,7 +42,8 @@ It contains
         <slf4j.version>1.5.0</slf4j.version>
         <spring.version>4.0.0.RELEASE</spring.version>
         <antlr.version>4.5</antlr.version>
-        <hibernate.version>4.3.6.Final</hibernate.version>
+        <hibernate4.version>4.3.6.Final</hibernate4.version>
+		<hibernate5.version>5.0.0.Final</hibernate5.version>
     </properties>
 
     <modules>
@@ -50,7 +51,8 @@ It contains
         <module>babyfish-core</module>
         <module>babyfish-persistence</module>
         <module>babyfish-entity</module>
-        <module>babyfish-hibernate</module>
+        <module>babyfish-hibernate4</module>
+		<module>babyfish-hibernate5</module>
         <module>babyfish-spring-orm</module>
         <module>babyfish-persistence-tool</module>
         <module>babyfish-hibernate-tool</module>
@@ -116,16 +118,6 @@ It contains
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-entitymanager</artifactId>
-                <version>${hibernate.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-jpamodelgen</artifactId>
-                <version>${hibernate.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.javax.persistence</groupId>

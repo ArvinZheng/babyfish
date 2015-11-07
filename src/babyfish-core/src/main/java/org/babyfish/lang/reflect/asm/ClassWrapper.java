@@ -376,7 +376,8 @@ public abstract class ClassWrapper {
         return rawMethod;
     }
 
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
+	@SuppressWarnings("unchecked")
     protected final <T> T createProxy(T raw, T ... args) {
         return (T)this.factory.run(raw, args);
     }

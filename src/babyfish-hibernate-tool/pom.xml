@@ -43,7 +43,7 @@ but should NOT be used by code of user projects directly.
   <dependencies>
     <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>babyfish-hibernate</artifactId>
+        <artifactId>babyfish-hibernate4</artifactId>
         <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -87,7 +87,7 @@ but should NOT be used by code of user projects directly.
           <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
-            <version>${hibernate.version}</version>
+            <version>${hibernate4.version}</version>
           </dependency>
           <dependency>
             <groupId>org.babyfish</groupId>
