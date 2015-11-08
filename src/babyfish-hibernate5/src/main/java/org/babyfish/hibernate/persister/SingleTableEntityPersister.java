@@ -33,11 +33,12 @@ import org.hibernate.persister.spi.PersisterCreationContext;
  */
 public class SingleTableEntityPersister extends org.hibernate.persister.entity.SingleTableEntityPersister {
 
-    public SingleTableEntityPersister(PersistentClass persistentClass, EntityRegionAccessStrategy cacheAccessStrategy,
-			NaturalIdRegionAccessStrategy naturalIdRegionAccessStrategy, PersisterCreationContext creationContext)
-					throws HibernateException {
+    public SingleTableEntityPersister(
+    		PersistentClass persistentClass, 
+    		EntityRegionAccessStrategy cacheAccessStrategy,
+			NaturalIdRegionAccessStrategy naturalIdRegionAccessStrategy, 
+			PersisterCreationContext creationContext) throws HibernateException {
 		super(persistentClass, cacheAccessStrategy, naturalIdRegionAccessStrategy, creationContext);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

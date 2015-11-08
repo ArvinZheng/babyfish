@@ -24,8 +24,8 @@ import java.util.Set;
 import org.babyfish.collection.ArrayList;
 import org.babyfish.collection.LinkedHashSet;
 import org.babyfish.collection.ReferenceEqualityComparator;
-import org.babyfish.hibernate.cfg.Configuration;
 import org.babyfish.hibernate.cfg.SettingsFactory;
+import org.babyfish.hibernate.internal.XSessionFactoryBuilderImpl;
 import org.babyfish.persistence.QueryType;
 import org.babyfish.persistence.path.spi.PathPlanKey;
 import org.babyfish.util.LazyResource;
@@ -62,7 +62,7 @@ public class XQueryPlan extends HQLQueryPlan {
     
     public static PathPlanKey currentPathPlanKey() {
         Object o = PATH_PLAN_KEY_TL.get();
-        if (o == null && !Configuration.isPathPlanKeyVlidationSuspended()) {
+        if (o == null && !XSessionFactoryBuilderImpl.isPathPlanKeyVlidationSuspended()) {
             throw new IllegalStateException(
                     LAZY_RESOURCE.get().notDuringAnyInvocation(
                             XQueryPlanCache.class, 

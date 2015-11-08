@@ -82,13 +82,13 @@ public class HibernatePersistenceProvider implements PersistenceProvider {
     @SuppressWarnings("rawtypes")
     @Override
     public XEntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties) {
-        return new XEntityManagerFactoryBuilderImpl(info, properties, null).build();
+        return XEntityManagerFactoryBuilderImpl.of(info, properties, null).build();
     }
     
     @SuppressWarnings("rawtypes")
     @Override
     public void generateSchema(PersistenceUnitInfo info, Map properties) {
-    	new XEntityManagerFactoryBuilderImpl(info, properties, null).generateSchema();
+    	XEntityManagerFactoryBuilderImpl.of(info, properties, null).generateSchema();
     }
 
     @SuppressWarnings("rawtypes")
@@ -197,11 +197,11 @@ public class HibernatePersistenceProvider implements PersistenceProvider {
                     MethodInsnNode methodInsnNode = (MethodInsnNode)abstractInsnNode;
                     if (methodInsnNode.name.equals("getEntityManagerFactoryBuilder") &&
                             methodInsnNode.owner.equals(ASM.getInternalName(Bootstrap.class))) {
-                        methodInsnNode.owner = ASM.getInternalName(XEntityManagerFactoryBuilderImpl.class);
-                        methodInsnNode.name = "of";
-                        methodInsnNode.desc = 
-                                methodInsnNode.desc.substring(0, methodInsnNode.desc.lastIndexOf(')') + 1) + 
-                                ASM.getDescriptor(XEntityManagerFactoryBuilderImpl.class);
+                    	methodInsnNode.owner = ASM.getInternalName(XEntityManagerFactoryBuilderImpl.class);
+                    	methodInsnNode.name = "of";
+                    	methodInsnNode.desc = 
+                    			methodInsnNode.desc.substring(0, methodInsnNode.desc.lastIndexOf(')') + 1) +
+                    			ASM.getDescriptor(XEntityManagerFactoryBuilderImpl.class);
                     } else if (methodInsnNode.name.equals("locatePersistenceUnits") &&
                             methodInsnNode.owner.equals(ASM.getInternalName(PersistenceXmlParser.class))) {
                         AbstractInsnNode nextInsnNode = abstractInsnNode.getNext();

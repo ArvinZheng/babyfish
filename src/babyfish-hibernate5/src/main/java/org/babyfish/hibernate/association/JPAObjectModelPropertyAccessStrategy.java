@@ -1,16 +1,12 @@
 package org.babyfish.hibernate.association;
 
-import org.babyfish.lang.Singleton;
 import org.hibernate.property.access.spi.PropertyAccess;
 import org.hibernate.property.access.spi.PropertyAccessStrategy;
 
-public class JPAObjectModelPropertyAccessStrategy extends Singleton implements PropertyAccessStrategy {
-
-	protected JPAObjectModelPropertyAccessStrategy() {}
+public class JPAObjectModelPropertyAccessStrategy implements PropertyAccessStrategy {
 	
-	public static JPAObjectModelPropertyAccessStrategy getInstance() {
-		return getInstance(JPAObjectModelPropertyAccessStrategy.class);
-	}
+	public static final JPAObjectModelPropertyAccessStrategy INSTANCE = 
+			new JPAObjectModelPropertyAccessStrategy();
 	
 	@SuppressWarnings("rawtypes")
 	@Override

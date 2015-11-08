@@ -68,7 +68,7 @@ public class JPAObjectModelPropertyAccess implements PropertyAccess {
 	
     @Override
 	public PropertyAccessStrategy getPropertyAccessStrategy() {
-		return JPAObjectModelPropertyAccessStrategy.getInstance();
+		return JPAObjectModelPropertyAccessStrategy.INSTANCE;
 	}
 
 	@Override

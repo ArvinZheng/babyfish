@@ -18,12 +18,19 @@
 package org.babyfish.hibernate.internal;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.babyfish.hibernate.XSessionFactory;
 import org.babyfish.hibernate.boot.XMetadataImplementor;
 import org.babyfish.hibernate.boot.XSessionFactoryBuilder;
+import org.babyfish.hibernate.dialect.InstallableDialect;
+import org.babyfish.hibernate.event.ObjectModelMergeEventListener;
 import org.babyfish.hibernate.hql.XQueryPlanCache;
+import org.babyfish.hibernate.model.metadata.HibernateMetadatas;
+import org.babyfish.lang.UncheckedException;
+import org.babyfish.model.metadata.Metadatas;
 import org.hibernate.ConnectionReleaseMode;
 import org.hibernate.CustomEntityDirtinessStrategy;
 import org.hibernate.EntityMode;
@@ -34,16 +41,28 @@ import org.hibernate.NullPrecedence;
 import org.hibernate.SessionFactoryObserver;
 import org.hibernate.boot.TempTableDdlTransactionHandling;
 import org.hibernate.boot.internal.SessionFactoryBuilderImpl;
+import org.hibernate.boot.registry.StandardServiceInitiator;
 import org.hibernate.cache.spi.QueryCacheFactory;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
+import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.SQLFunction;
 import org.hibernate.engine.query.spi.QueryPlanCache;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.event.service.spi.EventListenerGroup;
+import org.hibernate.event.service.spi.EventListenerRegistry;
+import org.hibernate.event.spi.EventType;
+import org.hibernate.event.spi.MergeEventListener;
 import org.hibernate.hql.spi.id.MultiTableBulkIdStrategy;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.loader.BatchFetchStyle;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.persister.spi.PersisterClassResolver;
+import org.hibernate.persister.spi.PersisterFactory;
 import org.hibernate.proxy.EntityNotFoundDelegate;
 import org.hibernate.resource.jdbc.spi.StatementInspector;
+import org.hibernate.service.internal.AbstractServiceRegistryImpl;
+import org.hibernate.service.spi.ServiceInitiator;
+import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.tuple.entity.EntityTuplizer;
 import org.hibernate.tuple.entity.EntityTuplizerFactory;
 
@@ -54,11 +73,12 @@ public class XSessionFactoryBuilderImpl extends SessionFactoryBuilderImpl implem
     
     private static final Field QUERY_PLAN_CACHE_FIELD;
     
-    private XMetadataImplementor metadata;
+    private static final Method ABSTACT_SERVICE_RESGISTRY_IMPL_CREATE_SERVICE_BINDING;
+    
+    private static boolean pathPlanKeyVlidationSuspended;
     
     public XSessionFactoryBuilderImpl(XMetadataImplementor metadata) {
 		super(metadata);
-		this.metadata = metadata;
 	}
 
     @Override
@@ -320,19 +340,45 @@ public class XSessionFactoryBuilderImpl extends SessionFactoryBuilderImpl implem
 
 	@Override
     public XSessionFactory build() {
-		super.build();
+		
+        replacePersisterClassResolver((AbstractServiceRegistryImpl)this.getServiceRegistry());
+        
         SessionFactoryImpl factory;
+        pathPlanKeyVlidationSuspended = true;
         try {
-            factory = new SessionFactoryImpl(this.metadata, this.buildSessionFactoryOptions());
+            factory = (SessionFactoryImpl)super.build();
         } finally {
-            //TODO: this.namedQueries.putAll(this.tmpNamedQueryDefinitions);
-            //TODO: this.tmpNamedQueryDefinitions.clear();
+            pathPlanKeyVlidationSuspended = false;
         }
         
-        //TODO: setNamedQueries(factory, this.namedQueries);
-        //TODO: checkNamedQueries(factory);
+        Dialect dialect = factory.getDialect();
+        if (dialect instanceof InstallableDialect) {
+            ((InstallableDialect)dialect).install(factory);
+        }
+        
+        EventListenerGroup<MergeEventListener> mergeEventListenerGroup =
+                factory
+                .getServiceRegistry()
+                .getService(EventListenerRegistry.class)
+                .getEventListenerGroup(EventType.MERGE);
+        MergeEventListener mergeEventListener = new ObjectModelMergeEventListener(mergeEventListenerGroup.listeners());
+        mergeEventListenerGroup.clear();
+        mergeEventListenerGroup.appendListener(mergeEventListener);
+        
         setQueryPlanceCache(factory, this.createQueryPlanCache(factory));
+        
+        for (ClassMetadata classMetadata : factory.getAllClassMetadata().values()) {
+            if(Metadatas.getObjectModelFactoryProvider(classMetadata.getMappedClass()) != null) {
+                //Validate whether JPA configuration is same with object model configuration
+                HibernateMetadatas.of(classMetadata.getMappedClass()).getPersistentClass(factory);
+            }
+        }
+        
         return SessionFactoryImplWrapper.wrap(factory);
+    }
+	
+	public static boolean isPathPlanKeyVlidationSuspended() {
+        return pathPlanKeyVlidationSuspended;
     }
     
     protected XQueryPlanCache createQueryPlanCache(SessionFactoryImplementor factory) {
@@ -346,7 +392,48 @@ public class XSessionFactoryBuilderImpl extends SessionFactoryBuilderImpl implem
             throw new AssertionError();
         }
     }
-
+    
+    private static void replacePersisterClassResolver(AbstractServiceRegistryImpl abstractServiceRegistryImpl) {
+        try {
+            ABSTACT_SERVICE_RESGISTRY_IMPL_CREATE_SERVICE_BINDING.invoke(
+                    abstractServiceRegistryImpl, 
+                    new StandardServiceInitiator<PersisterClassResolver>() {
+                        @Override
+                        public Class<PersisterClassResolver> getServiceInitiated() {
+                            return PersisterClassResolver.class;
+                        }
+                        @SuppressWarnings("rawtypes")
+                        @Override
+                        public PersisterClassResolver initiateService(
+                                Map configurationValues,
+                                ServiceRegistryImplementor registry) {
+                            return new org.babyfish.hibernate.persister.StandardPersisterClassResolver();
+                        }
+                    }
+            );
+            ABSTACT_SERVICE_RESGISTRY_IMPL_CREATE_SERVICE_BINDING.invoke(
+                    abstractServiceRegistryImpl, 
+                    new StandardServiceInitiator<PersisterFactory>() {
+                        @Override
+                        public Class<PersisterFactory> getServiceInitiated() {
+                            return PersisterFactory.class;
+                        }
+                        @SuppressWarnings("rawtypes")
+                        @Override
+                        public PersisterFactory initiateService(
+                                Map configurationValues,
+                                ServiceRegistryImplementor registry) {
+                            return new org.hibernate.persister.internal.PersisterFactoryImpl();
+                        }
+                    }
+            );
+        } catch (IllegalAccessException ex) {
+            throw new AssertionError(ex);
+        } catch (InvocationTargetException ex) {
+            UncheckedException.rethrow(ex.getTargetException());
+        }
+    }
+    
     static {
         Field queryPlanCacheField;
         try {
@@ -356,6 +443,18 @@ public class XSessionFactoryBuilderImpl extends SessionFactoryBuilderImpl implem
         }
         queryPlanCacheField.setAccessible(true);
         
+        Method abstractServiceRegistryImplCreateServiceBinding;
+        try {
+            abstractServiceRegistryImplCreateServiceBinding = 
+                    AbstractServiceRegistryImpl.class.getDeclaredMethod(
+                            "createServiceBinding", 
+                            ServiceInitiator.class);
+        } catch (NoSuchMethodException ex) {
+            throw new AssertionError(ex);
+        }
+        abstractServiceRegistryImplCreateServiceBinding.setAccessible(true);
+        
         QUERY_PLAN_CACHE_FIELD = queryPlanCacheField;
+        ABSTACT_SERVICE_RESGISTRY_IMPL_CREATE_SERVICE_BINDING = abstractServiceRegistryImplCreateServiceBinding;
     }
 }

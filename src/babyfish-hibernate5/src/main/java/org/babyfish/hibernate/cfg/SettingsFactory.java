@@ -1,47 +1,12 @@
-/*
- * BabyFish, Object Model Framework for Java and JPA.
- * https://github.com/babyfish-ct/babyfish
- *
- * Copyright (c) 2008-2015, Tao Chen
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * Please visit "http://opensource.org/licenses/LGPL-3.0" to know more.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
- * for more details.
- */
 package org.babyfish.hibernate.cfg;
 
 import java.util.Map;
-import java.util.Properties;
 
-import org.babyfish.hibernate.hql.XQueryPlan;
-import org.babyfish.hibernate.hql.XQueryTranslatorFactory;
-import org.babyfish.hibernate.hql.XQueryTranslatorFactoryImpl;
 import org.babyfish.util.LazyResource;
-import org.hibernate.HibernateException;
-import org.hibernate.cfg.AvailableSettings;
-import org.hibernate.cfg.Environment;
-import org.hibernate.engine.query.spi.EntityGraphQueryHint;
-import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.hql.spi.FilterTranslator;
-import org.hibernate.hql.spi.QueryTranslator;
-import org.hibernate.hql.spi.QueryTranslatorFactory;
-import org.hibernate.internal.util.ReflectHelper;
-import org.hibernate.internal.util.config.ConfigurationHelper;
-import org.hibernate.service.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Tao Chen
- */
-public class SettingsFactory extends org.hibernate.cfg.SettingsFactory {
+public class SettingsFactory {
 
     private static final long serialVersionUID = -2662239924044486522L;
     
@@ -77,79 +42,79 @@ public class SettingsFactory extends org.hibernate.cfg.SettingsFactory {
         return "true".equals(value) || Boolean.TRUE.equals(value);
     }
 
-    @Override
-    protected final QueryTranslatorFactory createQueryTranslatorFactory(Properties properties, ServiceRegistry serviceRegistry) {
-        if (properties.containsKey(Environment.QUERY_TRANSLATOR)) {
-            throw new HibernateException(
-                    "the property \"" +
-                    Environment.QUERY_TRANSLATOR +
-                    "\" is deprecated by \"" +
-                    OBJECT_QUERY_TRANSLATOR_FACTORY +
-                    "\"");
-        }
-        String className = ConfigurationHelper.getString(
-                AvailableSettings.QUERY_TRANSLATOR, 
-                properties,
-                XQueryTranslatorFactoryImpl.class.getName());
-        LOGGER.info("Entity query translator: " + className);
-        final XQueryTranslatorFactory translatorFactory;
-        Class<?> xQueryTranslatorFactoryImplClass;
-        try {
-            xQueryTranslatorFactoryImplClass = ReflectHelper.classForName(className);
-        } catch (ClassNotFoundException ex) {
-            throw new HibernateException(
-                    LAZY_RESOURCE.get().notExistingXQueryTransalatorFactoryImpl(
-                            XQueryTranslatorFactory.class,
-                            className
-                    )
-            );
-        }
-        try {
-            translatorFactory = (XQueryTranslatorFactory)xQueryTranslatorFactoryImplClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException ex) {
-            throw new HibernateException(
-                    LAZY_RESOURCE.get().failedToInstantiateXQueryTranslatorFactory(
-                            XQueryTranslatorFactory.class, 
-                            xQueryTranslatorFactoryImplClass
-                    ), 
-                    ex);
-        }
-        
-        return new QueryTranslatorFactory() {
-            
-            @SuppressWarnings({ "unchecked", "rawtypes" }) 
-            @Override
-            public QueryTranslator createQueryTranslator(
-                    String queryIdentifier,
-                    String queryString, 
-                    Map filters, 
-                    SessionFactoryImplementor factory,
-                    EntityGraphQueryHint entityGraphQueryHint) {
-                return translatorFactory.createQueryTranslator(
-                        queryIdentifier, 
-                        queryString, 
-                        XQueryPlan.currentPathPlanKey(), 
-                        filters, 
-                        factory,
-                        entityGraphQueryHint);
-            }
-            
-            @SuppressWarnings({ "unchecked", "rawtypes" }) 
-            @Override
-            public FilterTranslator createFilterTranslator(
-                    String queryIdentifier,
-                    String queryString, 
-                    Map filters, 
-                    SessionFactoryImplementor factory) {
-                return translatorFactory.createFilterTranslator(
-                        queryIdentifier, 
-                        queryString, 
-                        XQueryPlan.currentPathPlanKey(), 
-                        filters, 
-                        factory);
-            }
-        };
-    }
+//    @Override
+//    protected final QueryTranslatorFactory createQueryTranslatorFactory(Properties properties, ServiceRegistry serviceRegistry) {
+//        if (properties.containsKey(Environment.QUERY_TRANSLATOR)) {
+//            throw new HibernateException(
+//                    "the property \"" +
+//                    Environment.QUERY_TRANSLATOR +
+//                    "\" is deprecated by \"" +
+//                    OBJECT_QUERY_TRANSLATOR_FACTORY +
+//                    "\"");
+//        }
+//        String className = ConfigurationHelper.getString(
+//                AvailableSettings.QUERY_TRANSLATOR, 
+//                properties,
+//                XQueryTranslatorFactoryImpl.class.getName());
+//        LOGGER.info("Entity query translator: " + className);
+//        final XQueryTranslatorFactory translatorFactory;
+//        Class<?> xQueryTranslatorFactoryImplClass;
+//        try {
+//            xQueryTranslatorFactoryImplClass = ReflectHelper.classForName(className);
+//        } catch (ClassNotFoundException ex) {
+//            throw new HibernateException(
+//                    LAZY_RESOURCE.get().notExistingXQueryTransalatorFactoryImpl(
+//                            XQueryTranslatorFactory.class,
+//                            className
+//                    )
+//            );
+//        }
+//        try {
+//            translatorFactory = (XQueryTranslatorFactory)xQueryTranslatorFactoryImplClass.newInstance();
+//        } catch (InstantiationException | IllegalAccessException ex) {
+//            throw new HibernateException(
+//                    LAZY_RESOURCE.get().failedToInstantiateXQueryTranslatorFactory(
+//                            XQueryTranslatorFactory.class, 
+//                            xQueryTranslatorFactoryImplClass
+//                    ), 
+//                    ex);
+//        }
+//        
+//        return new QueryTranslatorFactory() {
+//            
+//            @SuppressWarnings({ "unchecked", "rawtypes" }) 
+//            @Override
+//            public QueryTranslator createQueryTranslator(
+//                    String queryIdentifier,
+//                    String queryString, 
+//                    Map filters, 
+//                    SessionFactoryImplementor factory,
+//                    EntityGraphQueryHint entityGraphQueryHint) {
+//                return translatorFactory.createQueryTranslator(
+//                        queryIdentifier, 
+//                        queryString, 
+//                        XQueryPlan.currentPathPlanKey(), 
+//                        filters, 
+//                        factory,
+//                        entityGraphQueryHint);
+//            }
+//            
+//            @SuppressWarnings({ "unchecked", "rawtypes" }) 
+//            @Override
+//            public FilterTranslator createFilterTranslator(
+//                    String queryIdentifier,
+//                    String queryString, 
+//                    Map filters, 
+//                    SessionFactoryImplementor factory) {
+//                return translatorFactory.createFilterTranslator(
+//                        queryIdentifier, 
+//                        queryString, 
+//                        XQueryPlan.currentPathPlanKey(), 
+//                        filters, 
+//                        factory);
+//            }
+//        };
+//    }
 
     private interface Resource {
         
