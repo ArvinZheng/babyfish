@@ -17,6 +17,7 @@
  */
 package org.babyfish.hibernate.internal;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import org.hibernate.boot.model.TypeDefinition;
 import org.hibernate.boot.model.relational.Database;
 import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
 import org.hibernate.boot.spi.MetadataBuildingOptions;
+import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.boot.spi.SessionFactoryBuilderFactory;
 import org.hibernate.cfg.annotations.NamedEntityGraphDefinition;
 import org.hibernate.cfg.annotations.NamedProcedureCallDefinition;
@@ -82,7 +84,8 @@ public class XMetadataImpl extends MetadataImpl implements XMetadata, XMetadataI
 		super(
 				uuid, 
 				metadataBuildingOptions, 
-				typeResolver, identifierGeneratorFactory, 
+				typeResolver, 
+				identifierGeneratorFactory, 
 				entityBindingMap, 
 				mappedSuperclassMap,
 				collectionBindingMap, 
@@ -96,10 +99,37 @@ public class XMetadataImpl extends MetadataImpl implements XMetadata, XMetadataI
 				namedProcedureCallMap, 
 				sqlResultSetMappingMap,
 				namedEntityGraphMap, 
-				sqlFunctionMap, database);
+				sqlFunctionMap, 
+				database
+		);
 	}
+    
+    @SuppressWarnings("rawtypes")
+	public XMetadataImpl(MetadataImplementor metadata) {
+    	this(
+				metadata.getUUID(), 
+				metadata.getMetadataBuildingOptions(), 
+				metadata.getTypeResolver(), 
+				getObject(metadata, "getIdentifierGeneratorFactory", MutableIdentifierGeneratorFactory.class), 
+				XMetadataImpl.<PersistentClass>getStringMap(metadata, "entityBindingMap"), 
+				XMetadataImpl.<Class, MappedSuperclass>getMap(metadata, "mappedSuperclassMap"),
+			    XMetadataImpl.<Collection>getStringMap(metadata, "collectionBindingMap"), 
+			    XMetadataImpl.<TypeDefinition>getStringMap(metadata, "typeDefinitionMap"), 
+			    XMetadataImpl.<FilterDefinition>getStringMap(metadata, "filterDefinitionMap"), 
+			    XMetadataImpl.<FetchProfile>getStringMap(metadata, "fetchProfileMap"), 
+				metadata.getImports(),
+				XMetadataImpl.<IdentifierGeneratorDefinition>getStringMap(metadata, "idGeneratorDefinitionMap"), 
+			    XMetadataImpl.<NamedQueryDefinition>getStringMap(metadata, "namedQueryMap"), 
+			    XMetadataImpl.<NamedSQLQueryDefinition>getStringMap(metadata, "namedNativeQueryMap"), 
+			    XMetadataImpl.<NamedProcedureCallDefinition>getStringMap(metadata, "namedProcedureCallMap"), 
+			    XMetadataImpl.<ResultSetMappingDefinition>getStringMap(metadata, "sqlResultSetMappingMap"),
+			    XMetadataImpl.<NamedEntityGraphDefinition>getStringMap(metadata, "namedEntityGraphMap"), 
+			    XMetadataImpl.<SQLFunction>getStringMap(metadata, "sqlFunctionMap"), 
+				metadata.getDatabase()
+		);
+    }
 
-    @Override
+	@Override
 	public XSessionFactoryBuilder getSessionFactoryBuilder() {
 		final XSessionFactoryBuilderImpl defaultBuilder = new XSessionFactoryBuilderImpl( this );
 
@@ -147,5 +177,47 @@ public class XMetadataImpl extends MetadataImpl implements XMetadata, XMetadataI
 	@Override
 	public XSessionFactory buildSessionFactory() {
 		return getSessionFactoryBuilder().build();
+	}
+	
+	private static <V> Map<String, V> getStringMap(MetadataImplementor owner, String fieldName) {
+		return XMetadataImpl.<String, V>getMap(owner, fieldName);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static <K, V> Map<K, V> getMap(MetadataImplementor owner, String fieldName) {
+		return (Map<K, V>)getObject(owner, fieldName, Map.class);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static <T> T getObject(MetadataImplementor owner, String fieldName, Class<T> fieldType) {
+		Field field;
+		try {
+			field = MetadataImpl.class.getDeclaredField(fieldName);
+		} catch (NoSuchFieldException ex) {
+			throw new AssertionError(
+					"Internal bug: The class \""
+					+ MetadataImpl.class
+					+ "\" does not have field \""
+					+ fieldName
+					+ "\""
+			);
+		}
+		if (!fieldType.isAssignableFrom(field.getType())) {
+			throw new AssertionError(
+					"Internal bug: The type of the field \""
+					+ fieldName
+					+ "\" of class \""
+					+ MetadataImpl.class.getName()
+					+ "\" is not \""
+					+ fieldType.getName()
+					+ "\" or its derived type"
+			);
+		}
+		field.setAccessible(true);
+		try {
+			return (T)field.get(owner);
+		} catch (IllegalAccessException ex) {
+			throw new AssertionError("Internal bug");
+		}
 	}
 }

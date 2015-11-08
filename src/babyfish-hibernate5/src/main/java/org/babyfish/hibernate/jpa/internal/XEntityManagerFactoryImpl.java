@@ -41,10 +41,8 @@ import org.babyfish.persistence.criteria.XCriteriaQuery;
 import org.babyfish.persistence.criteria.XCriteriaUpdate;
 import org.babyfish.persistence.criteria.spi.AbstractCriteriaBuilder;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.jpa.boot.internal.SettingsImpl;
 import org.hibernate.jpa.internal.EntityManagerFactoryImpl;
 

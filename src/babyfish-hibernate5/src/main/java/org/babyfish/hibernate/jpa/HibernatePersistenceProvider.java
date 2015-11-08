@@ -82,13 +82,13 @@ public class HibernatePersistenceProvider implements PersistenceProvider {
     @SuppressWarnings("rawtypes")
     @Override
     public XEntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map properties) {
-        return (XEntityManagerFactory)XEntityManagerFactoryBuilderImpl.of(info, properties).build();
+        return new XEntityManagerFactoryBuilderImpl(info, properties, null).build();
     }
     
     @SuppressWarnings("rawtypes")
     @Override
     public void generateSchema(PersistenceUnitInfo info, Map properties) {
-        XEntityManagerFactoryBuilderImpl.of(info, properties).generateSchema();
+    	new XEntityManagerFactoryBuilderImpl(info, properties, null).generateSchema();
     }
 
     @SuppressWarnings("rawtypes")

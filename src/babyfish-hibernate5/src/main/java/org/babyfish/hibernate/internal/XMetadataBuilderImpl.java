@@ -31,7 +31,6 @@ import org.hibernate.boot.archive.scan.spi.ScanOptions;
 import org.hibernate.boot.archive.scan.spi.Scanner;
 import org.hibernate.boot.archive.spi.ArchiveDescriptorFactory;
 import org.hibernate.boot.internal.MetadataBuilderImpl;
-import org.hibernate.boot.internal.MetadataImpl;
 import org.hibernate.boot.model.IdGeneratorStrategyInterpreter;
 import org.hibernate.boot.model.TypeContributor;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
@@ -47,8 +46,6 @@ import org.hibernate.type.BasicType;
 import org.hibernate.usertype.CompositeUserType;
 import org.hibernate.usertype.UserType;
 import org.jboss.jandex.IndexView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Tao Chen
@@ -57,8 +54,6 @@ public class XMetadataBuilderImpl
 extends MetadataBuilderImpl 
 implements XMetadataBuilder, XMetadataBuilderImplementor {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(XMetadataBuilderImpl.class);
-
 	public XMetadataBuilderImpl(MetadataSources sources, StandardServiceRegistry serviceRegistry) {
 		super(sources, serviceRegistry);
 	}
@@ -207,22 +202,26 @@ implements XMetadataBuilder, XMetadataBuilderImplementor {
 		return (XMetadataBuilder)super.applyAttributeConverter(definition);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public XMetadataBuilder applyAttributeConverter(Class<? extends AttributeConverter> attributeConverterClass) {
 		return (XMetadataBuilder)super.applyAttributeConverter(attributeConverterClass);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public XMetadataBuilder applyAttributeConverter(Class<? extends AttributeConverter> attributeConverterClass,
 			boolean autoApply) {
 		return (XMetadataBuilder)super.applyAttributeConverter(attributeConverterClass, autoApply);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public XMetadataBuilder applyAttributeConverter(AttributeConverter attributeConverter) {
 		return (XMetadataBuilder)super.applyAttributeConverter(attributeConverter);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public XMetadataBuilder applyAttributeConverter(AttributeConverter attributeConverter, boolean autoApply) {
 		return (XMetadataBuilder)super.applyAttributeConverter(attributeConverter, autoApply);
@@ -241,26 +240,6 @@ implements XMetadataBuilder, XMetadataBuilderImplementor {
 	@Override
 	public XMetadataImplementor build() {
 		MetadataImplementor metadata = super.build();
-		return new XMetadataImpl(
-				metadata.getUUID(), 
-				metadata.getMetadataBuildingOptions(), 
-				metadata.getTypeResolver(), 
-				metadata.getIdGeneratorDefinations(),
-				metadata.getEntityBindings(),
-				metadata.getMappedSuperclassMappingsCopy(),
-				metadata.getCollectionBindings(), 
-				metadata.getTypeDefinitions(), 
-				metadata.getFilterDefinitions(), 
-				metadata.getFetchProfiles(), 
-				metadata.getImports(), 
-				metadata.getIdGeneratorDefinitions(), 
-				metadata.getNamedQueryDefinitions(),
-				metadata.getNamedNativeQueryDefinitions(),
-				metadata.getNamedProcedureCallDefinitions(), 
-				metadata.getResultSetMappingDefinitions(),
-				metadata.getNamedEntityGraphs(), 
-				metadata.getSqlFunctionMap(), 
-				metadata.getDatabase()
-		);
+		return new XMetadataImpl(metadata);
 	}
 }

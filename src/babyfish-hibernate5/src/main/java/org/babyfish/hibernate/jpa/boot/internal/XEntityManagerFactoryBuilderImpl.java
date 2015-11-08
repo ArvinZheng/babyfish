@@ -17,305 +17,173 @@
  */
 package org.babyfish.hibernate.jpa.boot.internal;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import javax.persistence.PersistenceException;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.babyfish.hibernate.boot.XMetadataImplementor;
+import org.babyfish.hibernate.boot.XSessionFactoryBuilder;
+import org.babyfish.hibernate.internal.XMetadataImpl;
 import org.babyfish.hibernate.internal.XSessionFactoryImplementor;
 import org.babyfish.hibernate.jpa.internal.XEntityManagerFactoryImpl;
-import org.babyfish.lang.UncheckedException;
-import org.babyfish.lang.reflect.asm.ASM;
-import org.babyfish.lang.reflect.asm.ClassEnhancer;
-import org.babyfish.org.objectweb.asm.Opcodes;
-import org.babyfish.org.objectweb.asm.tree.AbstractInsnNode;
-import org.babyfish.org.objectweb.asm.tree.InsnList;
-import org.babyfish.org.objectweb.asm.tree.MethodInsnNode;
-import org.babyfish.org.objectweb.asm.tree.TypeInsnNode;
-import org.hibernate.MappingException;
-import org.hibernate.SessionFactoryObserver;
-import org.hibernate.boot.registry.classloading.internal.ClassLoaderServiceImpl;
+import org.babyfish.persistence.XEntityManagerFactory;
+import org.hibernate.boot.SessionFactoryBuilder;
+import org.hibernate.boot.model.process.spi.ManagedResources;
+import org.hibernate.boot.model.process.spi.MetadataBuildingProcess;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.spi.MetadataBuilderImplementor;
 import org.hibernate.boot.spi.MetadataImplementor;
 import org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl;
 import org.hibernate.jpa.boot.internal.PersistenceUnitInfoDescriptor;
 import org.hibernate.jpa.boot.internal.SettingsImpl;
 import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
-import org.hibernate.jpa.internal.EntityManagerFactoryImpl;
 import org.hibernate.jpa.internal.schemagen.JpaSchemaGenerator;
-import org.hibernate.service.ServiceRegistry;
 
 /**
  * @author Tao Chen
  */
-public abstract class XEntityManagerFactoryBuilderImpl extends EntityManagerFactoryBuilderImpl {
-    
-    private static final Constructor<XEntityManagerFactoryBuilderImpl> CONSTRUCTOR;
-    
-    private static final Field SETTINGS_FIELD;
-    
-    private static final Field HIBERNATE_CONFIGURATION_FIELD;
-    
-    private static final Field SUPPLIED_SESSION_FACTORY_OBSERVER_FIELD;
+public class XEntityManagerFactoryBuilderImpl extends EntityManagerFactoryBuilderImpl {
     
     private PersistenceUnitDescriptor persistenceUnit;
     
-    public static XEntityManagerFactoryBuilderImpl of(
-            PersistenceUnitDescriptor persistenceUnit, 
+    private StandardServiceRegistry standardServiceRegistry;
+    
+    private SettingsImpl settings;
+    
+    private ManagedResources managedResources;
+    
+	private MetadataBuilderImplementor metamodelBuilder;
+	
+	private XMetadataImplementor metadata;
+	
+	public XEntityManagerFactoryBuilderImpl(
+			PersistenceUnitInfo persistenceUnit, 
             Map<?, ?> integrationSettings,
             ClassLoader providedClassLoader) {
-        try {
-            return CONSTRUCTOR.newInstance(persistenceUnit, integrationSettings, providedClassLoader);
-        } catch (InstantiationException | IllegalAccessException ex) {
-            throw new AssertionError(ex);
-        } catch (InvocationTargetException ex) {
-            throw UncheckedException.rethrow(ex.getTargetException());
-        }
-    }
+		this(new PersistenceUnitInfoDescriptor(persistenceUnit), integrationSettings, providedClassLoader);
+	}
     
-    public static XEntityManagerFactoryBuilderImpl of(
-            PersistenceUnitDescriptor persistenceUnit, 
-            Map<?, ?> integrationSettings) {
-        return of(persistenceUnit, integrationSettings, null);
-    }
-    
-    public static XEntityManagerFactoryBuilderImpl of(
-            PersistenceUnitInfo persistenceUnitInfo, 
-            Map<?, ?> integrationSettings,
-            ClassLoader providedClassLoader) {
-        return of(
-                new PersistenceUnitInfoDescriptor(persistenceUnitInfo), 
-                integrationSettings, 
-                providedClassLoader);
-    }
-    
-    public static XEntityManagerFactoryBuilderImpl of(
-            PersistenceUnitInfo persistenceUnitInfo, 
-            Map<?, ?> integrationSettings) {
-        return of(
-                new PersistenceUnitInfoDescriptor(persistenceUnitInfo), 
-                integrationSettings);
-    }
-
-    protected XEntityManagerFactoryBuilderImpl(
+	public XEntityManagerFactoryBuilderImpl(
             PersistenceUnitDescriptor persistenceUnit, 
             Map<?, ?> integrationSettings,
             ClassLoader providedClassLoader) {
         super(persistenceUnit, integrationSettings, providedClassLoader);
         this.persistenceUnit = persistenceUnit;
+        this.standardServiceRegistry = getObject(this, "standardServiceRegistry", StandardServiceRegistry.class);
+        this.settings = getObject(this, "settings", SettingsImpl.class);
+        this.managedResources = getObject(this, "managedResources", ManagedResources.class);
+        this.metamodelBuilder = getObject(this, "metamodelBuilder", MetadataBuilderImplementor.class);
     }
     
     @Override
-	public MetadataImplementor getMetadata() {
+	public XMetadataImplementor getMetadata() {
 		return (XMetadataImplementor)super.getMetadata();
 	}
+    
+    private XMetadataImplementor metadata() {
+    	if ( this.metadata == null ) {
+			MetadataImplementor hibernateMetadata = 
+					MetadataBuildingProcess.complete(
+							this.managedResources, 
+							this.metamodelBuilder.getMetadataBuildingOptions()
+					);
+			this.metadata = new XMetadataImpl(hibernateMetadata);
+		}
+		return metadata;
+    }
+    
+    @Override
+	public void generateSchema() {
+    	try {
+			SessionFactoryBuilder sfBuilder = this.metadata().getSessionFactoryBuilder();
+			populate(sfBuilder, this.standardServiceRegistry);
+			sfBuilder.build();
 
-	class GenerateSchemaWork implements ClassLoaderServiceImpl.Work<Void> {
-        
-        private ServiceRegistry serviceRegistry;
-        
-        public GenerateSchemaWork(ServiceRegistry serviceRegistry) {
-            this.serviceRegistry = serviceRegistry;
-        }
-    
-        @Override
-        public Void doWork(ClassLoader classLoader) {
-        	MetadataImplementor metadata = XEntityManagerFactoryBuilderImpl.this.getMetadata();
-            try {
-            	metadata.buildSessionFactory();
-            }
-            catch (MappingException ex) {
-                throw XEntityManagerFactoryBuilderImpl.this.persistenceException( "Unable to build Hibernate SessionFactory", ex);
-            }
-            JpaSchemaGenerator.performGeneration(metadata, this.serviceRegistry);
-            return null;
-        }
-    }
+			JpaSchemaGenerator.performGeneration(
+					this.metadata(), 
+					this.getConfigurationValues(), 
+					this.standardServiceRegistry
+			);
+		}
+		catch (Exception e) {
+			throw persistenceException( "Unable to build Hibernate SessionFactory", e );
+		}
 
-    class BuildWork implements ClassLoaderServiceImpl.Work<XEntityManagerFactoryImpl> {
-        
-        private ServiceRegistry serviceRegistry;
-        
-        public BuildWork(ServiceRegistry serviceRegistry) {
-            this.serviceRegistry = serviceRegistry;
-        }
-        
-        @Override
-        public XEntityManagerFactoryImpl doWork(ClassLoader classLoader) {
-            final org.babyfish.hibernate.cfg.Configuration cfg = 
-                    (org.babyfish.hibernate.cfg.Configuration)buildHibernateConfiguration(this.serviceRegistry);
-            XEntityManagerFactoryBuilderImpl.this.setHibernateConfiguration(cfg);
-            XSessionFactoryImplementor sessionFactory;
-            try {
-                sessionFactory = (XSessionFactoryImplementor)cfg.buildSessionFactory(this.serviceRegistry);
-            }
-            catch (MappingException e) {
-                throw persistenceException( "Unable to build Hibernate SessionFactory", e );
-            }
-            
-            JpaSchemaGenerator.performGeneration(cfg, serviceRegistry);
-            
-            SessionFactoryObserver suppliedSessionFactoryObserver = 
-                    XEntityManagerFactoryBuilderImpl.this.getSuppliedSessionFactoryObserver();
-            if (suppliedSessionFactoryObserver != null) {
-                sessionFactory.addObserver(suppliedSessionFactoryObserver);
-            }
-            sessionFactory.addObserver( new ServiceRegistryCloser() );
-    
-            // NOTE : passing cfg is temporary until
-            
-            return new XEntityManagerFactoryImpl(
-                    XEntityManagerFactoryBuilderImpl.this.persistenceUnit.getName(),
-                    sessionFactory,
-                    XEntityManagerFactoryBuilderImpl.this.getMetadata(),
-                    XEntityManagerFactoryBuilderImpl.this.getSettings(),
-                    XEntityManagerFactoryBuilderImpl.this.getConfigurationValues()
-            );
-        }
-    }
+		// release this builder
+		cancel();
+	}
 
-    private static class Enhancer extends ClassEnhancer {
-        
-        private static final Enhancer INSTANCE = getInstance(Enhancer.class);
-        
-        private Enhancer() {
-            super(XEntityManagerFactoryBuilderImpl.class);
-        }
-        
-        public static Class<XEntityManagerFactoryBuilderImpl> getEnhancedClass() {
-            return INSTANCE.getResultClass();
-        }
+	@Override
+	public XEntityManagerFactory build() {
+		XSessionFactoryBuilder sfBuilder = this.metadata().getSessionFactoryBuilder();
+		populate(sfBuilder, this.standardServiceRegistry);
 
-        @Override
-        protected void doMethodFilter(MethodSource methodSource) {
-            InsnList instructions = methodSource.getInstructions();
-            for (AbstractInsnNode abstractInsnNode = instructions.getFirst();
-                    abstractInsnNode != null;
-                    abstractInsnNode = abstractInsnNode.getNext()) {
-                if (abstractInsnNode.getOpcode() == Opcodes.NEW) {
-                    TypeInsnNode typeInsnNode = (TypeInsnNode)abstractInsnNode;
-                    if (typeInsnNode.desc.equals(ASM.getInternalName(EntityManagerFactoryImpl.class))) {
-                        typeInsnNode.desc = ASM.getInternalName(XEntityManagerFactoryImpl.class);
-                    } else if (typeInsnNode.desc.equals(ASM.getInternalName(org.hibernate.cfg.Configuration.class))) {
-                        typeInsnNode.desc = ASM.getInternalName(org.babyfish.hibernate.cfg.Configuration.class);
-                    }
-                } else if (abstractInsnNode.getOpcode() == Opcodes.INVOKESPECIAL) {
-                    MethodInsnNode methodInsnNode = (MethodInsnNode)abstractInsnNode;
-                    if (methodInsnNode.name.equals("<init>")) {
-                        if (methodInsnNode.owner.equals(ASM.getInternalName(EntityManagerFactoryImpl.class))) {
-                            methodInsnNode.owner = ASM.getInternalName(XEntityManagerFactoryImpl.class);
-                        } else if (methodInsnNode.owner.equals(ASM.getInternalName(org.hibernate.cfg.Configuration.class))) {
-                            methodInsnNode.owner = ASM.getInternalName(org.babyfish.hibernate.cfg.Configuration.class);
-                        }
-                    }
-                } else if (abstractInsnNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
-                    MethodInsnNode methodInsnNode = (MethodInsnNode)abstractInsnNode;
-                    if (methodInsnNode.name.equals("withTccl") && 
-                            methodInsnNode.owner.equals(ASM.getInternalName(ClassLoaderServiceImpl.class))) {
-                        MethodInsnNode initWorkInsnNode = (MethodInsnNode)methodInsnNode.getPrevious();
-                        String oldOwnerName = initWorkInsnNode.owner;
-                        initWorkInsnNode.owner = 
-                                methodSource.getMethod().getName().equals("generateSchema") ?
-                                ASM.getInternalName(GenerateSchemaWork.class) :
-                                ASM.getInternalName(BuildWork.class);
-                        initWorkInsnNode.desc = initWorkInsnNode.desc.replace(
-                                ASM.getDescriptor(EntityManagerFactoryBuilderImpl.class), 
-                                ASM.getDescriptor(XEntityManagerFactoryBuilderImpl.class));
-                        AbstractInsnNode tmpInsnNode = initWorkInsnNode.getPrevious();
-                        while (true) {
-                            if (tmpInsnNode.getOpcode() == Opcodes.NEW) {
-                                TypeInsnNode typeInsnNode = (TypeInsnNode)tmpInsnNode;
-                                if (typeInsnNode.desc.equals(oldOwnerName)) {
-                                    typeInsnNode.desc = 
-                                            methodSource.getMethod().getName().equals("generateSchema") ?
-                                            ASM.getInternalName(GenerateSchemaWork.class) :
-                                            ASM.getInternalName(BuildWork.class);
-                                    break;
-                                }
-                            }
-                            tmpInsnNode = tmpInsnNode.getPrevious();
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    protected PersistenceException persistenceException(String message, Exception cause) {
-        return new PersistenceException(
-                "[PersistenceUnit: " + persistenceUnit.getName() + "] " + message,
-                cause
-        );
-    }
-    
-    protected PersistenceUnitDescriptor persistenceUnitInfo() {
-        return this.persistenceUnit;
-    }
-    
-    private SettingsImpl getSettings() {
-        try {
-            return (SettingsImpl)SETTINGS_FIELD.get(this);
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            throw new AssertionError(ex);
-        }
-    }
-    
-    private SessionFactoryObserver getSuppliedSessionFactoryObserver() {
-        try {
-            return (SessionFactoryObserver)SUPPLIED_SESSION_FACTORY_OBSERVER_FIELD.get(this);
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            throw new AssertionError(ex);
-        }
-    }
-    
-    private void setHibernateConfiguration(org.babyfish.hibernate.cfg.Configuration cfg) {
-        try {
-            HIBERNATE_CONFIGURATION_FIELD.set(this, cfg);
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            throw new AssertionError(ex);
-        }
-    }
+		XSessionFactoryImplementor sessionFactory;
+		try {
+			sessionFactory = (XSessionFactoryImplementor)sfBuilder.build();
+		}
+		catch (Exception e) {
+			throw persistenceException("Unable to build Hibernate SessionFactory", e );
+		}
 
-    static {
-        Constructor<XEntityManagerFactoryBuilderImpl> constructor;
-        try {
-            constructor = Enhancer.getEnhancedClass().getDeclaredConstructor(
-                    PersistenceUnitDescriptor.class, Map.class, ClassLoader.class);
-        } catch (NoSuchMethodException ex) {
-            throw new AssertionError(ex);
-        }
-        constructor.setAccessible(true);
-        
-        Field settingsField;
-        try {
-            settingsField = EntityManagerFactoryBuilderImpl.class.getDeclaredField("settings");
-        } catch (NoSuchFieldException ex) {
-            throw new AssertionError(ex);
-        }
-        settingsField.setAccessible(true);
+		JpaSchemaGenerator.performGeneration(
+				metadata(), 
+				this.getConfigurationValues(), 
+				this.standardServiceRegistry
+		);
 
-        Field hibernateConfigurationField;
-        try {
-            hibernateConfigurationField = EntityManagerFactoryBuilderImpl.class.getDeclaredField("hibernateConfiguration");
-        } catch (NoSuchFieldException ex) {
-            throw new AssertionError(ex);
-        }
-        hibernateConfigurationField.setAccessible(true);
-        
-        Field suppliedSessionFactoryObserverField;
-        try {
-            suppliedSessionFactoryObserverField = EntityManagerFactoryBuilderImpl.class.getDeclaredField("suppliedSessionFactoryObserver");
-        } catch (NoSuchFieldException ex) {
-            throw new AssertionError(ex);
-        }
-        suppliedSessionFactoryObserverField.setAccessible(true);
-        
-        CONSTRUCTOR = constructor;
-        SETTINGS_FIELD = settingsField;
-        HIBERNATE_CONFIGURATION_FIELD = hibernateConfigurationField;
-        SUPPLIED_SESSION_FACTORY_OBSERVER_FIELD = suppliedSessionFactoryObserverField;
-    }
+		return new XEntityManagerFactoryImpl(
+				this.persistenceUnit.getName(),
+				sessionFactory,
+				this.metadata(),
+				this.settings,
+				this.getConfigurationValues()
+		);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static <T> T getObject(EntityManagerFactoryBuilderImpl owner, String fieldName, Class<T> fieldType) {
+		Field field;
+		try {
+			field = EntityManagerFactoryBuilderImpl.class.getDeclaredField(fieldName);
+		} catch (NoSuchFieldException ex) {
+			throw new AssertionError(
+					"Internal bug: The class \""
+					+ EntityManagerFactoryBuilderImpl.class
+					+ "\" does not have field \""
+					+ fieldName
+					+ "\""
+			);
+		}
+		if (!fieldType.isAssignableFrom(field.getType())) {
+			throw new AssertionError(
+					"Internal bug: The type of the field \""
+					+ fieldName
+					+ "\" of class \""
+					+ EntityManagerFactoryBuilderImpl.class.getName()
+					+ "\" is not \""
+					+ fieldType.getName()
+					+ "\" or its derived type"
+			);
+		}
+		field.setAccessible(true);
+		try {
+			return (T)field.get(owner);
+		} catch (IllegalAccessException ex) {
+			throw new AssertionError("Internal bug");
+		}
+	}
+	
+	private PersistenceException persistenceException(String message, Exception cause) {
+		return new PersistenceException(
+				this.getExceptionHeader() + message,
+				cause
+		);
+	}
+
+	private String getExceptionHeader() {
+		return "[PersistenceUnit: " + this.persistenceUnit.getName() + "] ";
+	}
 }
